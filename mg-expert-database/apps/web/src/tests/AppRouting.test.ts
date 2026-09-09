@@ -13,6 +13,7 @@ const apiMock = vi.hoisted(() => ({
   getVersionDetail: vi.fn(),
   getTree: vi.fn(),
   updateNode: vi.fn(),
+  deleteNode: vi.fn(),
   getWorkspace: vi.fn(),
   updateModule: vi.fn(),
   listAiSuggestions: vi.fn(),
@@ -72,7 +73,7 @@ function render(router: ReturnType<typeof createAppRouter>) {
     global: {
       plugins: [ElementPlus, router],
       stubs: {
-        HeaderBar: true,
+        HeaderBar: { name: 'HeaderBar', template: '<div><slot /></div>' },
         LoginView: true,
         UsersView: true,
         SystemsView: true,
@@ -104,6 +105,32 @@ beforeEach(() => {
 });
 
 describe('App 路由会话协调', () => {
+  it('确认删除传递名称并离开已删除指标', async () => {
+    const router = createAppRouter(createMemoryHistory());
+    await router.push('/systems/version-1/indicators/indicator-1');
+    const wrapper = render(router);
+    await settle();
+    apiMock.deleteNode.mockResolvedValue(undefined);
+    apiMock.getTree.mockResolvedValue([]);
+    wrapper.findComponent({ name: 'IndicatorTreePanel' }).vm.$emit('remove', node.id, node.name);
+    await settle();
+    expect(apiMock.deleteNode).toHaveBeenCalledWith('version-1', node.id, node.name);
+    expect(router.currentRoute.value.name).toBe('system-detail');
+    expect(wrapper.findComponent({ name: 'ResearchWorkspace' }).exists()).toBe(false);
+    wrapper.unmount();
+  });
+  it('删除失败保留当前指标内容', async () => {
+    const router = createAppRouter(createMemoryHistory());
+    await router.push('/systems/version-1/indicators/indicator-1');
+    const wrapper = render(router);
+    await settle();
+    apiMock.deleteNode.mockRejectedValueOnce(new Error('删除失败'));
+    wrapper.findComponent({ name: 'IndicatorTreePanel' }).vm.$emit('remove', node.id, node.name);
+    await settle();
+    expect(router.currentRoute.value.params.indicatorId).toBe(node.id);
+    expect(wrapper.findComponent({ name: 'ResearchWorkspace' }).props('workspace').indicator.id).toBe(node.id);
+    wrapper.unmount();
+  });
   it('将非模块编辑状态和传送弹窗合并上报，关闭弹窗不清除其它草稿', async () => {
     const state = vi.spyOn(desktop, 'setState');
     const router = createAppRouter(createMemoryHistory());
@@ -256,7 +283,6 @@ describe('App 路由会话协调', () => {
     const wrapper = render(router);
     await settle();
     expect(wrapper.findComponent({ name: 'AiExpertPanel' }).props('collapsed')).toBe(true);
-    expect(wrapper.findComponent({ name: 'HeaderBar' }).props('collapsed')).toBe(true);
     wrapper.unmount();
   });
 

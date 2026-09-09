@@ -36,7 +36,7 @@ export class ApiController {
   @RequireSystemPermission('canManageCatalog')
   @Post('indicator-versions/:versionId/nodes/reorder') reorderNode(@Param('versionId') versionId: string, @Body() body: { nodeId: string; targetId: string; position: 'before' | 'after' }, @Req() req: AuthenticatedRequest) { return this.catalog.reorderNode(versionId, body, actorFromRequest(req)); }
   @RequireSystemPermission('canManageCatalog')
-  @Delete('indicator-versions/:versionId/nodes/:nodeId') @HttpCode(204) async deleteNode(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Req() req: AuthenticatedRequest) { await this.catalog.deleteNode(versionId, nodeId, actorFromRequest(req)); }
+  @Delete('indicator-versions/:versionId/nodes/:nodeId') @HttpCode(204) async deleteNode(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Req() req: AuthenticatedRequest, @Body() body?: { confirmName?: string }) { await this.catalog.deleteNode(versionId, nodeId, actorFromRequest(req), body); }
   @RequireSystemPermission('canManageCatalog')
   @Post('indicator-versions/:versionId/clone') cloneVersion(@Param('versionId') versionId: string, @Body() body: CloneVersionRequest, @Req() req: AuthenticatedRequest) { return this.catalog.cloneVersion(versionId, body, actorFromRequest(req)); }
   @RequireSystemPermission('canView')

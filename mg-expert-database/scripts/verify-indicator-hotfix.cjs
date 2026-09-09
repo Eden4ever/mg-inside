@@ -45,6 +45,26 @@ async function main() {
       assert.equal((await tx.indicatorNode.findUnique({ where: { id: child.id } })).parentId, rootNode.id);
       assert.equal((await tx.indicatorNode.findUnique({ where: { id: grandchild.id } })).parentId, child.id);
       assert.equal(await tx.auditLog.count({ where: { versionId: version.id, action: 'indicator_node.updated' } }), 3);
+      const record = await tx.researchRecord.create({ data: { versionId: version.id, indicatorNodeId: grandchild.id, summary: '待删除摘要' } });
+      const module = await tx.researchModule.create({ data: { recordId: record.id, moduleKey: 'portrait', values: { test: '内容' } } });
+      await tx.researchRevision.create({ data: { moduleId: module.id, revisionNo: 1, snapshot: {}, actorName: actor.name, action: 'saved' } });
+      await tx.researchSummaryRevision.create({ data: { recordId: record.id, revisionNo: 1, summary: '摘要修订', actorUserId: user.id, actorName: actor.name } });
+      await tx.evidence.create({ data: { recordId: record.id, moduleKey: 'portrait', type: 'case', title: '依据', verificationStatus: 'verified' } });
+      await tx.aISuggestion.create({ data: { recordId: record.id, content: '建议', rationale: '理由', confidence: 'high' } });
+      await tx.researchAssignment.create({ data: { versionId: version.id, indicatorNodeId: grandchild.id, userId: user.id } });
+      await assert.rejects(service.deleteNode(version.id, grandchild.id, actor), /请确认删除/);
+      await assert.rejects(service.deleteNode(version.id, grandchild.id, actor, { confirmName: '旧名称' }), /请确认删除/);
+      await assert.rejects(service.deleteNode(version.id, child.id, actor, { confirmName: '二级改名' }), /子节点/);
+      assert.equal(await tx.researchRecord.count({ where: { id: record.id } }), 1);
+      await service.deleteNode(version.id, grandchild.id, actor, { confirmName: grandchild.name });
+      assert.equal(await tx.indicatorNode.count({ where: { id: grandchild.id } }), 0);
+      assert.equal(await tx.researchRecord.count({ where: { id: record.id } }), 0);
+      for (const model of ['researchModule', 'evidence', 'aISuggestion', 'researchSummaryRevision']) assert.equal(await tx[model].count({ where: { recordId: record.id } }), 0);
+      assert.equal(await tx.researchRevision.count({ where: { moduleId: module.id } }), 0);
+      assert.equal(await tx.researchAssignment.count({ where: { indicatorNodeId: grandchild.id } }), 0);
+      const deletion = await tx.auditLog.findFirstOrThrow({ where: { targetId: grandchild.id, action: 'indicator_node.deleted' } });
+      assert.equal(deletion.detail.name, grandchild.name);
+      assert.deepEqual(deletion.detail.deletedContent, { modules: 1, evidence: 1, suggestions: 1, summaryRevisions: 1 });
       throw rollback;
     }, { timeout: 30000 });
   } catch (error) {
@@ -53,6 +73,6 @@ async function main() {
   assert(checked);
   assert.equal(await db.indicatorSystem.count({ where: { code: marker } }), 0);
   assert.equal(await db.user.count({ where: { username: marker } }), 0);
-  console.log('指标新增、自动编码、带子节点编辑及移动保护通过；临时数据已回滚。');
+  console.log('指标新增、编辑、删除确认、内容级联清理及审计验证通过；临时数据已回滚。');
 }
 main().catch((error) => { console.error(error.message); process.exitCode = 1; }).finally(() => db.$disconnect());

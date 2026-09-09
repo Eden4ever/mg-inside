@@ -18,7 +18,7 @@ const emit = defineEmits<{
   reorder: [input: { nodeId: string; targetId: string; position: 'before' | 'after' }];
   add: [input: CreateNodeInput];
   edit: [nodeId: string, input: Partial<CreateNodeInput>];
-  remove: [nodeId: string];
+  remove: [nodeId: string, confirmName: string];
 }>();
 
 const query = ref('');
@@ -101,13 +101,16 @@ function submitForm() {
 }
 
 async function removeNode(node: IndicatorTreeNode) {
+  if (props.readonly || props.loading || props.sorting) return;
   if (node.children?.length) {
     ElMessage.warning('请先处理该节点下的子指标');
     return;
   }
   try {
-    await ElMessageBox.confirm(`确定删除“${node.name}”？删除后不可恢复。`, '删除指标节点', { type: 'warning', confirmButtonText: '删除', cancelButtonText: '取消' });
-    emit('remove', node.id);
+    const confirmedName = node.name;
+    await ElMessageBox.confirm(`确定删除“${confirmedName}”？该指标的摘要、研究内容、关联依据、AI 建议、内容修订记录及研究分工将一并删除，且无法恢复。删除操作会保留审计记录。`, '确认删除指标', { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消', closeOnClickModal: false });
+    if (props.readonly || props.loading || props.sorting) return;
+    emit('remove', node.id, confirmedName);
   } catch {
     // 用户取消
   }

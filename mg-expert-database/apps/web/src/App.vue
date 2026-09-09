@@ -287,12 +287,15 @@ async function editNode(nodeId: string, input: Partial<CreateNodeInput>) {
   }
 }
 
-async function removeNode(nodeId: string) {
-  if (!currentSystem.value) return;
+async function removeNode(nodeId: string, confirmName: string) {
+  if (!currentSystem.value || treeSorting.value) return;
+  if (workspaceDirty.value || workspaceRef.value?.isSaving?.()) { ElMessage.warning('请先保存或取消当前编辑'); return; }
   const versionId = currentSystem.value.versionId;
+  treeSorting.value = true;
   try {
-    await api.deleteNode(versionId, nodeId);
+    await api.deleteNode(versionId, nodeId, confirmName);
     await reloadTree();
+    treeSorting.value = false;
     if (selectedNode.value?.id === nodeId) {
       const next = findFirstLeaf(tree.value);
       await router.replace(next
@@ -302,6 +305,8 @@ async function removeNode(nodeId: string) {
     ElMessage.success('指标节点已删除');
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : '删除指标节点失败');
+  } finally {
+    treeSorting.value = false;
   }
 }
 

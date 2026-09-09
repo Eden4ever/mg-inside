@@ -10,7 +10,7 @@ import time
 import urllib.request
 
 release_id, payload_dir = sys.argv[1:]
-assert re.fullmatch(r'stage13-\d{8}-\d{6}', release_id)
+assert re.fullmatch(r'stage(?:13|14)-\d{8}-\d{6}', release_id)
 root = Path('/opt/mg-expert-database')
 current = root / 'current'
 previous = current.resolve()
@@ -20,10 +20,10 @@ assert not release.exists()
 payload = Path(payload_dir).resolve()
 manifest = json.loads((payload / 'manifest.json').read_text())
 for name, digest in manifest['files'].items():
-    assert name in {'catalog.service.ts', 'catalog.service.js', 'verify-indicator-hotfix.cjs'}
+    assert name in {'catalog.service.ts', 'catalog.service.js', 'api.controller.ts', 'api.controller.js', 'verify-indicator-hotfix.cjs'}
     assert hashlib.sha256((payload / name).read_bytes()).hexdigest() == digest
 for name, digest in manifest['previous'].items():
-    assert name in {'apps/api/src/catalog.service.ts', 'apps/api/dist/apps/api/src/catalog.service.js'}
+    assert name in {'apps/api/src/catalog.service.ts', 'apps/api/dist/apps/api/src/catalog.service.js', 'apps/api/src/api.controller.ts', 'apps/api/dist/apps/api/src/api.controller.js'}
     assert hashlib.sha256((previous / name).read_bytes()).hexdigest() == digest, '当前服务版本已变化，停止发布'
 
 def run(*args, **kwargs):
@@ -49,9 +49,12 @@ run('cp', '-a', '--reflink=auto', str(previous), str(release))
 for source, destination in [
     ('catalog.service.ts', 'apps/api/src/catalog.service.ts'),
     ('catalog.service.js', 'apps/api/dist/apps/api/src/catalog.service.js'),
+    ('api.controller.ts', 'apps/api/src/api.controller.ts'),
+    ('api.controller.js', 'apps/api/dist/apps/api/src/api.controller.js'),
     ('verify-indicator-hotfix.cjs', 'verify-indicator-hotfix.cjs'),
 ]:
-    run('install', '-o', 'mgexpert', '-g', 'mgexpert', '-m', '0644', str(payload / source), str(release / destination))
+    if source in manifest['files']:
+        run('install', '-o', 'mgexpert', '-g', 'mgexpert', '-m', '0644', str(payload / source), str(release / destination))
 # Node 自行读取环境文件；凭据不进入命令参数或输出。
 node = root / 'runtimes/node-v24.20.0-linux-x64/bin/node'
 run(str(node), '--env-file=/etc/mg-expert-database/api.env', str(release / 'verify-indicator-hotfix.cjs'), str(release), cwd=release)

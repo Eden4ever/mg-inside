@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
-import ElementPlus from 'element-plus';
-import { describe, expect, it } from 'vitest';
+import ElementPlus, { ElMessageBox } from 'element-plus';
+import { describe, expect, it, vi } from 'vitest';
 import IndicatorTreePanel from '@/components/IndicatorTreePanel.vue';
 import type { IndicatorTreeNode } from '@/types/domain';
 
@@ -17,6 +17,20 @@ function render() {
 }
 
 describe('IndicatorTreePanel', () => {
+  it.each([true, false])('删除包含内容范围确认，确认=%s', async (confirmed) => {
+    const confirm = vi.spyOn(ElMessageBox, 'confirm');
+    if (confirmed) confirm.mockResolvedValue('confirm' as Awaited<ReturnType<typeof ElMessageBox.confirm>>);
+    else confirm.mockRejectedValue('cancel');
+    const wrapper = render();
+    try {
+      await wrapper.setProps({ nodes: [nodes[0]!.children[0]!.children[0]!] });
+      const menu = wrapper.findAllComponents({ name: 'ElDropdownItem' }).filter(item => item.text() === '删除').at(-1)!;
+      menu.vm.$emit('click');
+      await flushPromises();
+      expect(confirm).toHaveBeenCalledWith(expect.stringContaining('内容修订记录及研究分工将一并删除'), '确认删除指标', expect.objectContaining({ confirmButtonText: '确认删除', cancelButtonText: '取消' }));
+      expect(wrapper.emitted('remove')).toEqual(confirmed ? [['l3', '信用修复办理时效']] : undefined);
+    } finally { wrapper.unmount(); confirm.mockRestore(); }
+  });
   it('新增仅填写名称即可保存，不提交空编码', async () => {
     const wrapper = render();
     await wrapper.get('[aria-label="新增一级指标"]').trigger('click');

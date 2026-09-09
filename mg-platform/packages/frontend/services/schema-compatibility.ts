@@ -22,7 +22,7 @@ export function expandComparisonSchema(document:any,schema:Schema):Schema {
   if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Schema 格式无效');
   if(value.$ref){
    const ref=value.$ref;if(typeof ref!=='string'||!/^#\/components\/schemas\/[A-Za-z0-9._-]+$/.test(ref)||seen.has(ref))throw Error('Schema 引用循环或不受支持');
-   const target=document?.components?.schemas?.[ref.split('/')[3]];if(target===undefined)throw Error('Schema 引用不存在');
+   const target=document?.components?.schemas?.[ref.split('/')[3]!];if(target===undefined)throw Error('Schema 引用不存在');
    const expanded=visit(target,new Set([...seen,ref]),depth+1);
    const siblings=Object.fromEntries(Object.entries(value).filter(([key])=>key!=='$ref'&&!annotations.has(key)));
    return Object.keys(siblings).length?{allOf:[expanded,visit(siblings,seen,depth+1)]}:expanded;

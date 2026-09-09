@@ -272,14 +272,23 @@ export class CatalogService {
     });
   }
 
-  async deleteNode(versionId: string, nodeId: string, actor: Actor): Promise<void> {
+  async deleteNode(versionId: string, nodeId: string, actor: Actor, input?: { confirmName?: string }): Promise<void> {
     await this.systemAccess.requireForVersion(versionId, actor, ['canManageCatalog']);
-    await this.requireWritableVersion(versionId);
-    const node = await this.prisma.indicatorNode.findFirst({ where: { id: nodeId, versionId }, include: { children: true, record: true } });
-    if (!node) throw new NotFoundException('指标节点不存在。');
-    if (node.children.length) throw new ConflictException('请先删除全部子节点。');
-    if (node.record) throw new ConflictException('已建立内容记录的指标不可直接删除。');
-    await this.prisma.$transaction(async (tx) => { await tx.indicatorNode.delete({ where: { id: nodeId } }); await this.audit(tx, actor, 'indicator_node.deleted', 'IndicatorNode', nodeId, versionId); });
+    const version = await this.requireWritableVersion(versionId);
+    await this.prisma.$transaction(async (tx) => {
+      await this.templates.lock(tx, version.systemId);
+      const node = await tx.indicatorNode.findFirst({ where: { id: nodeId, versionId }, include: { children: true, record: { include: { _count: { select: { modules: true, evidence: true, suggestions: true, summaryRevisions: true } } } } } });
+      if (!node) throw new NotFoundException('指标节点不存在。');
+      if (node.children.length) throw new ConflictException('请先删除全部子节点。');
+      if ((node.record || input?.confirmName !== undefined) && input?.confirmName !== node.name) {
+        throw new ConflictException('请确认删除该指标及其内容记录；名称已变化时请刷新后重新确认。');
+      }
+      await tx.indicatorNode.delete({ where: { id: nodeId } });
+      await this.audit(tx, actor, 'indicator_node.deleted', 'IndicatorNode', nodeId, versionId, {
+        name: node.name, code: node.code, level: node.level, parentId: node.parentId,
+        contentDeleted: Boolean(node.record), deletedContent: node.record?._count ?? null,
+      });
+    });
   }
 
   async workspace(versionId: string, nodeId: string, actor?: Actor): Promise<object> {

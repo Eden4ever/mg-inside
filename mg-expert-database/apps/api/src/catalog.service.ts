@@ -235,7 +235,7 @@ export class CatalogService {
     const parentId = input.parentId === undefined ? existing.parentId : input.parentId;
     if (parentId === nodeId) throw new BadRequestException('指标节点不能以自身为父节点。');
     const parent = await this.validateParent(versionId, level, parentId ?? null);
-    if (existing.children.length && parent?.id !== existing.parentId) throw new BadRequestException('含子节点的指标不可移动，避免形成循环或破坏层级。');
+    if (existing.children.length && (parent?.id ?? null) !== existing.parentId) throw new BadRequestException('含子节点的指标不可移动，避免形成循环或破坏层级。');
     if (input.sortOrder !== undefined && (!Number.isInteger(Number(input.sortOrder)) || Number(input.sortOrder) < 0)) throw new BadRequestException('排序必须是非负整数。');
     try {
       const updated = await this.prisma.$transaction(async (tx) => {

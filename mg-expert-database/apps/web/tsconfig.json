@@ -1,0 +1,42 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "preserve",
+    "allowJs": false,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@mg-expert/contracts": [
+        "../../packages/contracts/src/index.ts"
+      ],
+      "@mg-inside/frontend": [
+        "../../../mg-platform/packages/frontend/index.ts"
+      ],
+      "@mg-inside/frontend/*": [
+        "../../../mg-platform/packages/frontend/*"
+      ],
+      "vue": [
+        "./node_modules/vue"
+      ]
+    },
+    "types": [
+      "vite/client",
+      "vitest/globals"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "vite.config.ts"
+  ]
+}

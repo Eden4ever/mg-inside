@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "token-one",
+  "name": "Token One",
+  "defaultPath": "/dashboard",
+  "brand": {
+    "name": "Token One"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "dashboard",
+      "path": "/dashboard",
+      "title": "概览",
+      "component": "route",
+      "icon": "gauge"
+    },
+    {
+      "id": "my-usage",
+      "path": "/my-usage",
+      "title": "令牌与用量",
+      "component": "route",
+      "icon": "key-round"
+    },
+    {
+      "id": "playground",
+      "path": "/playground",
+      "title": "API 调试",
+      "component": "route",
+      "icon": "send"
+    },
+    {
+      "id": "docs",
+      "path": "/docs",
+      "title": "文档中心",
+      "component": "route",
+      "icon": "book-open"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "dashboard",
+      "my-usage",
+      "playground",
+      "docs"
+    ]
+  }
+}

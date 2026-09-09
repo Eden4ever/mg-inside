@@ -1,0 +1,11 @@
+{
+ "$schema":"../mg-platform/packages/frontend/config/application.schema.json","schemaVersion":1,"layout":"standard","appId":"resource-manager","name":"资源管理","defaultPath":"/pools",
+ "brand":{"name":"资源管理","icon":"server","homePath":"/pools"},"header":{"showTitle":true,"showBrand":true,"showAccount":true},
+ "pages":[
+  {"id":"pools","path":"/pools","title":"资源池","component":"resources","icon":"layout-grid","description":"按环境与用途组织服务器，了解当前容量与连接状态。"},
+  {"id":"servers","path":"/servers","title":"服务器","component":"resources","icon":"server","description":"查看实时采集指标，维护资源归属与备注。"},
+  {"id":"deployments","path":"/deployments","title":"应用部署","component":"resources","icon":"box","description":"查看已登记的应用与运行服务之间的关联。"},
+  {"id":"audit","path":"/audit","title":"采集记录","component":"resources","icon":"clock","description":"查看每次采集与资源资料修改的结果。"}
+ ],"navigation":{"mode":"flat","defaultCollapsed":true,"pageIds":["pools","servers","deployments","audit"]},"browser":{"titleTemplate":"{title} · {name}"}
+}
+

@@ -1,0 +1,139 @@
+{
+  "style": "Windows 11 Fluent",
+  "generation": "image_gen built-in, existing approved final generation",
+  "normalization": "Alpha > 128 bounding box, CSS-only normalization; original raster bytes preserved",
+  "assets": [
+    {
+      "appId": "files",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-b3c08e32-5352-4bf1-ac58-57da1b8ddfa4.png",
+      "asset": "files-fluent.png",
+      "sha256": "760abe48a5ef4d9d910476ce37104fcdc76220d980e9d1cdcbe4a50561f940f4",
+      "imageViewport": [
+        15.072,
+        15.391,
+        74.242,
+        68.262
+      ]
+    },
+    {
+      "appId": "personal-center",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-7a1acd75-08be-4903-828c-9f500a803ce3.png",
+      "asset": "personal-center-fluent.png",
+      "sha256": "e2480c31ffd59a5f648c7fa7fd18da39e2ad36f95ebf3a299908deda951f50c9",
+      "imageViewport": [
+        15.71,
+        11.802,
+        68.581,
+        78.947
+      ]
+    },
+    {
+      "appId": "app-manager",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-650cf0b2-56f8-4b54-b6c8-02ef66b53825.png",
+      "asset": "app-manager-fluent.png",
+      "sha256": "55882610db32721b0bf3b7358e87e9b72e46ea1f3bdff56850e6f1d59b58d647",
+      "imageViewport": [
+        13.238,
+        13.955,
+        74.801,
+        70.973
+      ]
+    },
+    {
+      "appId": "expert-database",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-aee67b7a-a4ed-45a7-a8e3-a457da4a5f6d.png",
+      "asset": "expert-database-fluent.png",
+      "sha256": "e38e55429a9d6d116c9c9ef1a0bbd278aa911534078c21bab3355b3bf26a9e23",
+      "imageViewport": [
+        5.901,
+        14.115,
+        88.198,
+        74.402
+      ]
+    },
+    {
+      "appId": "identity",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-c23229f9-f746-4a41-8209-06b21f532547.png",
+      "asset": "identity-fluent.png",
+      "sha256": "8e21a34d7adacebc9558635bf286a2ceb33d81d1b1a837de4eeb38e483a825f0",
+      "imageViewport": [
+        14.434,
+        8.054,
+        71.212,
+        84.051
+      ]
+    },
+    {
+      "appId": "token-one",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-ef1ca944-62ee-443a-8283-9df93522a58e.png",
+      "asset": "token-one-fluent.png",
+      "sha256": "05d53fad831ab266a056a5c9bb8347723b41b3e003b27e2bd0a05cf3f8e3e1fb",
+      "imageViewport": [
+        18.102,
+        7.815,
+        63.876,
+        87.64
+      ]
+    },
+    {
+      "appId": "office-one",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-0aa8b713-c631-4213-9d20-85d89b9ce98b.png",
+      "asset": "office-one-fluent.png",
+      "sha256": "f24035c09aeaaf92cfa7120b487b389655e1d107272f88eaea0288843546e53a",
+      "imageViewport": [
+        11.324,
+        9.49,
+        79.346,
+        79.904
+      ]
+    },
+    {
+      "appId": "resource-manager",
+      "source": "C:\\Users\\Eden\\.codex\\generated_images\\01a08144-7b20-7772-976f-3194b66f7c82\\exec-5fd31aa3-8520-4cde-9e3b-332d762a28a3.png",
+      "asset": "resource-manager-fluent.png",
+      "sha256": "0935e0d2a6cec8da0925e2608c7cb7bff5c361afeb72cd34a3e7c8db1c42b25d",
+      "imageViewport": [
+        17.863,
+        23.285,
+        64.354,
+        55.183
+      ]
+    },
+    {
+      "imageViewport": [
+        11.643,
+        7.656,
+        77.512,
+        85.247
+      ],
+      "appId": "trash",
+      "sha256": "ac4176c55fccd6f345894b9c98e9227ecbc7dcb0234a08f5dd2fafb37ba57be5",
+      "asset": "trash-empty-fluent.png",
+      "source": "C:/Users/Eden/.codex/generated_images/01a0817e-359b-7301-aa1c-f6dbc93a8eea/exec-332b0a5f-b587-49ee-bf41-89b8cba0d7bc.png"
+    },
+    {
+      "imageViewport": [
+        11.643,
+        5.024,
+        77.671,
+        87.959
+      ],
+      "appId": "trash-full",
+      "sha256": "87b0d91dfe51a9db6262e8b438ed81453702f7504b2af2a7233306f244049d95",
+      "asset": "trash-full-fluent.png",
+      "source": "C:/Users/Eden/.codex/generated_images/01a0817e-359b-7301-aa1c-f6dbc93a8eea/exec-17c32526-3595-48ee-9d66-7fad3d4bb58c.png"
+    },
+    {
+      "imageViewport": [
+        11.802,
+        11.563,
+        77.592,
+        76.156
+      ],
+      "appId": "launcher",
+      "sha256": "6cf91b9cdb7e605d76610dd11a19c5e4f7ae422cab49388e559b37b33fbd1666",
+      "asset": "launcher-fluent.png",
+      "source": "C:/Users/Eden/.codex/generated_images/01a0817e-359b-7301-aa1c-f6dbc93a8eea/exec-45a1bb70-02cb-4ac2-8cd9-6f08cc9d71d3.png"
+    }
+  ]
+}

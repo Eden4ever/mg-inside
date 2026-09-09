@@ -1,0 +1,27 @@
+/* 桌面窗口使用同一层毛玻璃；浏览器独立访问不加载这些覆盖。 */
+.desktop-embedded { --shell-header-height:0px; --mg-layout-header-height:0px; --inside-titlebar-height:42px; background:transparent!important; }
+.desktop-embedded body { background:transparent!important; }
+.desktop-embedded .app-shell .app-header,
+.desktop-embedded .workspace-shell .workspace-topbar { display:none; }
+.desktop-embedded .app-shell,
+.desktop-embedded .workspace-shell,
+.desktop-embedded .docs-shell {
+  --inside-window-surface:var(--mg-bg-surface,var(--el-bg-color,#fff));
+  box-sizing:border-box; height:100dvh; min-height:0; padding-top:var(--inside-titlebar-height);
+}
+/* 由父窗口统一模糊桌面背景，避免 iframe 中各区域重复模糊造成接缝。 */
+.desktop-embedded body .app-shell,
+.desktop-embedded body .workspace-shell,
+.desktop-embedded body .docs-shell,
+.desktop-embedded .app-shell .app-sidebar,
+.desktop-embedded .workspace-shell .workspace-sidebar,
+.desktop-embedded .workspace-shell .workspace-column { background:transparent!important; }
+.desktop-embedded .app-shell .app-sidebar,
+.desktop-embedded .workspace-shell .workspace-sidebar { border:0; box-shadow:none; }
+.desktop-embedded .app-shell .app-content,
+.desktop-embedded .workspace-shell .workspace-main { border-radius:var(--inside-content-radius,16px 0 0); box-shadow:var(--inside-content-shadow,0 0 8px rgb(48 49 51 / 8%)); }
+@media(max-width:980px) {
+  /* 抽屉覆盖正文时仍需自己的底色，避免两层文字混在一起。 */
+  .desktop-embedded .app-shell .app-sidebar:not(.is-collapsed),
+  .desktop-embedded .workspace-shell .workspace-sidebar:not(.is-collapsed) { top:var(--inside-titlebar-height); background:var(--inside-window-surface)!important; }
+}

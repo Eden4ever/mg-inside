@@ -1,0 +1,53 @@
+{
+  "name": "mg-gateway",
+  "version": "0.1.0",
+  "description": "MG Token One - 自研 LLM API 聚合分发网关",
+  "private": true,
+  "scripts": {
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:prod": "node -r tsconfig-paths/register dist/main.js",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "typeorm": "ts-node -r tsconfig-paths/register node_modules/typeorm/cli.js",
+    "migrate": "node --env-file-if-exists=.env scripts/migrate.mjs",
+    "migrate:status": "node --env-file-if-exists=.env scripts/migrate.mjs --status",
+    "configure:claude-upstream": "node --env-file-if-exists=.env scripts/configure-cctq-claude-upstream.mjs",
+    "channel:probe": "node --env-file-if-exists=.env scripts/probe-channel.mjs",
+    "test:monthly-quota": "node -r ts-node/register -r tsconfig-paths/register --test test/monthly-quota-policy.spec.ts",
+    "test:identity": "node -r ts-node/register -r tsconfig-paths/register --test test/identity-sso.spec.ts",
+    "test:protocols": "node -r ts-node/register -r tsconfig-paths/register --test test/upstream-protocol.spec.ts test/channel-pool-protocol.spec.ts test/chat-completions-transport.spec.ts test/native-responses-transport.spec.ts",
+    "test:gateway": "node -r ts-node/register -r tsconfig-paths/register --test test/configuration.spec.ts test/health.spec.ts test/request-log-retention.service.spec.ts test/request-log-retention-lock.service.spec.ts test/monthly-quota-policy.spec.ts test/quota-concurrency.spec.ts test/pricing-policy.spec.ts test/cctq-account-policy.spec.ts test/cctq-account.service.spec.ts test/deepseek-account-policy.spec.ts test/supplier-account-directory.spec.ts test/supplier-account-sync.service.spec.ts test/supplier-account-adapter-http.spec.ts test/routing-metadata.spec.ts test/upstream-protocol.spec.ts test/channel-pool-protocol.spec.ts test/chat-completions-transport.spec.ts test/native-responses-transport.spec.ts test/anthropic-messages-transport.spec.ts test/relay-accounting.spec.ts test/relay-executor.spec.ts test/relay-response-state.spec.ts test/relay-models.spec.ts test/stats-availability.spec.ts test/availability-monitoring.spec.ts test/management-policy.spec.ts test/configure-codex-upstream.spec.mjs test/configure-cctq-claude-upstream.spec.mjs test/configure-codex-responses.spec.mjs",
+    "test:e2e": "node --env-file-if-exists=.env -r ts-node/register -r tsconfig-paths/register --test test/migration-idempotency.e2e.spec.ts test/quota-mysql-concurrency.e2e.spec.ts test/supplier-account-sync-lock.e2e.spec.ts test/request-log-retention.e2e.spec.ts test/channel-pool-circuit.e2e.spec.ts test/gateway.e2e.spec.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "^10.4.4",
+    "@nestjs/config": "^3.2.3",
+    "@nestjs/core": "^10.4.4",
+    "@nestjs/platform-express": "^10.4.4",
+    "@nestjs/schedule": "^4.1.1",
+    "@nestjs/typeorm": "^10.0.2",
+    "axios": "^1.7.7",
+    "bcryptjs": "^2.4.3",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.11.3",
+    "nanoid": "^3.3.7",
+    "openid-client": "^6.8.8",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.5",
+    "@nestjs/schematics": "^10.1.4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/node": "^22.7.4",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.6.2"
+  }
+}

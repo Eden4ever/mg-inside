@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "identity.api",
+  "appId": "identity",
+  "name": "身份资料服务",
+  "version": "1.1.0",
+  "description": "统一身份认证 已明确登记的应用接口",
+  "operations": [
+    {
+      "operationId": "me",
+      "method": "GET",
+      "path": "/auth/me",
+      "summary": "读取当前身份",
+      "effect": "read"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+@import './typography.css';
+/* 与 IAM 原型保持一致的品牌梯度和贯通式应用框架。 */
+:root {
+  --el-color-primary: #0052d9;
+  --el-color-primary-light-3: #4d86e4;
+  --el-color-primary-light-5: #80a8ec;
+  --el-color-primary-light-7: #b3cbf4;
+  --el-color-primary-light-8: #ccdcf7;
+  --el-color-primary-light-9: #e6eefb;
+  --el-color-primary-dark-2: #0042ae;
+  --el-border-radius-base: 4px;
+  --el-border-radius-small: 4px;
+  --shell-header-height: 56px;
+  --inside-content-radius: 16px 0 0;
+  --inside-content-shadow: 0 0 8px rgb(48 49 51 / 8%);
+  --shell-sidebar-width: 256px;
+  --shell-gradient-origin-x: 38px;
+  --shell-background: linear-gradient(270deg, #f1f9ed 0, #f9fcf7 180px, transparent 440px), linear-gradient(28deg, rgb(103 93 171 / 9%) 0, transparent 38%), linear-gradient(332deg, rgb(103 194 58 / 8%) 0, transparent 34%), var(--shell-blue-gradient);
+  --shell-blue-gradient: radial-gradient(circle at var(--shell-gradient-origin-x) 28px, #dbe7fa 0, #ebf1fc 120px, #f7faff 260px, #fff 440px);
+}
+* { scrollbar-width: thin; scrollbar-color: #cdd1d8 transparent; }
+.app-shell {
+  display: grid;
+  grid-template-columns: var(--shell-sidebar-width) minmax(0, 1fr);
+  grid-template-rows: var(--shell-header-height) minmax(0, 1fr);
+  /* 圆角缺口与顶栏、侧栏共享同一视口坐标下的渐变。 */
+  background-color: #fff;
+  background-image: var(--shell-background);
+  background-attachment: fixed;
+}
+.app-shell .app-header {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  height: var(--shell-header-height);
+  padding: 0 24px;
+  gap: 16px;
+  border: 0;
+  background-color: #fff;
+  background-image: var(--shell-background);
+  background-attachment: fixed;
+  box-shadow: none;
+}
+.app-header .brand-lockup { width: 236px; flex: 0 0 236px; gap: 8px; }
+.app-header .brand-logo { width: 28px; height: 28px; }
+.app-header .brand-copy strong { font-family: var(--mg-font-family-brand); font-size: 18px; font-weight: 400; white-space: nowrap; }
+.app-header .brand-copy > span { display: none; }
+.header-breadcrumb { display: flex; align-items: center; flex: 1; min-width: 0; font-size: 13px; color: #606b7a; }
+.header-breadcrumb strong { font-weight: 400; color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.app-header .header-right { flex-shrink: 0; gap: 12px; }
+.app-header .header-role { font-size: 12px; color: #7c8797; white-space: nowrap; }
+.app-header .user-trigger { min-height: 36px; padding: 3px 10px 3px 4px; gap: 8px; border: 1px solid rgb(111 132 166 / 14%); border-radius: 20px; background: rgb(255 255 255 / 54%); box-shadow: 0 1px 2px rgb(34 54 84 / 3%); transition: background .16s ease, border-color .16s ease, box-shadow .16s ease; }
+.app-header .user-trigger:hover, .app-header .user-trigger[aria-expanded="true"] { background: rgb(255 255 255 / 88%); border-color: rgb(0 82 217 / 20%); box-shadow: 0 2px 5px rgb(34 54 84 / 6%); }
+.app-header .user-trigger > .el-icon { color: #8590a0; font-size: 12px; }
+.app-header .user-name { max-width: 144px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.app-header .user-avatar { background: linear-gradient(145deg, #4e83d8, #285fac); color: #fff; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 25%); font-size: 13px; }
+.app-sidebar {
+  grid-column: 1;
+  grid-row: 2;
+  min-height: 0;
+  overflow: auto;
+  background-color: #fff;
+  background-image: var(--shell-background);
+  background-attachment: fixed;
+}
+.app-sidebar .global-nav { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 8px 8px 16px; }
+.app-sidebar .nav-item { width: 100%; height: 44px; min-width: 0; flex-shrink: 0; padding: 0 12px; border: 0; border-radius: 6px; justify-content: flex-start; gap: 12px; text-align: left; color: var(--inside-nav-text, #586474); background: transparent; transition: color .16s ease, background .16s ease, box-shadow .16s ease; }
+.app-sidebar .nav-item .el-icon { font-size: 18px; color: var(--inside-nav-icon, #8390a2); transition: color .16s ease; }
+.app-sidebar .nav-item:hover { background: var(--inside-nav-hover, rgb(255 255 255 / 58%)); color: var(--inside-nav-hover-text, #2d4d79); box-shadow: inset 0 0 0 1px rgb(83 115 162 / 6%); }
+.app-sidebar .nav-item:hover .el-icon { color: inherit; }
+.app-sidebar .nav-item.active { color: var(--el-color-primary); background: linear-gradient(100deg, rgb(0 82 217 / 10%), rgb(0 82 217 / 6%)); box-shadow: inset 0 0 0 1px rgb(0 82 217 / 7%), 0 1px 2px rgb(34 54 84 / 3%); font-weight: 500; }
+.app-sidebar .nav-item.active .el-icon { color: inherit; }
+.app-shell .app-content { grid-column: 2; grid-row: 2; min-width: 0; background: #fff; border-radius: var(--inside-content-radius,16px 0 0); box-shadow: var(--inside-content-shadow,0 0 8px rgb(48 49 51 / 8%)); position: relative; z-index: 21; }

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "files.api",
+  "appId": "files",
+  "name": "个人文件服务",
+  "version": "1.1.0",
+  "description": "文件 已明确登记的应用接口",
+  "operations": [
+    {
+      "operationId": "me",
+      "method": "GET",
+      "path": "/auth/me",
+      "summary": "当前文件用户",
+      "effect": "read"
+    },
+    {
+      "operationId": "desktop",
+      "method": "GET",
+      "path": "/desktop",
+      "summary": "桌面文件",
+      "effect": "read"
+    },
+    {
+      "operationId": "list",
+      "method": "GET",
+      "path": "/entries",
+      "summary": "查询文件",
+      "effect": "read"
+    },
+    {
+      "operationId": "folders",
+      "method": "GET",
+      "path": "/folders",
+      "summary": "查询文件夹",
+      "effect": "read"
+    },
+    {
+      "operationId": "createFolder",
+      "method": "POST",
+      "path": "/folders",
+      "summary": "创建文件夹",
+      "effect": "write"
+    },
+    {
+      "operationId": "upload",
+      "method": "POST",
+      "path": "/uploads",
+      "summary": "上传文件",
+      "effect": "write"
+    },
+    {
+      "operationId": "get",
+      "method": "GET",
+      "path": "/entries/{id}",
+      "summary": "查询文件元数据",
+      "effect": "read"
+    },
+    {
+      "operationId": "content",
+      "method": "GET",
+      "path": "/entries/{id}/content",
+      "summary": "下载文件",
+      "effect": "read"
+    },
+    {
+      "operationId": "patch",
+      "method": "PATCH",
+      "path": "/entries/{id}",
+      "summary": "更新文件",
+      "effect": "write"
+    },
+    {
+      "operationId": "move",
+      "method": "POST",
+      "path": "/entries/{id}/move",
+      "summary": "移动文件",
+      "effect": "write"
+    },
+    {
+      "operationId": "restore",
+      "method": "POST",
+      "path": "/entries/{id}/restore",
+      "summary": "恢复文件",
+      "effect": "write"
+    },
+    {
+      "operationId": "access",
+      "method": "POST",
+      "path": "/entries/{id}/access",
+      "summary": "登记最近访问",
+      "effect": "write"
+    },
+    {
+      "operationId": "remove",
+      "method": "DELETE",
+      "path": "/entries/{id}",
+      "summary": "移至回收站",
+      "effect": "write"
+    },
+    {
+      "operationId": "permanent",
+      "method": "DELETE",
+      "path": "/entries/{id}/permanent",
+      "summary": "永久删除文件",
+      "effect": "write"
+    }
+  ]
+}

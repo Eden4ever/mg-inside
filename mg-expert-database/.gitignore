@@ -1,0 +1,17 @@
+node_modules/
+.pnpm-store/
+dist/
+coverage/
+.env*
+!.env.example
+*.log
+.tmp-*/
+artifacts/
+.runtime/
+.agents/
+.codex/
+apps/web/playwright-report/
+apps/web/test-results/
+*.tar.gz
+apps/api/prisma/dev.db
+apps/api/prisma/dev.db-journal

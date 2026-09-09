@@ -1,0 +1,42 @@
+{
+  "name": "@mg-inside/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./auth": "./auth/session.ts",
+    "./desktop": "./desktop-sdk/src/application.ts",
+    "./contracts": "./desktop-contracts/src/index.ts",
+    "./services": "./services/client.ts",
+    "./dialogs": "./dialogs/application-dialogs.ts",
+    "./config": "./config/application.ts",
+    "./assets": "./assets/index.ts",
+    "./assets/*": "./assets/*",
+    "./application.schema.json": "./config/application.schema.json",
+    "./shell.css": "./shell.css",
+    "./embedded.css": "./embedded.css",
+    "./layout.css": "./layout.css",
+    "./overlays.css": "./overlays.css"
+  },
+  "files": [
+    "*.ts",
+    "*.vue",
+    "*.css",
+    "auth",
+    "services",
+    "config",
+    "assets",
+    "dialogs",
+    "desktop-sdk",
+    "desktop-contracts",
+    "icons"
+  ],
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  }
+}

@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import { chromium } from '@playwright/test';
+import { build } from 'esbuild';
+import { mkdir, writeFile } from 'node:fs/promises';
+const sdk = await build({ entryPoints: ['../mg-platform/packages/frontend/desktop-sdk/src/index.ts'], bundle: true, write: false, format: 'iife', globalName: 'DesktopBridge' });
+const app = { id:'expert-database', name:'知识库', icon:'knowledge', entryUrl:'http://127.0.0.1:15990', defaultPath:'/', allowedPaths:['/'], minWidth:640, minHeight:420 };
+const browser = await chromium.launch({ channel:'chrome', headless:true });
+const page = await browser.newPage({ viewport:{ width:1440,height:1000 } }); page.setDefaultTimeout(10000);
+let offline = false, apiCalls = 0, saved = { pinned:[app.id],restore:false };
+try {
+  await page.route('**/api/session', route => route.fulfill({json:{user:{id:'offline-test',name:'离线测试'},csrfToken:'test',expiresAt:Date.now()/1000+36000,apps:[app]}}));
+  await page.route('**/api/preferences', async route => {
+    apiCalls++; if (offline) return route.abort('internetdisconnected');
+    if (route.request().method()==='PUT') saved=route.request().postDataJSON();
+    await route.fulfill({json:saved});
+  });
+  await page.route('**/api/notifications', route=>route.fulfill({json:{items:[]}}));
+  await page.route(`${app.entryUrl}/**`, route=>route.fulfill({contentType:'text/html; charset=utf-8',body:`<html><body style="padding-top:50px"><input aria-label="草稿"><script>${sdk.outputFiles[0].text}; const bridge=DesktopBridge.connectDesktop({appId:'expert-database',allowedOrigins:['http://127.0.0.1:4301'],onClose:()=>new Promise(()=>{})});document.querySelector('input').oninput=()=>bridge.setState({dirty:true});</script></body></html>`}));
+  await page.goto('http://127.0.0.1:4301/'); await page.getByRole('button',{name:'打开知识库',exact:true}).click();
+  const frame=page.frameLocator('iframe'); await frame.getByRole('textbox',{name:'草稿'}).waitFor();
+  offline=true; const before=apiCalls;
+  await page.getByRole('button',{name:'最小化知识库',exact:true}).click();
+  assert.equal(await page.locator('.app-window').isVisible(),false);
+  await page.getByRole('button',{name:'打开知识库',exact:true}).click();
+  await page.getByRole('button',{name:'最大化或还原知识库',exact:true}).click();
+  await page.getByRole('button',{name:'关闭知识库',exact:true}).click();
+  await page.locator('iframe').waitFor({state:'detached',timeout:1000});
+  assert.equal(apiCalls,before,'本地窗口操作没有请求偏好 API');
+  await page.getByRole('button',{name:'打开知识库',exact:true}).click();
+  await frame.getByRole('textbox',{name:'草稿'}).fill('离线保留');
+  await page.getByRole('button',{name:'关闭知识库',exact:true}).click();
+  await page.getByRole('alertdialog').waitFor({timeout:1000});
+  await page.getByRole('button',{name:'继续使用',exact:true}).click();
+  assert.equal(await frame.getByRole('textbox',{name:'草稿'}).inputValue(),'离线保留');
+  await page.getByRole('button',{name:'关闭知识库',exact:true}).click();
+  await page.getByRole('button',{name:'直接关闭',exact:true}).click();
+  await page.locator('iframe').waitFor({state:'detached',timeout:1000});
+  // 未握手页面也可以立即关闭。
+  await page.unroute(`${app.entryUrl}/**`); await page.route(`${app.entryUrl}/**`, route=>route.abort());
+  await page.getByRole('button',{name:'打开知识库',exact:true}).click();
+  await page.getByRole('button',{name:'关闭知识库',exact:true}).click();
+  await page.locator('iframe').waitFor({state:'detached',timeout:1000});
+  await page.locator('.dock [data-app-id]').click({button:'right'});
+  await page.getByRole('menuitem',{name:'从 Dock 移除'}).click();
+  await page.waitForTimeout(500); await page.reload();
+  await page.getByRole('button',{name:'所有应用',exact:true}).waitFor();
+  assert.equal(await page.locator('.dock [data-app-id]').count(),0,'离线固定状态在刷新后保留');
+  offline=false; await page.evaluate(()=>window.dispatchEvent(new Event('online')));
+  await page.waitForTimeout(500); assert.deepEqual(saved.pinned,[],'恢复网络后自动同步');
+  await mkdir('.runtime/offline',{recursive:true});
+  await writeFile('.runtime/offline/result.json',JSON.stringify({passed:true,checks:['离线关闭/最小化/还原/最大化不等网络','无响应应用本地未保存提示','取消保留内容','明确放弃后关闭','未握手窗口立即关闭','离线Dock偏好持久化及恢复同步']},null,2));
+  console.log('离线窗口交互及偏好恢复验证通过。');
+} catch(error) { console.error(await page.locator('body').innerText()); console.error(page.frames().map(f=>f.url())); await page.screenshot({path:'.runtime/offline-failure.png'}); throw error; } finally { await browser.close(); }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs><linearGradient id="badge" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#d9efff"/></linearGradient></defs><rect x="1" y="1" width="30" height="30" rx="8" fill="url(#badge)" stroke="#8bc5ee"/><g transform="translate(6 6) scale(.833333)" fill="none" stroke="#1764a4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M10 5H3" />
+  <path d="M12 19H3" />
+  <path d="M14 3v4" />
+  <path d="M16 17v4" />
+  <path d="M21 12h-9" />
+  <path d="M21 19h-5" />
+  <path d="M21 5h-7" />
+  <path d="M8 10v4" />
+  <path d="M8 12H3" />
+</g></svg>

@@ -1,0 +1,5 @@
+CREATE TABLE "EmbeddingModelConfig" (
+ "id" TEXT PRIMARY KEY, "enabled" BOOLEAN NOT NULL DEFAULT true,
+ "encryptedKey" TEXT NOT NULL, "revision" INTEGER NOT NULL DEFAULT 1,
+ "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

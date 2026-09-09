@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "layout": "reading",
+  "appId": "token-one-docs",
+  "name": "Token One 文档",
+  "defaultPath": "/docs",
+  "brand": {
+    "name": "Token One 文档",
+    "homePath": "/docs",
+    "logo": {
+      "src": "enterpriseLogo",
+      "alt": "元引"
+    }
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "docs",
+      "path": "/docs",
+      "title": "开发者文档",
+      "component": "route",
+      "icon": "file-text"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "token-one.api",
+  "appId": "token-one",
+  "name": "模型目录服务",
+  "version": "1.2.0",
+  "description": "Token One 已明确登记的应用接口",
+  "operations": [
+    {
+      "operationId": "portal-models",
+      "method": "GET",
+      "path": "/portal/models",
+      "summary": "查询当前账户可用模型",
+      "effect": "read"
+    },
+    {
+      "operationId": "models",
+      "method": "GET",
+      "path": "/public/models",
+      "summary": "查询可用模型",
+      "effect": "read"
+    }
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../../mg-platform/packages/frontend/config/application.schema.json",
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "expert-database",
+  "name": "指标知识库",
+  "defaultPath": "/systems",
+  "brand": {
+    "name": "指标知识库",
+    "logo": {
+      "src": "enterpriseLogo",
+      "alt": "元引"
+    },
+    "homePath": "/systems"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "systems",
+      "path": "/systems",
+      "title": "指标体系",
+      "component": "systems",
+      "icon": "book-open"
+    },
+    {
+      "id": "semantic",
+      "path": "/semantic-libraries",
+      "title": "智能语义库",
+      "component": "semantic",
+      "icon": "chart-no-axes-combined"
+    },
+    {
+      "id": "users",
+      "path": "/users",
+      "title": "用户管理",
+      "component": "users",
+      "icon": "users-round"
+    },
+    {
+      "id": "models",
+      "path": "/model-management",
+      "title": "模型管理",
+      "component": "models",
+      "icon": "server"
+    },
+    {
+      "id": "mail",
+      "path": "/mail-settings",
+      "title": "邮件设置",
+      "component": "mail",
+      "icon": "send"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "systems",
+      "semantic",
+      "users",
+      "models",
+      "mail"
+    ]
+  },
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  }
+}

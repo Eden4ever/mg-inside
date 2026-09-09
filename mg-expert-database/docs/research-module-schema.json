@@ -1,0 +1,771 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mg-expert-database.local/schema/research-module-schema.json",
+  "title": "营商环境指标知识库八模块研究字段定义",
+  "description": "各级知识记录契约，x-moduleDefinitions 仅作为三级及明细层级初始模板。",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "researchRecord",
+    "moduleDefinitions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "researchRecord": {
+      "$ref": "#/$defs/researchRecord"
+    },
+    "moduleDefinitions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/$defs/moduleDefinition"
+      },
+      "description": "体系和层级的当前模块定义。"
+    }
+  },
+  "$defs": {
+    "moduleKey": {
+      "type": "string",
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,99}$"
+    },
+    "requirement": {
+      "type": "string",
+      "enum": [
+        "confirm",
+        "publish",
+        "optional"
+      ]
+    },
+    "fieldType": {
+      "type": "string",
+      "enum": [
+        "short_text",
+        "long_text",
+        "rich_text",
+        "number",
+        "decimal",
+        "percentage",
+        "date",
+        "enum",
+        "reference_list",
+        "object_list",
+        "organization_contact_list"
+      ]
+    },
+    "fieldDefinition": {
+      "type": "object",
+      "required": [
+        "fieldId",
+        "label",
+        "fieldType",
+        "requirement"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "fieldId": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{1,63}$"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "fieldType": {
+          "$ref": "#/$defs/fieldType"
+        },
+        "requirement": {
+          "$ref": "#/$defs/requirement"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "enumValues": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "uniqueItems": true
+        },
+        "requiresEvidence": {
+          "type": "boolean",
+          "default": false
+        },
+        "allowNotApplicable": {
+          "type": "boolean",
+          "default": false
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "inactiveEnumValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "fieldType": {
+                "const": "enum"
+              }
+            },
+            "required": [
+              "fieldType"
+            ]
+          },
+          "then": {
+            "required": [
+              "enumValues"
+            ]
+          }
+        }
+      ]
+    },
+    "moduleDefinition": {
+      "type": "object",
+      "required": [
+        "moduleKey",
+        "displayOrder",
+        "name",
+        "researchQuestion",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "moduleKey": {
+          "$ref": "#/$defs/moduleKey"
+        },
+        "displayOrder": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 50
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "researchQuestion": {
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 100
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/$defs/fieldDefinition"
+          }
+        },
+        "active": {
+          "type": "boolean"
+        }
+      }
+    },
+    "researchRecord": {
+      "type": "object",
+      "required": [
+        "indicatorVersionId",
+        "indicatorNodeId",
+        "indicatorLevel",
+        "modules"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "indicatorVersionId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "indicatorNodeId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "indicatorLevel": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "summary": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4000
+        },
+        "modules": {
+          "type": "array",
+          "minItems": 0,
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/$defs/modulePayload"
+          }
+        }
+      }
+    },
+    "modulePayload": {
+      "type": "object",
+      "required": [
+        "moduleKey",
+        "status",
+        "revisionNo",
+        "values"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "moduleKey": {
+          "$ref": "#/$defs/moduleKey"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "not_started",
+            "in_progress",
+            "pending_review",
+            "confirmed",
+            "returned"
+          ]
+        },
+        "revisionNo": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "values": {
+          "type": "object",
+          "description": "键必须使用该模块 fieldId；服务端按 moduleDefinitions 校验字段类型、必填性和不适用说明。"
+        },
+        "notApplicableReasons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        }
+      }
+    }
+  },
+  "x-moduleDefinitions": [
+    {
+      "moduleKey": "portrait",
+      "displayOrder": 1,
+      "name": "指标画像",
+      "researchQuestion": "考什么",
+      "fields": [
+        {
+          "fieldId": "indicator_nature",
+          "label": "指标属性",
+          "fieldType": "enum",
+          "enumValues": [
+            "正向指标",
+            "逆向指标",
+            "中性指标"
+          ],
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "assessment_scope",
+          "label": "考核对象与范围",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "measurement_type",
+          "label": "计量方式",
+          "fieldType": "enum",
+          "enumValues": [
+            "比率类",
+            "数量类",
+            "时长类",
+            "评分类",
+            "复合类"
+          ],
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "assessment_cycle",
+          "label": "考核周期",
+          "fieldType": "enum",
+          "enumValues": [
+            "实时",
+            "每日",
+            "每月",
+            "季度",
+            "年度",
+            "不固定"
+          ],
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "time_dimension",
+          "label": "时间维度",
+          "fieldType": "enum",
+          "enumValues": [
+            "时点数",
+            "时期数",
+            "存量",
+            "增量",
+            "混合"
+          ],
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "horizontal_relations",
+          "label": "横向联系",
+          "fieldType": "long_text",
+          "requirement": "optional",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "assessment_weight",
+          "label": "考核权重",
+          "fieldType": "percentage",
+          "requirement": "publish",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "frontier_values",
+          "label": "全国前沿值",
+          "fieldType": "object_list",
+          "requirement": "publish",
+          "requiresEvidence": true
+        }
+      ]
+    },
+    {
+      "moduleKey": "policy",
+      "displayOrder": 2,
+      "name": "政策溯源与标杆案例",
+      "researchQuestion": "为什么考",
+      "fields": [
+        {
+          "fieldId": "policy_sources",
+          "label": "政策源头追溯",
+          "fieldType": "reference_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "policy_intent",
+          "label": "政策意图解码",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "validity_assessment",
+          "label": "时效性研判",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "latest_updates",
+          "label": "最新动态跟踪",
+          "fieldType": "long_text",
+          "requirement": "optional",
+          "requiresEvidence": true,
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "trend_forecast",
+          "label": "政策趋势预判",
+          "fieldType": "long_text",
+          "requirement": "optional",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "benchmark_cases",
+          "label": "标杆地区典型案例",
+          "fieldType": "object_list",
+          "requirement": "publish",
+          "requiresEvidence": true
+        }
+      ]
+    },
+    {
+      "moduleKey": "data",
+      "displayOrder": 3,
+      "name": "技术解码与数据链路",
+      "researchQuestion": "怎么考、数据从哪来",
+      "fields": [
+        {
+          "fieldId": "calculation_formula",
+          "label": "计算公式",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "numerator_definition",
+          "label": "分子定义",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "denominator_definition",
+          "label": "分母定义",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "exceptions_adjustments",
+          "label": "排除项与调整项",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "core_driver_variables",
+          "label": "核心驱动变量",
+          "fieldType": "object_list",
+          "requirement": "optional"
+        },
+        {
+          "fieldId": "data_sources",
+          "label": "数据来源",
+          "fieldType": "reference_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "collection_method",
+          "label": "采集方式",
+          "fieldType": "enum",
+          "enumValues": [
+            "自动抓取",
+            "人工填报",
+            "系统推送",
+            "第三方导入",
+            "混合"
+          ],
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "data_flow",
+          "label": "数据流转路径",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "statistical_node",
+          "label": "统计时间节点",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "refresh_cycle",
+          "label": "数据刷新周期",
+          "fieldType": "enum",
+          "enumValues": [
+            "实时",
+            "每日",
+            "每周",
+            "每月",
+            "季度",
+            "年度",
+            "不固定"
+          ],
+          "requirement": "confirm"
+        }
+      ]
+    },
+    {
+      "moduleKey": "quality",
+      "displayOrder": 4,
+      "name": "质量诊断与问题归因",
+      "researchQuestion": "数据是否可信、问题为何发生",
+      "fields": [
+        {
+          "fieldId": "authenticity_risks",
+          "label": "真实性风险",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "completeness_assessment",
+          "label": "完整性评估",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "consistency_check",
+          "label": "一致性检查",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "local_problem_categories",
+          "label": "地方问题归类",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "common_vs_specific",
+          "label": "共性与个性区分",
+          "fieldType": "long_text",
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "root_cause",
+          "label": "问题原因",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "enumValues": [
+            "能力不足",
+            "客观限制",
+            "体制机制障碍",
+            "复合原因"
+          ]
+        },
+        {
+          "fieldId": "impact_assessment",
+          "label": "影响研判",
+          "fieldType": "long_text",
+          "requirement": "confirm"
+        }
+      ]
+    },
+    {
+      "moduleKey": "governance",
+      "displayOrder": 5,
+      "name": "管理体制与责任边界",
+      "researchQuestion": "条块权责如何划分",
+      "fields": [
+        {
+          "fieldId": "governance_model",
+          "label": "行政管理体制",
+          "fieldType": "enum",
+          "enumValues": [
+            "条条为主",
+            "块块为主",
+            "条块协同"
+          ],
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "vertical_responsibilities",
+          "label": "垂直管理责任",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "local_responsibilities",
+          "label": "属地管理责任",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "authority_boundaries",
+          "label": "权力责任边界",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "cross_level_coordination",
+          "label": "跨层级协同机制",
+          "fieldType": "long_text",
+          "requirement": "publish",
+          "allowNotApplicable": true
+        }
+      ]
+    },
+    {
+      "moduleKey": "rectify",
+      "displayOrder": 6,
+      "name": "分层整改与行动计划",
+      "researchQuestion": "怎么改、何时完成",
+      "fields": [
+        {
+          "fieldId": "province_actions",
+          "label": "省级整改建议",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "city_actions",
+          "label": "市级整改建议",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "county_actions",
+          "label": "县级整改建议",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "district_actions",
+          "label": "市辖区整改建议",
+          "fieldType": "rich_text",
+          "requirement": "confirm",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "standard_response",
+          "label": "统一答复话术",
+          "fieldType": "rich_text",
+          "requirement": "publish",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "action_plan",
+          "label": "行动要点与责任分工",
+          "fieldType": "object_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "expected_outcomes",
+          "label": "预期成效",
+          "fieldType": "long_text",
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "priority",
+          "label": "轻重缓急",
+          "fieldType": "enum",
+          "enumValues": [
+            "立即整改",
+            "分步推进",
+            "持续优化"
+          ],
+          "requirement": "confirm"
+        }
+      ]
+    },
+    {
+      "moduleKey": "optimize",
+      "displayOrder": 7,
+      "name": "指标优化迭代",
+      "researchQuestion": "如何更科学",
+      "fields": [
+        {
+          "fieldId": "necessity_assessment",
+          "label": "指标必要性评估",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "evaluability_assessment",
+          "label": "指标可考性判断",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "orientation_rationality",
+          "label": "指标导向合理性",
+          "fieldType": "long_text",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "differentiated_adjustment",
+          "label": "差异化调整",
+          "fieldType": "long_text",
+          "requirement": "optional",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "alternative_proposal",
+          "label": "指标替代方案",
+          "fieldType": "long_text",
+          "requirement": "optional",
+          "allowNotApplicable": true
+        },
+        {
+          "fieldId": "grassroots_burden",
+          "label": "基层减负考量",
+          "fieldType": "long_text",
+          "requirement": "confirm"
+        },
+        {
+          "fieldId": "optimization_decision",
+          "label": "优化建议",
+          "fieldType": "enum",
+          "enumValues": [
+            "保留",
+            "调整",
+            "合并",
+            "取消",
+            "新增"
+          ],
+          "requirement": "confirm",
+          "requiresEvidence": true
+        }
+      ]
+    },
+    {
+      "moduleKey": "contacts",
+      "displayOrder": 8,
+      "name": "责任单位与联络机制",
+      "researchQuestion": "谁来干、如何协同",
+      "fields": [
+        {
+          "fieldId": "province_responsibility",
+          "label": "省级责任单位",
+          "fieldType": "organization_contact_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "city_responsibility",
+          "label": "市级责任单位",
+          "fieldType": "organization_contact_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "county_responsibility",
+          "label": "县级责任单位",
+          "fieldType": "organization_contact_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "district_responsibility",
+          "label": "市辖区责任单位",
+          "fieldType": "organization_contact_list",
+          "requirement": "confirm",
+          "requiresEvidence": true
+        },
+        {
+          "fieldId": "communication_mechanism",
+          "label": "联络与协同机制",
+          "fieldType": "long_text",
+          "requirement": "publish",
+          "allowNotApplicable": true
+        }
+      ]
+    }
+  ]
+}

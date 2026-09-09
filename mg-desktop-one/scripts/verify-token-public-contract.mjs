@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import Ajv from 'ajv/dist/2020.js';
+const doc=JSON.parse(await readFile('../mg-token-one/mg-gateway/services/openapi.json','utf8'));
+const schema=doc.paths['/public/models'].get.responses['200'].content['application/json'].schema;
+const validate=new Ajv({strict:false,allErrors:true}).compile({...schema,components:doc.components});
+const response=await fetch('https://token.meta-gravity.com/api/public/models',{signal:AbortSignal.timeout(15000)});
+assert.equal(response.status,200);
+const result=await response.json();assert(validate(result),JSON.stringify(validate.errors));
+console.log(`正式 Token 公开目录 ${result.list.length} 个模型符合 ${doc.info.version} 契约；公开响应不含分组、价格、绑定或上游信息。`);

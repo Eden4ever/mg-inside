@@ -1,0 +1,20 @@
+{
+  "name": "mg-expert-database",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.11.0",
+  "scripts": {
+    "dev": "pnpm --filter @mg-expert/contracts build && pnpm --parallel --filter @mg-expert/api --filter @mg-expert/web dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "db:generate": "pnpm --filter @mg-expert/api prisma:generate",
+    "db:migrate": "pnpm --filter @mg-expert/api prisma:migrate",
+    "db:seed": "pnpm --filter @mg-expert/api prisma:seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
+  }
+}

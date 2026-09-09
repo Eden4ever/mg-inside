@@ -1,0 +1,17 @@
+# secrets/service.env，仅为变量模板，不包含真实凭据。
+DATABASE_URL=postgresql://identity:REPLACE_WITH_ENCODED_PASSWORD@db:5432/identity
+SESSION_TTL_HOURS=12
+ZENTAO_ENABLED=false
+ZENTAO_BASE_URL=https://pm.meta-gravity.com
+WECOM_LOGIN_ENABLED=false
+WECOM_CORP_ID=
+WECOM_AGENT_ID=
+WECOM_APP_SECRET=
+WECOM_REDIRECT_URI=https://identity.meta-gravity.com/api/auth/wecom/callback
+WECOM_DIRECTORY_SYNC_ENABLED=false
+WECOM_DIRECTORY_SYNC_INTERVAL_MINUTES=60
+
+# secrets/postgres.env 单独填写：
+# POSTGRES_DB=identity
+# POSTGRES_USER=identity
+# POSTGRES_PASSWORD=强随机密码

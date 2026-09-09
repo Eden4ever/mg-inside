@@ -1,0 +1,56 @@
+{
+  "$schema": "../mg-platform/packages/frontend/config/application.schema.json",
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "service-manager",
+  "name": "服务管理",
+  "defaultPath": "/services",
+  "brand": {
+    "name": "服务管理",
+    "icon": "cable",
+    "homePath": "/services"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "services",
+      "path": "/services",
+      "title": "服务目录",
+      "component": "services",
+      "icon": "box",
+      "description": "查看应用提供的 API、版本与调用方式。"
+    },
+    {
+      "id": "activity",
+      "path": "/activity",
+      "title": "调用记录",
+      "component": "services",
+      "icon": "clock",
+      "description": "查看统一出口的请求结果与耗时。"
+    },
+    {
+      "id": "register",
+      "path": "/register",
+      "title": "注册服务",
+      "component": "services",
+      "icon": "file-text",
+      "description": "导入应用服务清单，发布经过校验的接口。"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "services",
+      "activity",
+      "register"
+    ]
+  },
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  }
+}

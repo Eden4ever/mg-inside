@@ -1,0 +1,79 @@
+/* 公共结构只定义尺寸和布局；颜色及渐变由应用自己的主题提供。 */
+:root { --inside-page-space:24px; --inside-page-gap:20px; --inside-heading-size:18px; --inside-nav-width:256px; }
+.app-content .primary-page { padding:var(--inside-page-space); }
+.app-content .primary-page .primary-page-heading { min-height:32px; margin-bottom:var(--inside-page-gap); gap:12px; }
+.app-content .primary-page .primary-page-heading h1,
+.workspace-body .page-head h2 { font-size:var(--inside-heading-size); font-weight:500; line-height:1.5; }
+.mg-page { display:flex; flex-direction:column; height:100%; min-height:0; min-width:0; overflow:hidden; padding:var(--inside-page-space); }
+.mg-page-heading { flex:none; min-width:0; margin-bottom:var(--inside-page-gap); }
+.mg-page-heading .page-head { margin:0; min-height:32px; align-items:center; }
+.mg-page-content { flex:1; min-height:0; min-width:0; overflow:auto; overscroll-behavior:contain; scrollbar-gutter:stable; }
+/* 固定标题不缩进。正文向右侧留白借出滚动轨道，扣除真实滚动条后仍与标题等宽。
+   覆盖式滚动条宽度为 0 时也保留 12px 轨道，避免覆盖卡片边框与操作。 */
+.mg-page > .mg-aligned-page-scroll,
+.app-content .primary-page .mg-aligned-page-scroll {
+  --inside-page-scrollbar-rail:max(12px,var(--inside-page-scrollbar-width,0px));
+  box-sizing:border-box;
+  margin-inline-end:calc(-1 * var(--inside-page-scrollbar-rail));
+  padding-inline-end:calc(var(--inside-page-scrollbar-rail) - var(--inside-page-scrollbar-width,0px));
+}
+.app-content .primary-page .primary-page-layout.mg-aligned-scroll-layout { overflow:visible; }
+.workspace-main:has(> .workspace-body > .mg-page) { overflow:hidden; }
+.workspace-body:has(> .mg-page) { height:100%; min-height:0; padding:0; gap:0; }
+.workspace-body .mg-page { padding:var(--inside-page-space); }
+.workspace-body .page-head .el-button,
+.app-content .primary-page .primary-page-heading .el-button { height:32px; padding:8px 12px; border-radius:4px; font-size:13px; }
+.workspace-body .filter-bar,
+.app-content .table-toolbar { display:flex; flex-wrap:wrap; align-items:center; gap:12px; }
+.workspace-body .table-pager,
+.app-content .pagination { display:flex; justify-content:flex-end; align-items:center; min-height:48px; padding:12px 16px; }
+.el-dialog { max-width:calc(100vw - 32px); }
+.el-dialog__footer { display:flex; align-items:center; justify-content:flex-end; gap:8px; }
+.el-dialog__footer > .el-button + .el-button { margin-left:0; }
+.app-shell .app-sidebar, body .workspace-shell .workspace-sidebar { display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.app-sidebar .global-nav { flex:1; min-height:0; overflow:auto; }
+.mg-nav-footer { flex:none; padding:8px; display:flex; flex-direction:column; gap:4px; }
+.mg-nav-toggle, .mg-nav-secondary { display:flex; align-items:center; justify-content:flex-start; width:100%; height:40px; padding:0 12px; gap:12px; background:transparent; color:inherit; border:0; border-radius:6px; cursor:pointer; font:inherit; font-size:13px; white-space:nowrap; }
+.mg-nav-toggle svg { width:20px; height:20px; flex:none; }
+.mg-nav-toggle:hover,.mg-nav-secondary:hover { background:color-mix(in srgb,currentColor 7%,transparent); }
+.mg-nav-toggle:focus-visible { outline:2px solid var(--el-color-primary); outline-offset:-2px; }
+.is-collapsed .mg-nav-toggle,.is-collapsed .mg-nav-secondary { justify-content:center; padding:0; }
+.workspace-shell.is-sidebar-collapsed { --mg-layout-sidebar-width:64px; }
+.workspace-sidebar.is-collapsed .workspace-nav button { justify-content:center; padding:0; gap:0; }
+.workspace-sidebar.is-collapsed .workspace-nav button > span { display:none; }
+.app-shell .app-sidebar .mobile-nav-heading, .workspace-sidebar .workspace-mobile-heading { display:none; }
+@media(max-width:980px) {
+  .app-shell { grid-template-columns:64px minmax(0,1fr); }
+  .app-shell .app-content { grid-column:2; }
+  .app-shell .app-sidebar { position:relative; grid-column:1; width:64px; top:auto; bottom:auto; transform:none; height:100%; }
+  .app-shell .app-sidebar:not(.is-collapsed) { position:absolute; width:min(256px,calc(100vw - 48px)); top:var(--shell-header-height); bottom:0; height:auto; z-index:30; }
+  .app-sidebar.is-collapsed .nav-item { justify-content:center; padding:0; gap:0; }
+  .app-sidebar.is-collapsed .nav-item > span { display:none; }
+  .workspace-column { position:relative; }
+  body .workspace-shell .workspace-sidebar { position:relative; top:auto; bottom:auto; left:auto; transform:none; width:64px; flex:0 0 64px; }
+  body .workspace-shell .workspace-sidebar:not(.is-collapsed) { position:absolute; width:min(256px,calc(100vw - 48px)); left:0; top:0; bottom:0; z-index:30; }
+  .workspace-shell:not(.is-sidebar-collapsed) .workspace-main { margin-left:64px; }
+}
+@media(max-width:767px) { :root { --inside-page-space:16px; --inside-page-gap:16px; } .mg-page-heading .page-head { align-items:flex-start; } }
+/* 平台基础组件采用知识库规格，并接受应用语义色覆盖。 */
+.mg-application-shell { width:100%; height:100dvh; min-height:0; overflow:hidden; }
+.mg-application-shell .app-content { min-height:0; overflow:hidden; }
+.mg-application-shell.is-sidebar-collapsed { --shell-sidebar-width:64px; }
+.app-shell .app-sidebar { visibility:visible; }
+.mg-page { box-sizing:border-box; background:var(--inside-page-background,var(--mg-bg-page,#f8fafc)); }
+.mg-page-content { display:flex; flex-direction:column; gap:var(--inside-page-gap); }
+.mg-page-content > * { flex-shrink:0; }
+.mg-page-heading-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; min-height:32px; }
+.mg-page-heading-copy { min-width:0; }
+.mg-page-heading-copy h1 { margin:0; font-size:18px; line-height:1.5; font-weight:500; }
+.mg-page-heading-copy p { margin:6px 0 0; color:var(--mg-text-secondary,var(--el-text-color-secondary)); font-size:13px; }
+.mg-page-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; }
+.mg-page-actions .el-button { height:32px; padding:8px 12px; font-size:13px; border-radius:4px; }
+.mg-page-actions .el-button + .el-button { margin-left:0; }
+.mg-content-panel { min-width:0; border:1px solid var(--mg-border-lighter,var(--el-border-color-lighter,#e5eaf0)); border-radius:8px; background:var(--mg-bg-surface,var(--el-bg-color,#fff)); }
+.mg-content-panel-heading,.mg-content-panel-toolbar,.mg-content-panel-body,.mg-content-panel-footer { padding:20px; }
+.mg-content-panel-heading h2 { margin:0; font-size:16px; font-weight:500; }
+.mg-content-panel-heading + .mg-content-panel-body { padding-top:0; }
+.mg-content-panel-toolbar { display:flex; align-items:center; flex-wrap:wrap; gap:12px; border-bottom:1px solid var(--el-border-color-lighter); }
+.mg-content-panel-footer { display:flex; justify-content:flex-end; align-items:center; gap:8px; border-top:1px solid var(--el-border-color-lighter); }
+.workspace-shell { --inside-nav-text:var(--mg-text-regular); --inside-nav-icon:var(--mg-text-secondary); --inside-nav-hover-text:var(--mg-text-primary); --inside-nav-hover:color-mix(in srgb,var(--mg-color-brand) 6%,transparent); }

@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "office-one.api",
+  "appId": "office-one",
+  "name": "文档编辑服务",
+  "version": "1.1.0",
+  "description": "Office One 已明确登记的应用接口",
+  "operations": [
+    {
+      "operationId": "status",
+      "method": "GET",
+      "path": "/status",
+      "summary": "编辑服务配置状态",
+      "effect": "read"
+    },
+    {
+      "operationId": "documents",
+      "method": "GET",
+      "path": "/documents",
+      "summary": "查询文档",
+      "effect": "read"
+    },
+    {
+      "operationId": "create",
+      "method": "POST",
+      "path": "/documents",
+      "summary": "新建文档",
+      "effect": "write"
+    },
+    {
+      "operationId": "open",
+      "method": "POST",
+      "path": "/documents/{id}/open",
+      "summary": "打开文档",
+      "effect": "write"
+    },
+    {
+      "operationId": "session",
+      "method": "GET",
+      "path": "/sessions/{id}",
+      "summary": "查询编辑与保存状态",
+      "effect": "read"
+    },
+    {
+      "operationId": "save",
+      "method": "POST",
+      "path": "/sessions/{id}/save",
+      "summary": "保存文档",
+      "effect": "write"
+    }
+  ]
+}

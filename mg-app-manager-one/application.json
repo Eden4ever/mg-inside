@@ -1,0 +1,43 @@
+{
+  "$schema": "../mg-platform/packages/frontend/config/application.schema.json",
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "app-manager",
+  "name": "应用管理",
+  "defaultPath": "/applications",
+  "brand": {
+    "name": "应用管理",
+    "icon": "layout-grid",
+    "logo": {
+      "src": "enterpriseLogo",
+      "alt": "元引"
+    },
+    "favicon": "enterpriseLogo",
+    "homePath": "/applications"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  },
+  "pages": [
+    {
+      "id": "applications",
+      "path": "/applications",
+      "title": "应用目录",
+      "description": "查看平台应用，添加和管理自己的外链应用。",
+      "component": "applications",
+      "icon": "layout-grid"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "applications"
+    ]
+  }
+}

@@ -1,0 +1,379 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "MG 平台应用配置 v1",
+  "description": "严格平台界面配置。导航图标仅来自公共 Lucide 白名单，应用不能传入组件、HTML、CSS 或任意资源地址。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "appId",
+    "name",
+    "defaultPath",
+    "brand",
+    "header",
+    "pages",
+    "layout"
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "pattern": "\\S"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "appId": {
+      "$ref": "#/$defs/key"
+    },
+    "name": {
+      "$ref": "#/$defs/text"
+    },
+    "defaultPath": {
+      "$ref": "#/$defs/path"
+    },
+    "brand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/text"
+        },
+        "icon": {
+          "$ref": "#/$defs/icon"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "\\S"
+        },
+        "homePath": {
+          "$ref": "#/$defs/path"
+        },
+        "logo": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "src"
+          ],
+          "properties": {
+            "src": {
+              "$ref": "#/$defs/key"
+            },
+            "darkSrc": {
+              "$ref": "#/$defs/key"
+            },
+            "alt": {
+              "$ref": "#/$defs/text"
+            }
+          }
+        },
+        "favicon": {
+          "$ref": "#/$defs/key"
+        }
+      }
+    },
+    "header": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "showTitle"
+      ],
+      "properties": {
+        "showTitle": {
+          "type": "boolean"
+        },
+        "showBrand": {
+          "type": "boolean",
+          "description": "默认显示品牌"
+        },
+        "showAccount": {
+          "type": "boolean",
+          "description": "默认显示账号插槽"
+        }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 100,
+      "items": {
+        "$ref": "#/$defs/page"
+      }
+    },
+    "navigation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "defaultCollapsed",
+            "pageIds"
+          ],
+          "properties": {
+            "mode": {
+              "const": "flat"
+            },
+            "defaultCollapsed": {
+              "type": "boolean"
+            },
+            "pageIds": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 100,
+              "uniqueItems": true,
+              "items": {
+                "$ref": "#/$defs/key"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "defaultCollapsed",
+            "groups"
+          ],
+          "properties": {
+            "mode": {
+              "const": "grouped"
+            },
+            "defaultCollapsed": {
+              "type": "boolean"
+            },
+            "groups": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 30,
+              "items": {
+                "$ref": "#/$defs/group"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "defaultCollapsed",
+            "parents"
+          ],
+          "properties": {
+            "mode": {
+              "const": "tree"
+            },
+            "defaultCollapsed": {
+              "type": "boolean"
+            },
+            "parents": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 30,
+              "items": {
+                "$ref": "#/$defs/parent"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "layout": {
+      "enum": [
+        "standard",
+        "reading"
+      ]
+    },
+    "browser": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "titleTemplate"
+      ],
+      "properties": {
+        "titleTemplate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "^(?=.*\\{(?:title|name)\\})(?:[^{}]|\\{(?:title|name)\\})+$"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 64,
+      "pattern": "^[a-zA-Z][a-zA-Z0-9_-]{0,63}$"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "pattern": "\\S"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "^/(?:[a-zA-Z0-9_-]+(?:/[a-zA-Z0-9_-]+)*)?$"
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "path",
+        "title",
+        "component",
+        "icon"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/key"
+        },
+        "path": {
+          "$ref": "#/$defs/path"
+        },
+        "title": {
+          "$ref": "#/$defs/text"
+        },
+        "component": {
+          "$ref": "#/$defs/key"
+        },
+        "icon": {
+          "$ref": "#/$defs/icon"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        }
+      }
+    },
+    "group": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "pageIds"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/key"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "pageIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/key"
+          }
+        }
+      }
+    },
+    "parent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "label",
+        "icon",
+        "children"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/key"
+        },
+        "label": {
+          "$ref": "#/$defs/text"
+        },
+        "icon": {
+          "$ref": "#/$defs/icon"
+        },
+        "children": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 100,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/key"
+          }
+        }
+      }
+    },
+    "icon": {
+      "type": "string",
+      "enum": [
+        "square",
+        "user-round",
+        "lock-keyhole",
+        "settings",
+        "bell",
+        "folder",
+        "monitor",
+        "clock",
+        "star",
+        "trash-2",
+        "layout-grid",
+        "chart-no-axes-combined",
+        "cable",
+        "box",
+        "users-round",
+        "key-round",
+        "file-text",
+        "messages-square",
+        "wallet",
+        "gauge",
+        "send",
+        "book-open",
+        "book-open-text",
+        "shield-check",
+        "server",
+        "chevron-left",
+        "chevron-right",
+        "panel-left-close",
+        "panel-left-open"
+      ]
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "layout": {
+          "const": "standard"
+        }
+      },
+      "required": [
+        "navigation"
+      ]
+    },
+    {
+      "properties": {
+        "layout": {
+          "const": "reading"
+        }
+      },
+      "not": {
+        "required": [
+          "navigation"
+        ]
+      }
+    }
+  ]
+}

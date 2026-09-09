@@ -1,0 +1,677 @@
+{
+  "openapi": "3.1.1",
+  "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+  "info": {
+    "title": "资源台账与采集服务",
+    "version": "1.1.0",
+    "description": "提供方 /api 相对路由。统一出口由平台绑定，调用使用当前用户身份；写请求须携带当前会话的 X-CSRF-Token。"
+  },
+  "x-service-id": "resource-manager.api",
+  "x-app-id": "resource-manager",
+  "servers": [
+    {
+      "url": "/api"
+    }
+  ],
+  "security": [
+    {
+      "unifiedSession": []
+    }
+  ],
+  "paths": {
+    "/overview": {
+      "get": {
+        "operationId": "overview",
+        "summary": "查询资源池、服务器与部署",
+        "responses": {
+          "400": {
+            "description": "参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或会话过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无应用权限或 CSRF 校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "不存在或不属于当前账户",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务未完成请求",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          }
+        },
+        "description": "读取共享资源台账及最新采集结果；仅授权资源管理员可用。observation 可为空，stale 表示采集数据超过五分钟或从未成功采集；不是服务健康结论。"
+      }
+    },
+    "/resources/{id}/refresh": {
+      "post": {
+        "operationId": "refresh",
+        "summary": "立即采集服务器",
+        "responses": {
+          "400": {
+            "description": "参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或会话过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无应用权限或 CSRF 校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "不存在或不属于当前账户",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务未完成请求",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "目标条目 ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "description": "当前用户会话的 CSRF 值",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "description": "触发服务器采集并等待结果；采集失败仍返回 200 概览，须检查 observation.error。不会因为读取概览自动采集。"
+      }
+    },
+    "/resources/{id}/metadata": {
+      "post": {
+        "operationId": "metadata",
+        "summary": "更新资源资料",
+        "responses": {
+          "400": {
+            "description": "参数无效",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "未登录或会话过期",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "无应用权限或 CSRF 校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "不存在或不属于当前账户",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务未完成请求",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "200": {
+            "description": "请求成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "正文超过 8192 字节",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "目标条目 ID",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "X-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "description": "当前用户会话的 CSRF 值",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MetadataInput"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "unifiedSession": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "由桌面统一出口转发的用户令牌；浏览器使用平台会话，不在页面持久保存令牌。"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Snapshot": {
+        "type": "object",
+        "properties": {
+          "schemaVersion": {
+            "const": 1
+          },
+          "collectedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hostname": {
+            "type": "string"
+          },
+          "system": {
+            "type": "string"
+          },
+          "cpuCount": {
+            "type": "number",
+            "minimum": 0
+          },
+          "loadAverage": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "minimum": 0
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "memoryTotal": {
+            "type": "number",
+            "minimum": 0
+          },
+          "memoryAvailable": {
+            "type": "number",
+            "minimum": 0
+          },
+          "diskTotal": {
+            "type": "number",
+            "minimum": 0
+          },
+          "diskFree": {
+            "type": "number",
+            "minimum": 0
+          },
+          "dockerAvailable": {
+            "type": "boolean"
+          },
+          "containers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "Names": {
+                  "type": "string"
+                },
+                "Image": {
+                  "type": "string"
+                },
+                "State": {
+                  "type": "string"
+                },
+                "Status": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "Names",
+                "Image",
+                "State",
+                "Status"
+              ]
+            }
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "state": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "state"
+              ]
+            }
+          },
+          "desktopRelease": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "expertRelease": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "schemaVersion",
+          "collectedAt",
+          "hostname",
+          "system",
+          "cpuCount",
+          "loadAverage",
+          "memoryTotal",
+          "memoryAvailable",
+          "diskTotal",
+          "diskFree",
+          "dockerAvailable",
+          "containers",
+          "services",
+          "desktopRelease",
+          "expertRelease"
+        ]
+      },
+      "Observation": {
+        "type": "object",
+        "properties": {
+          "snapshot": {
+            "$ref": "#/components/schemas/Snapshot"
+          },
+          "attemptedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "error": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "attemptedAt",
+          "error"
+        ]
+      },
+      "Pool": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "environment": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "environment",
+          "description"
+        ]
+      },
+      "Resource": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "host": {
+            "type": "string"
+          },
+          "poolId": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "cloudProduct": {
+            "type": "null"
+          },
+          "region": {
+            "type": "null"
+          },
+          "instanceId": {
+            "type": "null"
+          },
+          "deployments": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "appId": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "domain": {
+                  "type": "string"
+                },
+                "runtime": {
+                  "type": "string"
+                },
+                "service": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "appId",
+                "name",
+                "domain",
+                "runtime",
+                "service"
+              ]
+            }
+          },
+          "observation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Observation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "collecting": {
+            "type": "boolean"
+          },
+          "stale": {
+            "type": "boolean"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "host",
+          "poolId",
+          "provider",
+          "cloudProduct",
+          "region",
+          "instanceId",
+          "deployments",
+          "observation",
+          "collecting",
+          "stale"
+        ],
+        "additionalProperties": false
+      },
+      "Overview": {
+        "type": "object",
+        "properties": {
+          "pools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pool"
+            }
+          },
+          "resources": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Resource"
+            }
+          },
+          "audit": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "at": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "actor": {
+                  "type": "string"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "resourceId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "success": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "at",
+                "actor",
+                "action",
+                "resourceId",
+                "success"
+              ]
+            }
+          },
+          "cloudApiConfigured": {
+            "const": false
+          }
+        },
+        "required": [
+          "pools",
+          "resources",
+          "audit",
+          "cloudApiConfigured"
+        ]
+      },
+      "MetadataInput": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "tags": {
+            "type": "array",
+            "maxItems": 10,
+            "items": {
+              "type": "string",
+              "maxLength": 30
+            }
+          },
+          "poolId": {
+            "type": "string",
+            "description": "必须是资源概览返回的资源池 ID"
+          }
+        },
+        "required": [
+          "owner",
+          "notes",
+          "tags",
+          "poolId"
+        ]
+      }
+    }
+  }
+}

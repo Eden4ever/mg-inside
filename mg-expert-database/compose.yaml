@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: mg_expert
+      POSTGRES_USER: mg_expert
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?请配置独立的数据库强密码}
+    ports:
+      - "127.0.0.1:5437:5432"
+    volumes:
+      - mg_expert_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mg_expert -d mg_expert"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  mg_expert_postgres:

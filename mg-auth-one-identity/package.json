@@ -1,0 +1,44 @@
+{
+  "name": "@mg/auth-one-identity",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "build": "npm --prefix web run build && node node_modules/typescript/bin/tsc -p tsconfig.json && node scripts/copy-static.mjs",
+    "start": "node --env-file-if-exists=.env dist/main.js",
+    "dev": "tsx --env-file-if-exists=.env src/main.ts",
+    "generate": "node node_modules/prisma/build/index.js generate",
+    "migrate": "node node_modules/prisma/build/index.js migrate deploy",
+    "test": "node --test test/*.test.mjs",
+    "dev:web": "npm --prefix web run dev"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.6",
+    "@nestjs/core": "^11.1.6",
+    "@nestjs/platform-fastify": "^11.1.6",
+    "@prisma/client": "^6.14.0",
+    "@simplewebauthn/server": "^14.0.1",
+    "ipaddr.js": "^2.5.0",
+    "nodemailer": "^10.0.1",
+    "otpauth": "^9.5.2",
+    "pinyin-pro": "^3.29.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "oidc-provider": "^9.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "@types/nodemailer": "^6.4.17",
+    "typescript": "^5.9.2",
+    "prisma": "^6.14.0",
+    "tsx": "^4.20.5"
+  },
+  "overrides": {
+    "fastify": "^5.12.1",
+    "@prisma/config": {
+      "deepmerge-ts": "^8.0.0"
+    }
+  }
+}

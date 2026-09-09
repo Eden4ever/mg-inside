@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ],
+      "@metagravity_cn/mg-design": [
+        "E:/Projects/mg-design/packages/components/dist/index.mjs"
+      ],
+      "@metagravity_cn/primitives": [
+        "E:/Projects/mg-design/packages/primitives/dist/index.mjs"
+      ],
+      "@mg-inside/frontend": [
+        "../../../../mg-platform/packages/frontend/index.ts"
+      ],
+      "@mg-inside/frontend/*": [
+        "../../../../mg-platform/packages/frontend/*"
+      ],
+      "vue": [
+        "./node_modules/vue"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.vue"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}

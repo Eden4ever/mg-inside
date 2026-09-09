@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "token-one-console",
+  "name": "Token One 控制台",
+  "defaultPath": "/admin/stats",
+  "brand": {
+    "name": "Token One 控制台"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "stats",
+      "path": "/admin/stats",
+      "title": "统计分析",
+      "component": "route",
+      "icon": "chart-no-axes-combined"
+    },
+    {
+      "id": "availability-alerts",
+      "path": "/admin/availability-alerts",
+      "title": "可用性告警",
+      "component": "route",
+      "icon": "bell"
+    },
+    {
+      "id": "channels",
+      "path": "/admin/channels",
+      "title": "渠道管理",
+      "component": "route",
+      "icon": "cable"
+    },
+    {
+      "id": "models",
+      "path": "/admin/models",
+      "title": "模型管理",
+      "component": "route",
+      "icon": "box"
+    },
+    {
+      "id": "users",
+      "path": "/admin/users",
+      "title": "用户管理",
+      "component": "route",
+      "icon": "user-round"
+    },
+    {
+      "id": "groups",
+      "path": "/admin/groups",
+      "title": "分组管理",
+      "component": "route",
+      "icon": "users-round"
+    },
+    {
+      "id": "tokens",
+      "path": "/admin/tokens",
+      "title": "令牌管理",
+      "component": "route",
+      "icon": "key-round"
+    },
+    {
+      "id": "logs",
+      "path": "/admin/logs",
+      "title": "调用日志",
+      "component": "route",
+      "icon": "file-text"
+    },
+    {
+      "id": "wecom",
+      "path": "/admin/wecom",
+      "title": "企业微信",
+      "component": "route",
+      "icon": "messages-square"
+    },
+    {
+      "id": "suppliers",
+      "path": "/admin/suppliers",
+      "title": "供应商账户",
+      "component": "route",
+      "icon": "wallet"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "stats",
+      "availability-alerts",
+      "channels",
+      "models",
+      "users",
+      "groups",
+      "tokens",
+      "logs",
+      "wecom",
+      "suppliers"
+    ]
+  }
+}

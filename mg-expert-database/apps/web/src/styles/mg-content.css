@@ -1,0 +1,155 @@
+/* 内容区沿用 IAM 的页面头部、白色工作区和 16px 内容间距。 */
+.workspace-entry-header { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 12px 16px; border-bottom: 1px solid #ebeef5; }
+.app-content :is(.systems-page, .system-detail-page, .users-page, .profile-page) {
+  padding: 16px 16px 32px;
+  background: var(--el-bg-color);
+}
+.app-content :is(.systems-content, .detail-content, .users-content) {
+  max-width: none;
+  gap: 16px;
+}
+.app-content :is(.page-heading, .users-toolbar, .profile-header) {
+  position: sticky;
+  top: -16px;
+  z-index: 5;
+  min-height: 76px;
+  max-width: none;
+  margin: -16px -16px 0;
+  padding: 12px 16px;
+  background: var(--el-bg-color);
+  border-bottom: 1px solid #ebeef5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.app-content :is(.page-title, .users-title, .profile-title) { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.app-content :is(.page-title, .users-title, .profile-title) > .el-breadcrumb { display: none; }
+.app-content :is(.page-heading, .users-toolbar, .profile-header) h1 { margin: 0; padding: 0; font-size: 18px; line-height: 1.5; font-weight: 600; }
+.app-content :is(.page-heading, .users-toolbar, .profile-header) p { margin: 0; color: #909399; font-size: 13px; line-height: 1.5; }
+.app-content .title-row { padding: 0; flex-wrap: wrap; }
+.app-content .meta-line { flex-wrap: wrap; }
+.app-content :is(.heading-actions, .toolbar-actions) { display: flex; gap: 12px; flex-wrap: wrap; flex-shrink: 0; }
+.app-content :is(.heading-actions, .toolbar-actions, .filter-row, .summary-actions, .module-actions) > .el-button + .el-button { margin-left: 0; }
+.app-content .filter-row { gap: 12px; }
+.app-content .table-toolbar { gap: 16px; }
+.app-content .stat-card .el-card__body { padding: 16px; }
+.app-content .stat-card strong { font-size: 24px; line-height: 1.5; font-weight: 600; }
+.app-content .stat-row { row-gap: 12px; }
+.app-content .table-wrap { border: 0; }
+.app-content .el-table {
+  --el-table-header-bg-color: #f5f7fa;
+  --el-table-header-text-color: #303133;
+  --el-table-row-hover-bg-color: #f5f7fa;
+  font-size: 14px;
+}
+.app-content .el-table th.el-table__cell { padding: 10px 0; font-weight: 500; }
+.app-content .el-table td.el-table__cell { padding: 12px 0; }
+.app-content .el-table .cell { line-height: 22px; font-size: 14px; }
+.app-content .el-table .cell > strong { font-weight: 500; }
+.app-content .el-table .cell small, .app-content .el-table .subtext { color: #909399; font-size: 12px; line-height: 20px; }
+.app-content .el-table .ops-col .cell { white-space: nowrap; }
+.app-content .el-table .ops-col .el-dropdown { vertical-align: middle; margin-left: 12px; }
+.app-content .el-table .date-col .cell { white-space: nowrap; }
+.app-content .systems-page .page-heading { min-height: 56px; }
+.app-content .research-overview { border-top: 0; margin: -8px 0; }
+.app-content .research-overview .el-collapse-item__header { height: 40px; font-size: 13px; font-weight: 400; color: #606266; }
+.app-content .research-overview .el-collapse-item__content { padding-bottom: 0; }
+.app-content .directory-search { width: min(320px, 100%); }
+.app-content .directory-actions { display: flex; gap: 12px; }
+.app-content .directory-actions .el-button + .el-button { margin-left: 0; }
+.app-content .directory-columns { display: grid; grid-template-columns: minmax(0, 1fr) 160px 96px; padding: 10px 12px; background: #f5f7fa; border: 1px solid #ebeef5; font-size: 14px; }
+.app-content .directory-columns span:nth-child(2) { text-align: right; padding-right: 24px; }
+.app-content .directory-columns span:last-child { text-align: center; }
+.app-content .system-detail-page .tree-list { border: 1px solid #ebeef5; border-top: 0; }
+.app-content .system-detail-page .tree-row { gap: 8px; min-height: 48px; }
+.app-content .system-detail-page .tree-row.level-1 { background: var(--el-bg-color); }
+.app-content .directory-toggle, .app-content .directory-toggle-placeholder { width: 22px; height: 22px; flex: 0 0 22px; }
+.app-content .directory-toggle { border: 0; background: transparent; padding: 0; display: grid; place-items: center; cursor: pointer; color: #909399; }
+.app-content .directory-toggle .expanded { transform: rotate(90deg); }
+.app-content .directory-toggle:disabled { cursor: default; }
+.app-content .system-detail-page .node-meta { margin-left: auto; justify-content: flex-end; width: 152px; }
+.app-content .system-detail-page .enter-button { width: 96px; margin-left: 0; }
+.app-content .system-detail-page .panel { padding: 16px 0; border: 0; border-bottom: 1px solid #ebeef5; border-radius: 0; box-shadow: none; }
+.app-content .system-detail-page .stat-panel { padding: 16px; border: 1px solid #ebeef5; gap: 24px; }
+.app-content .system-detail-page .panel h2 { font-size: 16px; font-weight: 600; }
+.app-content .system-detail-page .tree-panel { padding: 0; border-bottom: 0; }
+.app-content .system-detail-page .tree-head { padding: 0 0 12px; }
+.app-content .system-detail-page .tree-row { min-height: 48px; }
+.app-content .system-detail-page .tree-row:hover { background: #f5f7fa; }
+.app-content .system-detail-page .node-level { font-size: 12px; }
+.app-content .system-detail-page .node-name { font-size: 14px; }
+.app-content .profile-header { margin-bottom: 24px; }
+.app-content .profile-body { max-width: 1080px; gap: 24px; }
+.app-content .profile-card { border: 0; }
+.app-content .profile-card > .el-card__header { padding: 0 0 12px; border: 0; font-size: 16px; }
+.app-content .profile-card > .el-card__body { padding: 0; }
+.app-content .profile-card .el-descriptions { max-width: 1000px; }
+.app-content .password-form { max-width: 520px; }
+.app-content .profile-tip { line-height: 1.6; align-items: flex-start; }
+
+/* 研究工作台的目录、模块导航和正文使用同一套面板层级。 */
+.app-content .workspace-detail { background: var(--el-bg-color); container-type: inline-size; }
+.app-content .detail-heading { justify-content: flex-end; min-height: 48px; padding: 8px 16px; gap: 12px; flex-wrap: wrap; }
+.app-content .detail-heading .heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.app-content .detail-heading .heading-actions .el-button { display: inline-flex; }
+.app-content .indicator-context h1 { font-size: 18px; line-height: 1.5; }
+.app-content .module-scroll { padding: 16px 16px 32px; background: var(--el-bg-color); }
+.app-content .module-nav { padding: 8px; }
+.app-content .module-nav-item { min-height: 44px; border-left: 0; padding: 8px; }
+.app-content .module-nav-item.active { background: rgb(0 82 217 / 11%); }
+.app-content .nav-name { font-size: 13px; }
+.app-content .module-nav-item .el-tag { transform: none; font-size: 11px; }
+.app-content .summary-card { border: 0; border-bottom: 1px solid #ebeef5; margin-bottom: 16px; }
+.app-content .summary-card > .el-card__body { padding: 0 0 16px; }
+.app-content .summary-head h2 { font-size: 16px; }
+.app-content .module-section { margin-bottom: 16px; border-color: #ebeef5; }
+.app-content .module-section.is-active { border-color: #b3cbf4; }
+.app-content .module-section-head { padding: 12px 16px; gap: 12px; flex-wrap: wrap; }
+.app-content .module-title h2 { font-size: 16px; }
+.app-content .module-number { border-radius: 2px; }
+.app-content .module-values .el-descriptions__label { background: #f5f7fa; color: #606266; font-weight: 500; }
+.app-content .module-values .el-descriptions__cell { padding: 12px; font-size: 14px; line-height: 1.6; }
+.app-content .module-values .el-tag { transform: none; }
+.app-content .module-form { padding: 16px 16px 0; }
+/* 模块导航放在顶部，正文始终单列。 */
+  .app-content .module-layout { display: flex; flex-direction: column; overflow: hidden; }
+  .app-content .module-nav { display: flex; flex: 0 0 auto; overflow-x: auto; border-right: 0; border-bottom: 1px solid #ebeef5; gap: 4px; }
+  .app-content .module-nav .nav-title { display: none; }
+  .app-content .module-nav-item { min-width: 140px; width: 140px; flex-shrink: 0; }
+  .app-content .module-scroll { flex: 1; min-height: 0; }
+@container (max-width: 760px) {
+  .app-content .summary-head { align-items: flex-start; flex-direction: column; }
+}
+
+/* 弹层沿用案例的直角容器、分隔线和紧凑表单间距。 */
+.el-dialog { --el-dialog-border-radius: 0; --el-dialog-padding-primary: 0; max-width: calc(100vw - 32px); }
+.el-dialog .el-dialog__header { padding: 16px; margin-right: 0; border-bottom: 1px solid #ebeef5; }
+.el-dialog .el-dialog__body { padding: 16px; }
+.el-dialog .el-dialog__footer { padding: 12px 16px 16px; }
+.el-drawer .el-drawer__header { margin-bottom: 0; padding: 16px; border-bottom: 1px solid #ebeef5; }
+.el-drawer .el-drawer__body { padding: 16px; }
+.el-message-box { --el-messagebox-border-radius: 0; }
+@media (max-width: 700px) {
+  .app-content :is(.page-heading, .users-toolbar, .profile-header) { align-items: flex-start; flex-direction: column; }
+  .app-content :is(.heading-actions, .toolbar-actions) { gap: 8px; }
+  .app-content .table-toolbar { align-items: stretch; flex-direction: column; }
+  .app-content .filter-row { gap: 8px; }
+  .app-content .system-detail-page .stat-panel { gap: 16px; }
+  .app-content .system-detail-page .tree-head { align-items: flex-start; flex-direction: column; }
+  .app-content .system-detail-page .node-name { flex-direction: column; align-items: flex-start; white-space: normal; gap: 0; }
+}
+/* 工作区共用顶部栏，横跨目录、正文与 AI 面板。 */
+.workspace-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; flex: 0 0 auto; padding: 8px 16px; border-bottom: 1px solid #ebeef5; background: var(--el-bg-color); flex-wrap: wrap; }
+.workspace-toolbar-context { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.workspace-toolbar-context h1 { margin: 0; font-size: 16px; font-weight: 600; line-height: 24px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workspace-toolbar-context .workspace-back { flex-shrink: 0; }
+.app-content .workspace-toolbar .detail-heading { min-height: 0; padding: 0; border: 0; }
+#workspace-toolbar-actions { margin-left: auto; }
+/* 模块外框负责外围边线，描述表格仅保留内部单线分隔。 */
+.app-content .module-values .el-descriptions__table { border-collapse: collapse; }
+.app-content .module-values .el-descriptions__table tr:first-child > .el-descriptions__cell { border-top: 0; }
+.app-content .module-values .el-descriptions__table tr:last-child > .el-descriptions__cell { border-bottom: 0; }
+.app-content .module-values .el-descriptions__table tr > .el-descriptions__cell:first-child { border-left: 0; }
+.app-content .module-values .el-descriptions__table tr > .el-descriptions__cell:last-child { border-right: 0; }

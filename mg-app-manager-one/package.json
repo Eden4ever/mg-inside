@@ -1,0 +1,14 @@
+{
+  "name": "@mg-inside/app-manager",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 14341 --strictPort",
+    "typecheck": "node node_modules/vue-tsc/bin/vue-tsc.js --noEmit",
+    "build": "npm run typecheck && node node_modules/vite/bin/vite.js build",
+    "test:ui": "node tests/verify-ui.mjs"
+  },
+  "dependencies": { "vue": "^3.5.18", "vue-router": "^4.5.1", "element-plus": "^2.11.5", "@element-plus/icons-vue": "^2.3.1" },
+  "devDependencies": { "@playwright/test": "1.63.0", "@types/node": "^24.3.0", "@vitejs/plugin-vue": "^6.0.1", "typescript": "^5.9.2", "vite": "^7.1.3", "vue-tsc": "^3.0.6" }
+}

@@ -1,0 +1,30 @@
+name: mg-office-engine
+services:
+  documentserver:
+    image: onlyoffice/documentserver:9.3.1@sha256:290a0a1406a485acc8a6bc20418ac7158c5eec78b4844c218f8f975a9800ddbc
+    restart: unless-stopped
+    ports: ["127.0.0.1:14460:80"]
+    env_file: /opt/mg-office/secrets/documentserver.env
+    environment:
+      JWT_ENABLED: "true"
+      JWT_HEADER: Authorization
+      JWT_IN_BODY: "true"
+    volumes:
+      # 用户字体位于 Data/custom-fonts/mg-chinese-fonts，随命名卷持久化。
+      - office_data:/var/www/onlyoffice/Data
+      - office_logs:/var/log/onlyoffice
+      - office_cache:/var/lib/onlyoffice
+      - office_db:/var/lib/postgresql
+    mem_limit: 4g
+    cpus: 2
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+volumes:
+  office_data:
+  office_logs:
+  office_cache:
+  office_db:

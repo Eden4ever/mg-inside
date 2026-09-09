@@ -1,0 +1,13 @@
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import ElementPlus from 'element-plus';
+import zhCn from 'element-plus/es/locale/lang/zh-cn';
+import 'element-plus/dist/index.css';
+import '@mg-inside/frontend/shell.css';
+import '@mg-inside/frontend/layout.css';
+import '@mg-inside/frontend/embedded.css';
+import '@mg-inside/frontend/overlays.css';
+import App from './App.vue';
+import './style.css';
+export const router = createRouter({ history: createWebHistory(import.meta.env.BASE_URL), routes: [{path:'/',redirect:'/documents'},{path:'/documents/:id?',component:{render:()=>null}}] });
+createApp(App).use(router).use(ElementPlus,{locale:zhCn}).mount('#app');

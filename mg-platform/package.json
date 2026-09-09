@@ -1,0 +1,8 @@
+{
+  "name": "@mg-inside/platform-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": ["packages/*"],
+  "engines": { "node": ">=22.19.0" },
+  "scripts": { "test": "node --experimental-strip-types --test tests/*.test.mjs" }
+}

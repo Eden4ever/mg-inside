@@ -1,0 +1,49 @@
+/* 工作区、登录页沿用列表页的字号、浅色面板和边框规格，不改变业务布局。 */
+.app-content .detail-page { background: var(--el-bg-color-page); }
+.app-content .workspace-toolbar { min-height: 62px; padding: 14px 20px; }
+.app-content .workspace-toolbar-context h1 { font-size: 18px; font-weight: 500; }
+.app-content .tree-panel .panel-heading h2,
+.app-content .tree-panel .level-1 .node-text { font-weight: 500; }
+
+.app-content .workspace-detail .module-scroll {
+  padding: 20px;
+  background: var(--el-bg-color-page);
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.app-content .workspace-detail .summary-card,
+.app-content .workspace-detail .module-section {
+  margin: 0 0 16px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  background: var(--el-bg-color);
+}
+
+.app-content .workspace-detail .summary-card > .el-card__body { padding: 20px; }
+.app-content .workspace-detail .summary-head h2,
+.app-content .workspace-detail .module-title h2 { font-size: 16px; font-weight: 500; }
+.app-content .workspace-detail .module-section { overflow: hidden; }
+.app-content .workspace-detail .module-section.is-active { border-color: var(--el-color-primary-light-5); }
+.app-content .workspace-detail .module-section-head { min-height: 64px; padding: 16px 20px; }
+.app-content .workspace-detail .module-title p { overflow-wrap: anywhere; line-height: 1.6; }
+.app-content .workspace-detail .module-number { border-radius: 4px; font-weight: 500; }
+.app-content .workspace-detail .module-form { padding: 20px 20px 2px; }
+.app-content .workspace-detail .module-values .el-descriptions__cell { padding: 12px 16px; }
+.app-content .workspace-detail .field-display { flex-wrap: wrap; }
+.app-content .workspace-detail .field-actions { flex-wrap: wrap; margin-left: auto; }
+
+@container (max-width: 640px) {
+  .app-content .workspace-detail .module-scroll { padding: 14px; }
+  .app-content .workspace-detail .summary-card > .el-card__body,
+  .app-content .workspace-detail .module-section-head { padding: 14px; }
+  .app-content .workspace-detail .module-section-head { align-items: flex-start; flex-direction: column; }
+  .app-content .workspace-detail .module-actions { justify-content: flex-start; }
+  .app-content .workspace-detail .module-form { padding: 14px 14px 2px; }
+}
+
+@media (max-width: 600px) {
+  .app-content .workspace-toolbar { padding: 12px; }
+  .app-content .workspace-toolbar-context { width: 100%; }
+  .app-content .workspace-toolbar-context h1 { white-space: normal; overflow-wrap: anywhere; }
+}

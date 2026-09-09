@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+overrides:
+  fastify@5: ^5.12.1
+  fast-uri@3: ^3.1.6
+  fast-uri@4: ^4.1.4
+  glob@10: ^10.5.0
+  exceljs>uuid: 11.1.1
+  '@prisma/config>deepmerge-ts': 8.0.0

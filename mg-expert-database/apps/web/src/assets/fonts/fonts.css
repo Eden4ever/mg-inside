@@ -1,0 +1,5 @@
+/* 与 IAM 示例项目一致的本地字体及字重。 */
+@font-face { font-family: 'mg-font-alinormal'; src: url('./AlibabaPuHuiTi-3-55-Regular.woff2') format('woff2'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'mg-font-alinormal'; src: url('./AlibabaPuHuiTi-3-65-Medium.woff2') format('woff2'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'mg-font-alinormal'; src: url('./AlibabaPuHuiTi-3-75-SemiBold.woff2') format('woff2'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'mg-font-ding'; src: url('./DingTalk-JinBuTi.woff2') format('woff2'); font-weight: 400; font-display: swap; }

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "appId": "office-one",
+  "name": "Office One",
+  "layout": "standard",
+  "defaultPath": "/documents",
+  "brand": {
+    "name": "Office One",
+    "icon": "file-text"
+  },
+  "header": {
+    "showTitle": false,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "documents",
+      "path": "/documents",
+      "title": "我的文档",
+      "component": "documents",
+      "icon": "file-text",
+      "description": "在线编辑文档、表格与演示文稿，保存到个人文件。"
+    }
+  ],
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  },
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "documents"
+    ]
+  }
+}

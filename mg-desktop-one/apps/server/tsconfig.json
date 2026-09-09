@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "target": "ES2022", "module": "ESNext", "moduleResolution": "Bundler", "strict": true,
+    "types": ["node"], "skipLibCheck": true, "noEmit": true, "resolveJsonModule": true, "allowSyntheticDefaultImports": true, "allowImportingTsExtensions": true
+  },
+  "include": ["src/**/*.ts", "../../../mg-platform/packages/frontend/desktop-contracts/src/**/*.ts"]
+}

@@ -1,0 +1,25 @@
+[Unit]
+Description=MG Expert Database API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mgexpert
+Group=mgexpert
+WorkingDirectory=/opt/mg-expert-database/current
+EnvironmentFile=/etc/mg-expert-database/api.env
+Environment=PATH=/opt/mg-expert-database/runtimes/node-v24.20.0-linux-x64/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/mg-expert-database/runtimes/node-v24.20.0-linux-x64/bin/node apps/api/dist/apps/api/src/main.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/mg-expert-database/shared
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

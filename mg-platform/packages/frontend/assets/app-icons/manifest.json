@@ -1,0 +1,207 @@
+{
+  "files": {
+    "src": "files.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "folder",
+    "palette": "blue",
+    "image": "files-fluent.png",
+    "imageViewport": [
+      15.072,
+      15.391,
+      74.242,
+      68.262
+    ]
+  },
+  "personal-center": {
+    "src": "personal-center.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "user-round",
+    "palette": "sky",
+    "image": "personal-center-fluent.png",
+    "imageViewport": [
+      15.71,
+      11.802,
+      68.581,
+      78.947
+    ]
+  },
+  "app-manager": {
+    "src": "app-manager.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "layout-grid",
+    "palette": "green",
+    "image": "app-manager-fluent.png",
+    "imageViewport": [
+      13.238,
+      13.955,
+      74.801,
+      70.973
+    ]
+  },
+  "expert-database": {
+    "src": "expert-database.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "book-open",
+    "palette": "blue",
+    "image": "expert-database-fluent.png",
+    "imageViewport": [
+      5.901,
+      14.115,
+      88.198,
+      74.402
+    ]
+  },
+  "token-one": {
+    "src": "token-one.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "zap",
+    "palette": "violet",
+    "image": "token-one-fluent.png",
+    "imageViewport": [
+      18.102,
+      7.815,
+      63.876,
+      87.64
+    ]
+  },
+  "token-one-console": {
+    "src": "token-one-console.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "zap",
+    "palette": "violet",
+    "badge": "badge-console.svg",
+    "image": "token-one-fluent.png",
+    "imageViewport": [
+      18.102,
+      7.815,
+      63.876,
+      87.64
+    ]
+  },
+  "token-one-docs": {
+    "src": "token-one-docs.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "zap",
+    "palette": "violet",
+    "badge": "badge-docs.svg",
+    "image": "token-one-fluent.png",
+    "imageViewport": [
+      18.102,
+      7.815,
+      63.876,
+      87.64
+    ]
+  },
+  "identity": {
+    "src": "identity.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "shield-check",
+    "palette": "teal",
+    "image": "identity-fluent.png",
+    "imageViewport": [
+      14.434,
+      8.054,
+      71.212,
+      84.051
+    ]
+  },
+  "office-one": {
+    "src": "office-one.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "file-text",
+    "palette": "blue",
+    "image": "office-one-fluent.png",
+    "imageViewport": [
+      11.324,
+      9.49,
+      79.346,
+      79.904
+    ]
+  },
+  "resource-manager": {
+    "src": "resource-manager.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "server",
+    "palette": "ocean",
+    "image": "resource-manager-fluent.png",
+    "imageViewport": [
+      17.863,
+      23.285,
+      64.354,
+      55.183
+    ]
+  },
+  "launcher": {
+    "src": "launcher.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "layout-grid",
+    "palette": "slate",
+    "image": "launcher-fluent.png",
+    "imageViewport": [
+      11.802,
+      11.563,
+      77.592,
+      76.156
+    ]
+  },
+  "trash": {
+    "src": "trash.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "trash-2",
+    "palette": "slate",
+    "image": "trash-empty-fluent.png",
+    "imageViewport": [
+      11.643,
+      7.656,
+      77.512,
+      85.247
+    ]
+  },
+  "placeholder": {
+    "src": "placeholder.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "square",
+    "palette": "neutral"
+  },
+  "trash-full": {
+    "src": "trash-full.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "trash-2",
+    "palette": "slate",
+    "image": "trash-full-fluent.png",
+    "imageViewport": [
+      11.643,
+      5.024,
+      77.671,
+      87.959
+    ]
+  },
+  "service-manager": {
+    "src": "app-manager.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "layout-grid",
+    "palette": "green",
+    "image": "service-manager-fluent.png",
+    "imageViewport": [
+      6.14,
+      9.171,
+      87.799,
+      76.077
+    ]
+  }
+}

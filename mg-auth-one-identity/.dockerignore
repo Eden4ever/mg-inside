@@ -1,0 +1,12 @@
+node_modules
+dist
+secrets
+.runtime
+.env*
+test
+*.log
+
+private
+web/node_modules
+web/dist
+.git

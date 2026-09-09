@@ -1,0 +1,11 @@
+import {resolve} from 'node:path';
+import {ResourceStore} from './store.ts';
+import {createResourceServer} from './http.ts';
+const store=new ResourceStore(resolve(process.env.RESOURCE_DATA_DIR||'.runtime/data'),resolve(process.env.RESOURCE_CREDENTIAL_DIR||'.runtime/credentials'));
+await store.initialize(resolve(process.env.RESOURCE_CONFIG||'server/resources.json'));
+const server=createResourceServer(store);
+server.listen(Number(process.env.RESOURCE_PORT||14370),process.env.RESOURCE_HOST||'127.0.0.1',()=>console.log('资源管理服务已启动'));
+const collect=async()=>{for(const r of store.resources)await store.refresh(r.id,'system')};
+void collect().catch(()=>console.error('资源采集状态保存失败'));
+const timer=setInterval(()=>void collect().catch(()=>console.error('资源采集状态保存失败')),60000);timer.unref();
+process.on('SIGTERM',()=>{clearInterval(timer);server.close(()=>process.exit(0))});

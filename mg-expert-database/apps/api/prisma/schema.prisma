@@ -1,0 +1,470 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+model MailConfig {
+  id String @id
+  enabled Boolean @default(false)
+  host String
+  port Int
+  security String
+  username String
+  encryptedPassword String
+  fromAddress String
+  fromName String
+  revision Int @default(1)
+  lastTestAt DateTime?
+  updatedAt DateTime @updatedAt
+}
+
+model EmbeddingModelConfig {
+  id String @id
+  enabled Boolean @default(true)
+  encryptedKey String
+  revision Int @default(1)
+  updatedAt DateTime @updatedAt
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  identityIssuer String?
+  identitySubject String? @unique
+  identityEnabled Boolean @default(true)
+  id               String        @id @default(uuid())
+  username         String?       @unique
+  displayName      String
+  passwordHash     String?
+  role             String        @default("reader")
+  status           String        @default("active")
+  authSource       String        @default("local")
+  departmentName   String?
+  failedLoginCount Int           @default(0)
+  lockedUntil      DateTime?
+  lastLoginAt      DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  securityVersion  Int           @default(0)
+  mfaEnabled       Boolean       @default(false)
+  mfaMethods       String[]      @default([])
+  verifiedEmail    VerifiedEmail?
+  totpCredential   TotpCredential?
+  securityKeys     SecurityKey[]
+  authChallenges  AuthChallenge[]
+  recoveryCodes   RecoveryCode[]
+  sessions         AuthSession[]
+  auditLogs        AuditLog[]
+  wecomIdentities  WeComIdentity[]
+  researchRevisions ResearchRevision[]
+  summaryRevisions  ResearchSummaryRevision[]
+  researchAssignments ResearchAssignment[]
+  assignedResearchAssignments ResearchAssignment[] @relation("AssignmentGranter")
+  decidedSuggestions AISuggestion[] @relation("SuggestionDecider")
+  systemAccesses IndicatorSystemAccess[] @relation("SystemAccessUser")
+  grantedSystemAccesses IndicatorSystemAccess[] @relation("SystemAccessGranter")
+  createdSystems IndicatorSystem[] @relation("SystemCreator")
+}
+
+model AuthSession {
+  identitySubject String?
+  identitySessionId String?
+  id         String    @id @default(uuid())
+  tokenHash  String    @unique
+  csrfToken  String    @unique
+  userId     String
+  expiresAt  DateTime
+  lastSeenAt DateTime  @default(now())
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+  userAgent  String?
+  ipAddress  String?
+  securityVersion Int @default(0)
+  authMethods String[] @default([])
+  verifiedAt DateTime @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt, revokedAt])
+}
+
+model WeComIdentity {
+  id             String   @id @default(uuid())
+  userId         String
+  corpId         String
+  externalUserId String
+  boundAt        DateTime @default(now())
+  lastLoginAt    DateTime?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([corpId, externalUserId])
+  @@unique([userId, corpId])
+  @@index([userId])
+}
+
+model WeComIdentityRevocation {
+  corpId         String
+  externalUserId String
+  revokedAt      DateTime @default(now())
+
+  @@id([corpId, externalUserId])
+}
+
+model VerifiedEmail {
+  userId String @id
+  address String @unique
+  verifiedAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model TotpCredential {
+  userId String @id
+  encryptedSecret String
+  lastUsedStep BigInt @default(-1)
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SecurityKey {
+  id String @id
+  userId String
+  name String
+  publicKey Bytes
+  counter BigInt @default(0)
+  transports String[] @default([])
+  backedUp Boolean @default(false)
+  createdAt DateTime @default(now())
+  lastUsedAt DateTime?
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model AuthChallenge {
+  id String @id @default(uuid())
+  tokenHash String @unique
+  browserHash String
+  userId String
+  purpose String
+  firstMethod String
+  securityVersion Int
+  payload Json @default("{}")
+  attempts Int @default(0)
+  expiresAt DateTime
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId, purpose, expiresAt])
+  @@index([expiresAt])
+}
+
+model RecoveryCode {
+  id String @id @default(uuid())
+  userId String
+  codeHash String @unique
+  usedAt DateTime?
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model WeComLoginState {
+  id               String    @id @default(uuid())
+  stateHash        String    @unique
+  browserNonceHash String
+  returnTo         String    @default("/")
+  expiresAt        DateTime
+  usedAt           DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([expiresAt, usedAt])
+}
+
+model IndicatorSystem {
+  id        String             @id @default(uuid())
+  name      String
+  code      String             @unique
+  region    String
+  creatorUserId String?
+  creator User? @relation("SystemCreator", fields: [creatorUserId], references: [id], onDelete: Restrict)
+  maxLevel  Int                @default(3)
+  templateRevision Int @default(1)
+  templates IndicatorLevelTemplate[]
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  versions  IndicatorVersion[]
+  accesses  IndicatorSystemAccess[]
+}
+
+model IndicatorLevelTemplate {
+  id String @id @default(uuid())
+  systemId String
+  level Int
+  revisionNo Int @default(1)
+  modules Json
+  system IndicatorSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  revisions IndicatorTemplateRevision[]
+  @@unique([systemId, level])
+}
+model IndicatorTemplateRevision {
+  id String @id @default(uuid())
+  templateId String
+  revisionNo Int
+  modules Json
+  actorName String
+  createdAt DateTime @default(now())
+  template IndicatorLevelTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  @@unique([templateId, revisionNo])
+}
+
+model IndicatorSystemAccess {
+  systemRole       String?
+  id               String          @id @default(uuid())
+  systemId         String
+  userId           String
+  canView          Boolean         @default(true)
+  canResearch      Boolean         @default(false)
+  canManageCatalog Boolean         @default(false)
+  canReview        Boolean         @default(false)
+  canPublish       Boolean         @default(false)
+  grantedByUserId  String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  system           IndicatorSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  user             User            @relation("SystemAccessUser", fields: [userId], references: [id], onDelete: Cascade)
+  grantedBy        User?           @relation("SystemAccessGranter", fields: [grantedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([systemId, userId])
+  @@index([userId, canView])
+  @@index([systemId])
+}
+
+model IndicatorVersion {
+  semanticLibrary SemanticLibrary?
+  id          String          @id @default(uuid())
+  systemId    String
+  year        Int
+  versionCode String
+  status      String          @default("draft")
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  system      IndicatorSystem @relation(fields: [systemId], references: [id], onDelete: Cascade)
+  nodes       IndicatorNode[]
+  records     ResearchRecord[]
+  auditLogs   AuditLog[]
+  researchAssignments ResearchAssignment[]
+
+  @@unique([systemId, year, versionCode])
+}
+
+model SemanticLibrary {
+  id String @id @default(uuid())
+  versionId String @unique
+  name String
+  activeBuildId String?
+  createdAt DateTime @default(now())
+  version IndicatorVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  builds SemanticBuild[]
+}
+
+model SemanticBuild {
+  id String @id @default(uuid())
+  libraryId String
+  actorUserId String
+  status String @default("queued")
+  fingerprint String
+  snapshot Json
+  total Int
+  completed Int @default(0)
+  reused Int @default(0)
+  tokens Int @default(0)
+  error String?
+  heartbeatAt DateTime @default(now())
+  createdAt DateTime @default(now())
+  finishedAt DateTime?
+  library SemanticLibrary @relation(fields: [libraryId], references: [id], onDelete: Cascade)
+  chunks SemanticChunk[]
+  @@index([status, createdAt])
+}
+
+model SemanticChunk {
+  id String @id @default(uuid())
+  buildId String
+  hash String
+  nodeId String
+  path String
+  label String
+  text String
+  metadata Json
+  embedding Float[]
+  build SemanticBuild @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  @@index([buildId])
+}
+
+model IndicatorNode {
+  id        String           @id @default(uuid())
+  versionId String
+  parentId  String?
+  parentKey String           @default("__root__")
+  level     Int
+  code      String
+  name      String
+  sortOrder Int              @default(0)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  version   IndicatorVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  parent    IndicatorNode?   @relation("IndicatorTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children  IndicatorNode[]  @relation("IndicatorTree")
+  record    ResearchRecord?
+  researchAssignments ResearchAssignment[]
+
+  @@unique([versionId, parentKey, code])
+  @@index([versionId, parentId, sortOrder])
+}
+
+model ResearchRecord {
+  id              String           @id @default(uuid())
+  versionId       String
+  indicatorNodeId String           @unique
+  summary         String?
+  revisionNo      Int              @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  version         IndicatorVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  indicatorNode   IndicatorNode    @relation(fields: [indicatorNodeId], references: [id], onDelete: Cascade)
+  modules         ResearchModule[]
+  evidence        Evidence[]
+  suggestions     AISuggestion[]
+  summaryRevisions ResearchSummaryRevision[]
+
+  @@unique([versionId, indicatorNodeId])
+}
+
+model ResearchSummaryRevision {
+  id                String         @id @default(uuid())
+  recordId          String
+  revisionNo        Int
+  summary           String
+  sourceRevisionIds Json           @default("[]")
+  actorUserId       String
+  actorName         String
+  createdAt         DateTime       @default(now())
+  record            ResearchRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  actorUser         User           @relation(fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@unique([recordId, revisionNo])
+  @@index([recordId, createdAt])
+}
+
+model ResearchAssignment {
+  id                 String           @id @default(uuid())
+  versionId          String
+  indicatorNodeId    String
+  userId             String
+  assignedByUserId   String?
+  createdAt          DateTime         @default(now())
+  version            IndicatorVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+  indicatorNode      IndicatorNode    @relation(fields: [indicatorNodeId], references: [id], onDelete: Cascade)
+  user               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assignedBy         User?            @relation("AssignmentGranter", fields: [assignedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([versionId, indicatorNodeId, userId])
+  @@index([userId, versionId])
+  @@index([versionId, indicatorNodeId])
+}
+
+model ResearchModule {
+  id         String             @id @default(uuid())
+  recordId   String
+  moduleKey  String
+  status     String             @default("not_started")
+  values     Json               @default("{}")
+  naReasons  Json               @default("{}")
+  revisionNo Int                @default(0)
+  returnReason String?
+  updatedAt  DateTime           @updatedAt
+  record     ResearchRecord     @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  revisions  ResearchRevision[]
+
+  @@unique([recordId, moduleKey])
+}
+
+model Evidence {
+  id                 String         @id @default(uuid())
+  recordId           String
+  moduleKey          String
+  fieldKeys          Json           @default("[]")
+  type               String
+  title              String
+  sourceUrl          String?
+  excerpt            String?
+  verificationStatus String         @default("pending_verification")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  record             ResearchRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+
+  @@index([recordId, moduleKey])
+}
+
+model ResearchRevision {
+  id        String         @id @default(uuid())
+  moduleId  String
+  revisionNo Int
+  snapshot  Json
+  actorName String
+  actorUserId String?
+  action    String
+  createdAt DateTime       @default(now())
+  module    ResearchModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  actorUser User?          @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@unique([moduleId, revisionNo])
+  @@index([moduleId, createdAt])
+}
+
+model AISuggestion {
+  id                String         @id @default(uuid())
+  recordId          String
+  templateRevision Int @default(1)
+  targetType        String         @default("module")
+  moduleKey         String?
+  fieldKey          String?
+  content           String
+  rationale         String
+  confidence        String
+  evidenceIds       Json           @default("[]")
+  verificationItems Json           @default("[]")
+  sourceRevisionIds Json           @default("[]")
+  modelId           String         @default("unconfigured")
+  promptVersion     String         @default("m0-contract")
+  status            String         @default("pending")
+  decisionReason    String?
+  decidedAt         DateTime?
+  decidedByUserId   String?
+  resultRevisionId  String?
+  createdAt         DateTime       @default(now())
+  record            ResearchRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  decidedBy         User?          @relation("SuggestionDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([recordId, targetType, status])
+  @@index([decidedByUserId])
+}
+
+model AuditLog {
+  id        String            @id @default(uuid())
+  versionId String?
+  actorUserId String?
+  actorName String
+  actorRole String
+  action    String
+  targetType String
+  targetId  String
+  result    String            @default("success")
+  detail    Json?
+  at        DateTime          @default(now())
+  version   IndicatorVersion? @relation(fields: [versionId], references: [id], onDelete: SetNull)
+  actorUser User?             @relation(fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([versionId, at])
+}

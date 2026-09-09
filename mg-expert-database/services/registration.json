@@ -1,0 +1,732 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "serviceId": "expert-database.api",
+    "appId": "expert-database",
+    "name": "指标体系查询服务",
+    "version": "1.1.0",
+    "description": "指标知识库 已明确登记的应用接口",
+    "operations": [
+      {
+        "operationId": "systems",
+        "method": "GET",
+        "path": "/systems",
+        "summary": "查询可访问指标体系",
+        "effect": "read"
+      },
+      {
+        "operationId": "system",
+        "method": "GET",
+        "path": "/systems/{id}",
+        "summary": "查询指标体系",
+        "effect": "read"
+      },
+      {
+        "operationId": "libraries",
+        "method": "GET",
+        "path": "/semantic-libraries",
+        "summary": "查询语义库",
+        "effect": "read"
+      }
+    ]
+  },
+  "contract": {
+    "openapi": "3.1.1",
+    "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+    "info": {
+      "title": "指标体系查询服务",
+      "version": "1.1.0",
+      "description": "只读查询保持知识库体系授权：普通用户仅可访问已获准查看的体系，系统管理员可查看全部。使用提供方原始 JSON 响应，不额外包装 data。"
+    },
+    "x-service-id": "expert-database.api",
+    "x-app-id": "expert-database",
+    "servers": [
+      {
+        "url": "/api"
+      }
+    ],
+    "security": [
+      {
+        "unifiedSession": []
+      }
+    ],
+    "paths": {
+      "/systems": {
+        "get": {
+          "operationId": "systems",
+          "summary": "查询可访问指标体系",
+          "description": "返回可查看的体系列表，按体系修改时间倒序；没有授权返回空数组。摘要选择年份最新、同年份修改时间最新的版本。没有版本时 year/version/versionId 为 null，指标数和进度为 0，status 为 draft。无分页或搜索参数。",
+          "responses": {
+            "200": {
+              "description": "查询成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/SystemSummary"
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录、会话过期或统一身份无法验证",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用访问权限、账户停用或无体系查看权限",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "提供方未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "502": {
+              "description": "统一出口无法连接提供方",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "服务未启用或当前部署未配置提供方",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/systems/{id}": {
+        "get": {
+          "operationId": "system",
+          "summary": "查询指标体系",
+          "description": "返回体系基本资料、当前用户有效权限及版本列表，不包含指标树或研究正文。版本按年份及修改时间倒序。普通用户无查看授权时返回 403（包括不存在但无授权的 ID），系统管理员查询不存在的 ID 返回 404。",
+          "responses": {
+            "200": {
+              "description": "查询成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SystemDetail"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录、会话过期或统一身份无法验证",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用访问权限、账户停用或无体系查看权限",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "提供方未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "502": {
+              "description": "统一出口无法连接提供方",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "服务未启用或当前部署未配置提供方",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "具有访问范围的调用者查询的体系不存在",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "minLength": 1,
+                "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+              },
+              "description": "体系列表中的 id，不是 versionId。"
+            }
+          ]
+        }
+      },
+      "/semantic-libraries": {
+        "get": {
+          "operationId": "libraries",
+          "summary": "查询语义库",
+          "description": "只返回可查看体系关联的语义库，按创建时间倒序。build 为最近创建的构建摘要，可能为空或与 activeBuildId 指向的可用构建不同。configured 仅表示向量服务已配置，不保证网络或业务健康。此操作不构建向量、不搜索、不产生模型调用；canManage 由当前用户体系权限决定。",
+          "responses": {
+            "200": {
+              "description": "查询成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SemanticLibraries"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录、会话过期或统一身份无法验证",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用访问权限、账户停用或无体系查看权限",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "提供方未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "502": {
+              "description": "统一出口无法连接提供方",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "服务未启用或当前部署未配置提供方",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "SystemPermissions": {
+          "type": "object",
+          "properties": {
+            "canView": {
+              "type": "boolean"
+            },
+            "canResearch": {
+              "type": "boolean"
+            },
+            "canManageCatalog": {
+              "type": "boolean"
+            },
+            "canReview": {
+              "type": "boolean"
+            },
+            "canPublish": {
+              "type": "boolean"
+            },
+            "canManageAccess": {
+              "type": "boolean"
+            },
+            "systemRole": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "creator",
+                    "manager",
+                    "editor",
+                    "viewer"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "canView",
+            "canResearch",
+            "canManageCatalog",
+            "canReview",
+            "canPublish"
+          ],
+          "additionalProperties": false
+        },
+        "SystemSummary": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "name": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
+            },
+            "year": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "version": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "versionId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "indicatorCount": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "maxLevel": {
+              "type": "integer"
+            },
+            "progress": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "status": {
+              "type": "string"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "access": {
+              "$ref": "#/components/schemas/SystemPermissions"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "code",
+            "region",
+            "year",
+            "version",
+            "versionId",
+            "indicatorCount",
+            "maxLevel",
+            "progress",
+            "status",
+            "updatedAt",
+            "access"
+          ],
+          "additionalProperties": false
+        },
+        "IndicatorVersion": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "systemId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "year": {
+              "type": "integer"
+            },
+            "versionCode": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "id",
+            "systemId",
+            "year",
+            "versionCode",
+            "status",
+            "createdAt",
+            "updatedAt"
+          ],
+          "additionalProperties": false
+        },
+        "SystemDetail": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "name": {
+              "type": "string"
+            },
+            "code": {
+              "type": "string"
+            },
+            "region": {
+              "type": "string"
+            },
+            "creatorUserId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "maxLevel": {
+              "type": "integer"
+            },
+            "templateRevision": {
+              "type": "integer"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "access": {
+              "$ref": "#/components/schemas/SystemPermissions"
+            },
+            "versions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/IndicatorVersion"
+              }
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "code",
+            "region",
+            "creatorUserId",
+            "maxLevel",
+            "templateRevision",
+            "createdAt",
+            "updatedAt",
+            "access",
+            "versions"
+          ],
+          "additionalProperties": false
+        },
+        "SemanticBuild": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "status": {
+              "type": "string"
+            },
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "completed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "reused": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "finishedAt": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "fingerprint": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "status",
+            "total",
+            "completed",
+            "reused",
+            "tokens",
+            "error",
+            "createdAt",
+            "finishedAt",
+            "fingerprint"
+          ],
+          "additionalProperties": false
+        },
+        "SemanticLibrary": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "name": {
+              "type": "string"
+            },
+            "versionId": {
+              "type": "string",
+              "minLength": 1,
+              "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+            },
+            "systemName": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "activeBuildId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "提供方返回的稳定标识；兼容已有非 UUID 数据标识。"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "build": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SemanticBuild"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "canManage": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "versionId",
+            "systemName",
+            "version",
+            "activeBuildId",
+            "build",
+            "canManage"
+          ],
+          "additionalProperties": false
+        },
+        "SemanticLibraries": {
+          "type": "object",
+          "properties": {
+            "configured": {
+              "type": "boolean"
+            },
+            "model": {
+              "const": "embedding-3"
+            },
+            "dimensions": {
+              "const": 1024
+            },
+            "libraries": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/SemanticLibrary"
+              }
+            }
+          },
+          "required": [
+            "configured",
+            "model",
+            "dimensions",
+            "libraries"
+          ],
+          "additionalProperties": false
+        },
+        "Error": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              ]
+            },
+            "statusCode": {
+              "type": "integer",
+              "minimum": 400,
+              "maximum": 599
+            },
+            "error": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "securitySchemes": {
+        "unifiedSession": {
+          "type": "http",
+          "scheme": "bearer",
+          "description": "由桌面出口转发当前用户身份；提供方映射本地用户及角色，再校验体系权限。服务登记不授予体系访问权。"
+        }
+      }
+    }
+  }
+}

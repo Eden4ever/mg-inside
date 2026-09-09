@@ -1,0 +1,16 @@
+<script setup lang="ts">
+import { nextTick,onMounted,onUnmounted,ref } from 'vue';
+import type { ApplicationDialogController } from '@mg-inside/frontend';
+import { request,response,download,bytes,type FileEntry } from '../api';
+const props=defineProps<{params:Record<string,unknown>;controller:ApplicationDialogController}>();
+const item=ref<FileEntry>(),loading=ref(true),error=ref(''),text=ref(''),image=ref(''),pdfPage=ref(1),pdfPages=ref(0),canvas=ref<HTMLCanvasElement>();
+let pdf:any,task:any,disposed=false;const abort=new AbortController();
+async function renderPdf(){if(!pdf||disposed)return;loading.value=true;try{const page=await pdf.getPage(pdfPage.value);const natural=page.getViewport({scale:1});const viewport=page.getViewport({scale:Math.min(1.3,1600/natural.width,2400/natural.height)});await nextTick();if(!canvas.value||disposed)return;canvas.value.width=viewport.width;canvas.value.height=viewport.height;await page.render({canvas:canvas.value,viewport}).promise;}catch(e){if(!disposed)error.value=(e as Error).message;}finally{loading.value=false;}}
+async function changePage(delta:number){pdfPage.value+=delta;await renderPdf();}
+onMounted(async()=>{try{item.value=await request<FileEntry>(`/entries/${String(props.params.id)}`,{signal:abort.signal});props.controller.setTitle(item.value.name);await request(`/entries/${item.value.id}/access`,{method:'POST'});if(item.value.preview==='none')return;if(item.value.preview==='text'&&item.value.size>1024**2){error.value='文本超过 1 MB，请下载后查看。';return;}const res=await response(`/entries/${item.value.id}/content`,{signal:abort.signal});const data=await res.arrayBuffer();if(disposed)return;if(item.value.preview==='text')text.value=new TextDecoder().decode(data);if(item.value.preview==='image')image.value=URL.createObjectURL(new Blob([data],{type:item.value.mimeType}));if(item.value.preview==='pdf'){const module=await import('pdfjs-dist');module.GlobalWorkerOptions.workerSrc=new URL('pdfjs-dist/build/pdf.worker.min.mjs',import.meta.url).href;task=module.getDocument({data,enableXfa:false});pdf=await task.promise;pdfPages.value=pdf.numPages;await renderPdf();}}catch(e){if(!disposed)error.value=(e as Error).message;}finally{loading.value=false;}});
+onUnmounted(()=>{disposed=true;abort.abort();if(image.value)URL.revokeObjectURL(image.value);task?.destroy();});
+async function save(){if(!item.value)return;try{await download(item.value);}catch(e){error.value=(e as Error).message;}}
+</script>
+<template><div class="preview-toolbar"><span>{{item?.name}} <small v-if="item">{{bytes(item.size)}}</small></span><el-button :disabled="!item" @click="save">下载</el-button></div><el-alert v-if="error" :title="error" type="error" :closable="false"/><p v-if="loading" role="status">正在加载预览…</p><div class="preview-body"><img v-if="image" :src="image" :alt="item?.name" @error="error='图片无法解码，请下载后查看';image=''"><pre v-if="item?.preview==='text'&&!error">{{text}}</pre><template v-if="item?.preview==='pdf'"><div class="pdf-controls"><el-button :disabled="pdfPage<=1||loading" @click="changePage(-1)">上一页</el-button><span>{{pdfPage}} / {{pdfPages}}</span><el-button :disabled="pdfPage>=pdfPages||loading" @click="changePage(1)">下一页</el-button></div><canvas ref="canvas"/></template><el-empty v-if="item?.preview==='none'" description="此格式暂不支持在线预览，请下载后查看"/></div></template>
+
+

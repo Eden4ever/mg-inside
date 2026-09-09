@@ -1,0 +1,41 @@
+name: mg-desktop
+services:
+  desktop:
+    image: mg-desktop-service:${RELEASE_ID:?RELEASE_ID 必填}
+    restart: unless-stopped
+    # 只使用宿主机 loopback，文件 API 不发布公网端口；不加入旧业务数据库网段。
+    network_mode: host
+    env_file:
+      - /opt/mg-desktop/secrets/desktop.env
+      - /opt/mg-desktop/secrets/services.env
+    volumes:
+      - /opt/mg-desktop/shared/desktop:/var/lib/mg-desktop
+      - /opt/mg-desktop/config:/etc/mg-desktop:ro
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:4300/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 4
+    depends_on:
+      files:
+        condition: service_healthy
+  files:
+    image: mg-files-service:${RELEASE_ID:?RELEASE_ID 必填}
+    restart: unless-stopped
+    network_mode: host
+    env_file: /opt/mg-desktop/secrets/files.env
+    volumes:
+      - /opt/mg-desktop/shared/files:/var/lib/mg-files
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test: [CMD, node, -e, "fetch('http://127.0.0.1:14350/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 4

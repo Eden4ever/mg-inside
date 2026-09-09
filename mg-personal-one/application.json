@@ -1,0 +1,70 @@
+{
+  "$schema": "../mg-platform/packages/frontend/config/application.schema.json",
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "personal-center",
+  "name": "个人中心",
+  "defaultPath": "/profile",
+  "brand": {
+    "name": "个人中心",
+    "icon": "user-round",
+    "logo": {
+      "src": "enterpriseLogo",
+      "alt": "元引"
+    },
+    "favicon": "personalIcon",
+    "homePath": "/profile"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "profile",
+      "path": "/profile",
+      "title": "个人资料",
+      "component": "profile",
+      "icon": "user-round",
+      "description": "查看统一身份信息，所有接入应用共用此账号。"
+    },
+    {
+      "id": "security",
+      "path": "/security",
+      "title": "账号安全",
+      "component": "security",
+      "icon": "lock-keyhole",
+      "description": "保护统一身份，安全设置适用于所有接入应用。"
+    },
+    {
+      "id": "preferences",
+      "path": "/preferences",
+      "title": "桌面设置",
+      "component": "preferences",
+      "icon": "settings",
+      "description": "设置统一桌面的外观和窗口恢复方式。"
+    },
+    {
+      "id": "notifications",
+      "path": "/notifications",
+      "title": "通知中心",
+      "component": "notifications",
+      "icon": "bell",
+      "description": "统一查看各应用的消息提醒。"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "profile",
+      "security",
+      "preferences",
+      "notifications"
+    ]
+  },
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  }
+}

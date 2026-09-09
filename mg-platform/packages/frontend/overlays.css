@@ -1,0 +1,62 @@
+/* 平台弹层只统一窗口控制区；业务保留自己的内容结构、关闭保护和 show-close 规则。 */
+:is(.el-dialog, .el-message-box, .el-drawer) {
+  --mg-overlay-close-width:46px;
+  --mg-overlay-close-height:42px;
+  --mg-overlay-close-hover:#c42b1c;
+}
+.el-dialog > .el-dialog__header.show-close,
+.el-message-box > .el-message-box__header.show-close,
+.el-drawer > .el-drawer__header {
+  min-height:var(--mg-overlay-close-height);
+  padding-inline-end:calc(var(--mg-overlay-close-width) + 16px);
+}
+.el-dialog .el-dialog__headerbtn,
+.el-message-box .el-message-box__headerbtn,
+.el-drawer .el-drawer__close-btn {
+  position:absolute;
+  inset-block-start:0;
+  inset-inline-end:0;
+  top:0;
+  right:0;
+  display:grid;
+  place-items:center;
+  width:var(--mg-overlay-close-width);
+  height:var(--mg-overlay-close-height);
+  margin:0;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--el-text-color-regular, #4b5563);
+  font-size:18px;
+  line-height:1;
+  cursor:pointer;
+  transition:background-color .12s ease, color .12s ease;
+}
+.el-dialog .el-dialog__headerbtn > .el-icon,
+.el-message-box .el-message-box__headerbtn > .el-icon,
+.el-drawer .el-drawer__close-btn > .el-icon {
+  width:18px;
+  height:18px;
+  color:inherit;
+  font-size:18px;
+}
+.el-dialog .el-dialog__headerbtn:not(:disabled):not([aria-disabled="true"]):hover,
+.el-message-box .el-message-box__headerbtn:not(:disabled):not([aria-disabled="true"]):hover,
+.el-drawer .el-drawer__close-btn:not(:disabled):not([aria-disabled="true"]):hover {
+  background:var(--mg-overlay-close-hover);
+  color:#fff;
+}
+.el-dialog .el-dialog__headerbtn:focus-visible,
+.el-message-box .el-message-box__headerbtn:focus-visible,
+.el-drawer .el-drawer__close-btn:focus-visible {
+  outline:2px solid var(--el-color-primary, #2563eb);
+  outline-offset:-3px;
+}
+:is(.el-dialog__headerbtn, .el-message-box__headerbtn, .el-drawer__close-btn):is(:disabled, [aria-disabled="true"]) {
+  opacity:.45;
+  cursor:not-allowed;
+}
+@media(prefers-reduced-motion:reduce) {
+  :is(.el-dialog__headerbtn, .el-message-box__headerbtn, .el-drawer__close-btn) { transition:none; }
+}

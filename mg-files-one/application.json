@@ -1,0 +1,74 @@
+{
+  "$schema": "../mg-platform/packages/frontend/config/application.schema.json",
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "files",
+  "name": "文件",
+  "defaultPath": "/my-files",
+  "brand": {
+    "name": "文件",
+    "icon": "folder",
+    "logo": {
+      "src": "enterpriseLogo",
+      "alt": "元引"
+    },
+    "favicon": "enterpriseLogo",
+    "homePath": "/my-files"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  },
+  "pages": [
+    {
+      "id": "files",
+      "path": "/my-files",
+      "title": "我的文件",
+      "component": "files",
+      "icon": "folder"
+    },
+    {
+      "path": "/my-files/desktop",
+      "id": "desktop",
+      "icon": "monitor",
+      "component": "files",
+      "title": "桌面"
+    },
+    {
+      "id": "recent",
+      "path": "/recent",
+      "title": "最近使用",
+      "component": "files",
+      "icon": "clock"
+    },
+    {
+      "id": "favorites",
+      "path": "/favorites",
+      "title": "收藏",
+      "component": "files",
+      "icon": "star"
+    },
+    {
+      "id": "trash",
+      "path": "/trash",
+      "title": "回收站",
+      "component": "files",
+      "icon": "trash-2"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": false,
+    "pageIds": [
+      "files",
+      "desktop",
+      "recent",
+      "favorites",
+      "trash"
+    ]
+  }
+}

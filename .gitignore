@@ -1,0 +1,46 @@
+# 依赖与构建输出
+node_modules/
+dist/
+build/
+coverage/
+.pnpm-store/
+*.tsbuildinfo
+__pycache__/
+.venv/
+
+# 本机与生产数据
+.runtime/
+private/
+secrets/
+artifacts/
+backups/
+.env
+.env.*
+!.env.example
+.npmrc
+*.log
+*.pem
+*.key
+*.p12
+*.pfx
+*.sqlite*
+*.db
+*.db-journal
+*.sql.gz
+*.zip
+*.tar*
+*.tgz
+*.bak
+
+# 工具与验收临时目录
+.agents/
+.codex/
+.claude/
+.workbuddy/
+.tools/
+.deploy-deps/
+.tmp-*/
+test-results/
+playwright-report/
+.DS_Store
+._*

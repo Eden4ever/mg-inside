@@ -1,0 +1,29 @@
+name: mg-office-engine
+services:
+  documentserver:
+    image: onlyoffice/documentserver:9.3.1
+    restart: unless-stopped
+    ports: ["127.0.0.1:14460:80"]
+    env_file: ../.runtime/documentserver.env
+    environment:
+      JWT_ENABLED: "true"
+      JWT_HEADER: Authorization
+      JWT_IN_BODY: "true"
+    volumes:
+      - office_data:/var/www/onlyoffice/Data
+      - office_logs:/var/log/onlyoffice
+      - office_cache:/var/lib/onlyoffice
+      - office_db:/var/lib/postgresql
+    mem_limit: 4g
+    cpus: 2
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/healthcheck"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+volumes:
+  office_data:
+  office_logs:
+  office_cache:
+  office_db:

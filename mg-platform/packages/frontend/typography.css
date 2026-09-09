@@ -1,0 +1,8 @@
+/* 平台 UI 字体；文档内容、代码与图标字体保持各自语义。 */
+:root {
+  --mg-font-family: 'mg-font-alinormal', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  --mg-font-family-brand: var(--mg-font-family);
+  --el-font-family: var(--mg-font-family);
+}
+body { font-family: var(--mg-font-family); }
+button, input, select, textarea { font-family: inherit; }

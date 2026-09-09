@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="1288.7395" height="1279.7085" viewBox="0 0 1288.7395 1279.7085">
+  <defs>
+    <radialGradient id="g0" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(0 976.4154) rotate(150.7283) scale(1211.3392 1596.0822)"><stop stop-color="#3A62DF"/><stop offset="1" stop-color="#DBDBDB"/></radialGradient>
+    <linearGradient id="g1" x1=".5" y1="0" x2=".5" y2="1"><stop stop-color="#9CC7EE"/><stop offset="1" stop-color="#EEF9FF"/></linearGradient>
+    <linearGradient id="g2" x1=".648" y1="0" x2=".468" y2="1.187"><stop stop-color="#C0C3CE"/><stop offset="1" stop-color="#7F93B2"/></linearGradient>
+    <linearGradient id="g3" x1="0" y1=".871" x2="1.066" y2=".962"><stop stop-color="#DDE1E7"/><stop offset=".733" stop-color="#9AB5DA"/><stop offset="1" stop-color="#F5F9FF"/></linearGradient>
+    <radialGradient id="g4" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(953.498 200.358) rotate(168.6134) scale(689.1496 1299.7774)"><stop stop-color="#3559D9"/><stop offset="1" stop-color="#79B9EE"/></radialGradient>
+    <radialGradient id="g5" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(762.8626 675.2744) rotate(148.8655) scale(769.7396 760.5245)"><stop stop-color="#4178EE"/><stop offset=".414" stop-color="#588AF4"/><stop offset="1" stop-color="#B5ECF8"/></radialGradient>
+  </defs>
+  <path d="M31.674 612.915C-11.826 694.415-51.326 924.915 208.674 976.415c-16-201.5 90-323.5 226.5-394.5 136.5-71 287.5-68 414 0 45-78.5 72.5-163 86.5-256Q721.174 233.415 480.174 284.415C198.174 349.915 75.174 531.415 31.674 612.915Z" fill="url(#g0)"/>
+  <path d="M266 747.915c0 51.825 33 151.5 81.5 221 115.5-19 204.5-78 243-104-20-24-97-181.5-66-307.5Q359.5 605.415 266 747.915Z" fill="url(#g1)"/>
+  <path d="M1030 1034.415c137.5-15.5 237-114 255.5-214s-46-225-98-292q-37.5 206.5-139 327.5c11 104.5-8.5 155-18.5 178.5Z" fill="url(#g2)"/>
+  <path d="M593.5 1216.915c61.5 30.5 264.5 104 455.5 32.5s230-256.5 230-377.5c-10 31.5-60.5 103.5-133 138.5q-130 61.5-271 33c-106.5 91-169 128-281.5 173.5Z" fill="url(#g3)"/>
+  <path d="M298.826 336.415q181.5-94 400-78.5 113-73 234.5-45c0-38-69.5-295.5-349.5-186q-170 69.5-285 309.5Z" fill="url(#g4)"/>
+  <path d="M0 818.415q34.5 177 115 292 124.5 166.5 388.5 120.5t635-569.5c47-144 63-248.5 39-364s-154.5-200-324.5-259.5c115.5 114.5 105.5 247.5 77.5 368s-123.5 277-201.5 355q-122.5 127-255 183.5t-350.5 17.5C56 924.415 14 888.915 0 818.415Z" fill="url(#g5)"/>
+</svg>

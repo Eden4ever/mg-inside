@@ -1,0 +1,1210 @@
+{
+  "manifest": {
+    "schemaVersion": 1,
+    "serviceId": "office-one.api",
+    "appId": "office-one",
+    "name": "文档编辑服务",
+    "version": "1.1.0",
+    "description": "Office One 已明确登记的应用接口",
+    "operations": [
+      {
+        "operationId": "status",
+        "method": "GET",
+        "path": "/status",
+        "summary": "编辑服务配置状态",
+        "effect": "read"
+      },
+      {
+        "operationId": "documents",
+        "method": "GET",
+        "path": "/documents",
+        "summary": "查询文档",
+        "effect": "read"
+      },
+      {
+        "operationId": "create",
+        "method": "POST",
+        "path": "/documents",
+        "summary": "新建文档",
+        "effect": "write"
+      },
+      {
+        "operationId": "open",
+        "method": "POST",
+        "path": "/documents/{id}/open",
+        "summary": "打开文档",
+        "effect": "write"
+      },
+      {
+        "operationId": "session",
+        "method": "GET",
+        "path": "/sessions/{id}",
+        "summary": "查询编辑与保存状态",
+        "effect": "read"
+      },
+      {
+        "operationId": "save",
+        "method": "POST",
+        "path": "/sessions/{id}/save",
+        "summary": "保存文档",
+        "effect": "write"
+      }
+    ]
+  },
+  "contract": {
+    "openapi": "3.1.1",
+    "jsonSchemaDialect": "https://json-schema.org/draft/2020-12/schema",
+    "info": {
+      "title": "文档编辑服务",
+      "version": "1.1.0",
+      "description": "Office 能力由 Files 后端的 /api/office 提供；统一出口使用 office-one 应用授权。引擎文档读取与签名回调不作为通用服务登记。"
+    },
+    "x-service-id": "office-one.api",
+    "x-app-id": "office-one",
+    "servers": [
+      {
+        "url": "/api/office"
+      }
+    ],
+    "security": [
+      {
+        "unifiedSession": []
+      }
+    ],
+    "paths": {
+      "/status": {
+        "get": {
+          "operationId": "status",
+          "summary": "编辑服务配置状态",
+          "responses": {
+            "400": {
+              "description": "参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录或会话过期",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用权限或 CSRF 校验失败",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "不存在或不属于当前账户",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "200": {
+              "description": "请求成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "configured": {
+                        "type": "boolean"
+                      },
+                      "engine": {
+                        "const": "ONLYOFFICE Docs"
+                      },
+                      "maxFileBytes": {
+                        "type": "integer",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "configured",
+                      "engine",
+                      "maxFileBytes"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "description": "返回编辑服务是否已配置及单文件大小限制；configured 不代表引擎可达或健康。"
+        }
+      },
+      "/documents": {
+        "get": {
+          "operationId": "documents",
+          "summary": "查询文档",
+          "responses": {
+            "400": {
+              "description": "参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录或会话过期",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用权限或 CSRF 校验失败",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "不存在或不属于当前账户",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "200": {
+              "description": "请求成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "items": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/OfficeDocument"
+                        }
+                      }
+                    },
+                    "required": [
+                      "items"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "view",
+              "in": "query",
+              "required": false,
+              "description": "all 按修改时间倒序；recent 仅 Office 打开历史，按最近打开时间倒序。",
+              "schema": {
+                "enum": [
+                  "all",
+                  "recent"
+                ],
+                "default": "all"
+              }
+            }
+          ],
+          "description": "仅当前账户、未进入回收站的 Word/Excel/PowerPoint 文件。成功创建打开会话后才登记 officeAccessedAt，不影响修改时间或文件版本；不回填部署前未知历史。旧 doc/xls/ppt 格式只读。"
+        },
+        "post": {
+          "operationId": "create",
+          "summary": "新建文档",
+          "responses": {
+            "400": {
+              "description": "参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录或会话过期",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用权限或 CSRF 校验失败",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "不存在或不属于当前账户",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "201": {
+              "description": "根据内置模板创建文件；同名自动生成后缀",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Entry"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "编辑服务未配置",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "413": {
+              "description": "请求过大、单文件或账户配额不足",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "同名文件无法分配有效名称",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "X-CSRF-Token",
+              "in": "header",
+              "required": true,
+              "description": "当前用户会话的 CSRF 值",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "format": {
+                      "enum": [
+                        "docx",
+                        "xlsx",
+                        "pptx"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "format"
+                  ]
+                }
+              }
+            }
+          },
+          "description": "在当前账户文件根目录新建文档；受单文件大小、个人空间配额及 CSRF 校验约束。创建成功尚不代表已打开编辑器。"
+        }
+      },
+      "/documents/{id}/open": {
+        "post": {
+          "operationId": "open",
+          "summary": "打开文档",
+          "responses": {
+            "400": {
+              "description": "参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录或会话过期",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用权限或 CSRF 校验失败",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "不存在或不属于当前账户",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "200": {
+              "description": "请求成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/OpenedDocument"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "编辑服务未配置",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "413": {
+              "description": "请求过大、单文件或账户配额不足",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "415": {
+              "description": "不是支持的 Office 文件",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "目标条目 ID",
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            {
+              "name": "X-CSRF-Token",
+              "in": "header",
+              "required": true,
+              "description": "当前用户会话的 CSRF 值",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": false,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "enum": [
+                        "edit",
+                        "view"
+                      ],
+                      "default": "edit"
+                    }
+                  },
+                  "required": []
+                }
+              }
+            }
+          },
+          "description": "为当前账户文件创建或复用八小时有效的会话，返回已签名编辑器配置。旧 doc/xls/ppt 即使请求 edit 也返回 view；同用户、文件、版本和模式复用未关闭会话。"
+        }
+      },
+      "/sessions/{id}": {
+        "get": {
+          "operationId": "session",
+          "summary": "查询编辑与保存状态",
+          "responses": {
+            "400": {
+              "description": "参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录或会话过期",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用权限或 CSRF 校验失败",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "不存在或不属于当前账户",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "200": {
+              "description": "请求成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SessionStatus"
+                  }
+                }
+              }
+            },
+            "410": {
+              "description": "会话不存在或已过期，需要重新打开文档",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "目标条目 ID",
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          ],
+          "description": "savedRequests 是文件已持久保存后由签名回调确认的最近 32 个请求 ID。不能仅凭 savedAt 或版本变化确认本次保存，也不能仅凭编辑器同步事件解除未保存保护。"
+        }
+      },
+      "/sessions/{id}/save": {
+        "post": {
+          "operationId": "save",
+          "summary": "保存文档",
+          "responses": {
+            "400": {
+              "description": "参数无效",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "未登录或会话过期",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "403": {
+              "description": "无应用权限或 CSRF 校验失败",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "不存在或不属于当前账户",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "服务未完成请求",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "200": {
+              "description": "请求成功",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SaveResponse"
+                  }
+                }
+              }
+            },
+            "503": {
+              "description": "编辑服务未配置",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "410": {
+              "description": "会话不存在或已过期，需要重新打开文档",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "409": {
+              "description": "当前会话为只读或已关闭",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            },
+            "502": {
+              "description": "编辑服务拒绝保存或返回失败状态",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Error"
+                  }
+                }
+              }
+            }
+          },
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "description": "目标条目 ID",
+              "schema": {
+                "type": "string",
+                "format": "uuid"
+              }
+            },
+            {
+              "name": "X-CSRF-Token",
+              "in": "header",
+              "required": true,
+              "description": "当前用户会话的 CSRF 值",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "description": "向引擎提交强制保存，queued=true 只表示已接受请求；须轮询 session，等待 savedRequests 包含本次 requestId。unchanged=true 表示引擎没有新内容，不是本次落盘证明。只读或关闭会话返回 409。请求正文不参与保存语义。"
+        }
+      }
+    },
+    "components": {
+      "securitySchemes": {
+        "unifiedSession": {
+          "type": "http",
+          "scheme": "bearer",
+          "description": "由桌面统一出口转发的用户令牌；浏览器使用平台会话，不在页面持久保存令牌。"
+        }
+      },
+      "schemas": {
+        "Error": {
+          "type": "object",
+          "properties": {
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "message"
+          ]
+        },
+        "Entry": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "parentId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "file",
+                "folder"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mimeType": {
+              "type": "string"
+            },
+            "preview": {
+              "enum": [
+                "image",
+                "text",
+                "pdf",
+                "none"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "favorite": {
+              "type": "boolean"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "protected": {
+              "enum": [
+                "root",
+                "desktop"
+              ]
+            },
+            "accessedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "officeAccessedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deletedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "trashRootId": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "id",
+            "parentId",
+            "name",
+            "kind",
+            "size",
+            "mimeType",
+            "preview",
+            "version",
+            "favorite",
+            "createdAt",
+            "updatedAt"
+          ],
+          "additionalProperties": false
+        },
+        "OfficeDocument": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "parentId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "name": {
+              "type": "string"
+            },
+            "kind": {
+              "enum": [
+                "file",
+                "folder"
+              ]
+            },
+            "size": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mimeType": {
+              "type": "string"
+            },
+            "preview": {
+              "enum": [
+                "image",
+                "text",
+                "pdf",
+                "none"
+              ]
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "favorite": {
+              "type": "boolean"
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "updatedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "protected": {
+              "enum": [
+                "root",
+                "desktop"
+              ]
+            },
+            "accessedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "officeAccessedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "deletedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "trashRootId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "editable": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "id",
+            "parentId",
+            "name",
+            "kind",
+            "size",
+            "mimeType",
+            "preview",
+            "version",
+            "favorite",
+            "createdAt",
+            "updatedAt",
+            "editable"
+          ],
+          "additionalProperties": false
+        },
+        "SessionStatus": {
+          "type": "object",
+          "properties": {
+            "savedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "version": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "closed": {
+              "type": "boolean"
+            },
+            "error": {
+              "type": "string"
+            },
+            "savedRequests": {
+              "type": "array",
+              "maxItems": 32,
+              "items": {
+                "type": "string",
+                "format": "uuid"
+              }
+            }
+          },
+          "required": [
+            "version",
+            "closed",
+            "savedRequests"
+          ]
+        },
+        "EditorConfig": {
+          "type": "object",
+          "properties": {
+            "documentType": {
+              "enum": [
+                "word",
+                "cell",
+                "slide"
+              ]
+            },
+            "type": {
+              "const": "desktop"
+            },
+            "width": {
+              "const": "100%"
+            },
+            "height": {
+              "const": "100%"
+            },
+            "document": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "fileType": {
+                  "enum": [
+                    "docx",
+                    "xlsx",
+                    "pptx",
+                    "doc",
+                    "xls",
+                    "ppt"
+                  ]
+                },
+                "key": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "仅交给编辑引擎的签名读取 URL，包含临时凭据，不得记录或共享。"
+                },
+                "permissions": {
+                  "type": "object",
+                  "properties": {
+                    "edit": {
+                      "type": "boolean"
+                    },
+                    "download": {
+                      "const": true
+                    },
+                    "print": {
+                      "const": true
+                    },
+                    "review": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "edit",
+                    "download",
+                    "print",
+                    "review"
+                  ]
+                }
+              },
+              "required": [
+                "title",
+                "fileType",
+                "key",
+                "url",
+                "permissions"
+              ]
+            },
+            "editorConfig": {
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "enum": [
+                    "edit",
+                    "view"
+                  ]
+                },
+                "lang": {
+                  "const": "zh-CN"
+                },
+                "callbackUrl": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "引擎专用签名回调地址，不通过公共服务出口调用。"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name"
+                  ]
+                },
+                "customization": {
+                  "type": "object",
+                  "properties": {
+                    "forcesave": {
+                      "const": true
+                    },
+                    "autosave": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "forcesave",
+                    "autosave"
+                  ]
+                }
+              },
+              "required": [
+                "mode",
+                "lang",
+                "callbackUrl",
+                "user",
+                "customization"
+              ]
+            },
+            "token": {
+              "type": "string",
+              "description": "编辑器配置签名，属于当前会话敏感数据，不在示例、日志或文档中回显。"
+            }
+          },
+          "required": [
+            "documentType",
+            "type",
+            "width",
+            "height",
+            "document",
+            "editorConfig",
+            "token"
+          ]
+        },
+        "OpenedDocument": {
+          "type": "object",
+          "properties": {
+            "sessionId": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "file": {
+              "$ref": "#/components/schemas/Entry"
+            },
+            "mode": {
+              "enum": [
+                "edit",
+                "view"
+              ]
+            },
+            "documentServerUrl": {
+              "type": "string",
+              "format": "uri"
+            },
+            "config": {
+              "$ref": "#/components/schemas/EditorConfig"
+            }
+          },
+          "required": [
+            "sessionId",
+            "file",
+            "mode",
+            "documentServerUrl",
+            "config"
+          ]
+        },
+        "SaveResponse": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "queued": {
+                  "const": true
+                },
+                "unchanged": {
+                  "const": false
+                },
+                "requestId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "queued",
+                "unchanged",
+                "requestId"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "queued": {
+                  "const": false
+                },
+                "unchanged": {
+                  "const": true
+                },
+                "requestId": {
+                  "type": "string",
+                  "format": "uuid"
+                }
+              },
+              "required": [
+                "queued",
+                "unchanged",
+                "requestId"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "x-provider-app-id": "files"
+  }
+}

@@ -1,0 +1,108 @@
+{
+  "schemaVersion": 1,
+  "pools": [
+    {
+      "id": "production-platform",
+      "name": "平台生产资源池",
+      "environment": "production",
+      "description": "当前平台服务所在服务器，仅用于资源归属展示；尚未开放自动部署。"
+    },
+    {
+      "id": "production-business",
+      "name": "业务生产资源池",
+      "environment": "production",
+      "description": "统一桌面、身份、文件、Office、资源管理和指标知识库所在服务器。"
+    }
+  ],
+  "resources": [
+    {
+      "id": "57386824-cd82-445e-8e59-dd941c917a2f",
+      "name": "平台生产服务器",
+      "host": "1.12.253.86",
+      "poolId": "production-platform",
+      "credential": "platform",
+      "provider": "腾讯云",
+      "cloudProduct": null,
+      "region": null,
+      "instanceId": null,
+      "deployments": [
+        {
+          "appId": "token-one",
+          "name": "Token One",
+          "domain": "token.meta-gravity.com",
+          "runtime": "Docker",
+          "service": "mg-gateway"
+        },
+        {
+          "appId": "token-one-console",
+          "name": "Token One 控制台",
+          "domain": "token.meta-gravity.com",
+          "runtime": "Docker",
+          "service": "mg-gateway"
+        },
+        {
+          "appId": "token-one-docs",
+          "name": "Token One 文档",
+          "domain": "token.meta-gravity.com",
+          "runtime": "Docker",
+          "service": "mg-gateway"
+        }
+      ]
+    },
+    {
+      "id": "1b63a5f2-0786-452f-aa78-490cefb3e3b9",
+      "name": "桌面与知识库生产服务器",
+      "host": "43.139.78.226",
+      "poolId": "production-business",
+      "credential": "knowledge",
+      "provider": "腾讯云",
+      "cloudProduct": null,
+      "region": null,
+      "instanceId": null,
+      "deployments": [
+        {
+          "appId": "expert-database",
+          "name": "指标知识库",
+          "domain": "yshj.meta-gravity.com/knowledge-base-inside/",
+          "runtime": "systemd",
+          "service": "mg-expert-database-api"
+        },
+        {
+          "appId": "desktop",
+          "name": "统一桌面",
+          "domain": "desktop.meta-gravity.com",
+          "runtime": "Docker",
+          "service": "mg-desktop-desktop-1"
+        },
+        {
+          "appId": "files",
+          "name": "文件",
+          "domain": "desktop.meta-gravity.com/apps/files/",
+          "runtime": "Docker",
+          "service": "mg-desktop-files-1"
+        },
+        {
+          "appId": "identity",
+          "name": "统一身份认证",
+          "domain": "identity.meta-gravity.com",
+          "runtime": "Docker",
+          "service": "mg-identity-identity-1"
+        },
+        {
+          "appId": "office-one",
+          "name": "Office One",
+          "domain": "desktop.meta-gravity.com/apps/office-one/",
+          "runtime": "Docker",
+          "service": "mg-office-engine-documentserver-1"
+        },
+        {
+          "appId": "resource-manager",
+          "name": "资源管理",
+          "domain": "desktop.meta-gravity.com/apps/resource-manager/",
+          "runtime": "systemd",
+          "service": "mg-resource-one"
+        }
+      ]
+    }
+  ]
+}

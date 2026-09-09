@@ -1,0 +1,222 @@
+{
+  "name": "MG 统一桌面",
+  "applications": {
+    "service-manager": {
+      "name": "服务管理",
+      "description": "服务目录、API 出口与调用记录",
+      "icon": {
+        "name": "layout-grid",
+        "palette": "ocean",
+        "image": "service-manager-fluent.png",
+        "imageViewport": [
+          6.14,
+          9.171,
+          87.799,
+          76.077
+        ]
+      }
+    },
+    "resource-manager": {
+      "name": "资源管理",
+      "description": "资源池、服务器与应用部署状态",
+      "icon": {
+        "name": "server",
+        "palette": "ocean",
+        "image": "resource-manager-fluent.png",
+        "imageViewport": [
+          17.863,
+          23.285,
+          64.354,
+          55.183
+        ]
+      }
+    },
+    "files": {
+      "name": "文件",
+      "description": "个人文件、桌面、收藏与回收站",
+      "icon": {
+        "name": "folder",
+        "palette": "blue",
+        "image": "files-fluent.png",
+        "imageViewport": [
+          15.072,
+          15.391,
+          74.242,
+          68.262
+        ]
+      }
+    },
+    "personal-center": {
+      "name": "个人中心",
+      "description": "个人资料、账号安全与全局偏好",
+      "icon": {
+        "name": "user-round",
+        "palette": "sky",
+        "image": "personal-center-fluent.png",
+        "imageViewport": [
+          15.71,
+          11.802,
+          68.581,
+          78.947
+        ]
+      }
+    },
+    "app-manager": {
+      "name": "应用管理",
+      "description": "查看平台应用，管理自己的外链应用",
+      "icon": {
+        "name": "layout-grid",
+        "palette": "green",
+        "image": "app-manager-fluent.png",
+        "imageViewport": [
+          13.238,
+          13.955,
+          74.801,
+          70.973
+        ]
+      }
+    },
+    "expert-database": {
+      "name": "指标知识库",
+      "description": "指标体系、依据材料与研究工作台",
+      "icon": {
+        "name": "book-open",
+        "palette": "blue",
+        "image": "expert-database-fluent.png",
+        "imageViewport": [
+          5.901,
+          14.115,
+          88.198,
+          74.402
+        ]
+      }
+    },
+    "token-one": {
+      "name": "Token One",
+      "description": "模型服务、API 调试与使用管理",
+      "icon": {
+        "name": "zap",
+        "palette": "violet",
+        "image": "token-one-fluent.png",
+        "imageViewport": [
+          18.102,
+          7.815,
+          63.876,
+          87.64
+        ]
+      }
+    },
+    "token-one-console": {
+      "name": "Token One 控制台",
+      "description": "模型、用户、额度与网关管理",
+      "icon": {
+        "name": "zap",
+        "palette": "violet",
+        "image": "token-one-fluent.png",
+        "imageViewport": [
+          18.102,
+          7.815,
+          63.876,
+          87.64
+        ],
+        "badge": "console"
+      }
+    },
+    "token-one-docs": {
+      "name": "Token One 文档",
+      "description": "接入说明、接口文档与开发指南",
+      "icon": {
+        "name": "zap",
+        "palette": "violet",
+        "image": "token-one-fluent.png",
+        "imageViewport": [
+          18.102,
+          7.815,
+          63.876,
+          87.64
+        ],
+        "badge": "docs"
+      }
+    },
+    "identity": {
+      "name": "统一身份认证",
+      "description": "账号、角色与应用访问授权",
+      "icon": {
+        "name": "shield-check",
+        "palette": "teal",
+        "image": "identity-fluent.png",
+        "imageViewport": [
+          14.434,
+          8.054,
+          71.212,
+          84.051
+        ]
+      }
+    },
+    "office-one": {
+      "name": "Office One",
+      "description": "在线编辑文档、表格与演示文稿",
+      "icon": {
+        "name": "file-text",
+        "palette": "blue",
+        "image": "office-one-fluent.png",
+        "imageViewport": [
+          11.324,
+          9.49,
+          79.346,
+          79.904
+        ]
+      }
+    }
+  },
+  "shellIcons": {
+    "resource-manager": {
+      "name": "server",
+      "palette": "ocean",
+      "image": "resource-manager-fluent.png",
+      "imageViewport": [
+        17.863,
+        23.285,
+        64.354,
+        55.183
+      ]
+    },
+    "launcher": {
+      "name": "layout-grid",
+      "palette": "slate",
+      "image": "launcher-fluent.png",
+      "imageViewport": [
+        11.802,
+        11.563,
+        77.592,
+        76.156
+      ]
+    },
+    "trash": {
+      "name": "trash-2",
+      "palette": "slate",
+      "image": "trash-empty-fluent.png",
+      "imageViewport": [
+        11.643,
+        7.656,
+        77.512,
+        85.247
+      ]
+    },
+    "placeholder": {
+      "name": "square",
+      "palette": "neutral"
+    },
+    "trash-full": {
+      "imageViewport": [
+        11.643,
+        5.024,
+        77.671,
+        87.959
+      ],
+      "name": "trash-2",
+      "image": "trash-full-fluent.png",
+      "palette": "slate"
+    }
+  }
+}

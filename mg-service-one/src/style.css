@@ -1,0 +1,7 @@
+*{box-sizing:border-box}html,body,#app{margin:0;width:100%;height:100%}body{font-family:var(--mg-font-family);font-size:14px;color:var(--el-text-color-primary)}button,a{-webkit-tap-highlight-color:transparent}.app-header{display:flex;align-items:center}
+.service-search{width:300px;max-width:100%}.service-provider{width:180px}.service-count{margin-left:auto;font-size:12px;color:var(--el-text-color-secondary)}
+.secondary{font-size:12px;color:var(--el-text-color-secondary);line-height:1.7;overflow-wrap:anywhere}.service-note{margin:16px 0 0;font-size:12px;line-height:1.7;color:var(--el-text-color-secondary)}.mg-content-panel-toolbar .service-note{margin:0}
+.service-operation{padding:20px 0;border-bottom:1px solid var(--el-border-color-lighter)}.operation-heading{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.service-operation h3{font-size:14px;font-weight:500;margin:12px 0}.service-operation pre{padding:12px;background:var(--el-fill-color-light);border-radius:4px;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}.endpoint-label{display:block;margin-top:16px;font-size:12px;color:var(--el-text-color-secondary)}
+@media(max-width:600px){.service-search{width:100%}.service-provider{width:100%}.service-count{width:100%;margin-left:0}}
+
+.contract-document h4{font-size:14px;font-weight:500;margin:20px 0 12px}.contract-document pre{margin:8px 0;max-height:320px;overflow:auto}.service-operation details{margin-top:16px}.service-operation summary{cursor:pointer;font-size:14px}

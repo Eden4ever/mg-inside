@@ -1,0 +1,72 @@
+{
+  "$schema": "../../../mg-platform/packages/frontend/config/application.schema.json",
+  "schemaVersion": 1,
+  "layout": "standard",
+  "appId": "identity",
+  "name": "统一身份认证",
+  "defaultPath": "/",
+  "brand": {
+    "name": "统一身份认证",
+    "logo": {
+      "src": "enterpriseLogo",
+      "alt": "元引"
+    },
+    "homePath": "/"
+  },
+  "header": {
+    "showTitle": true,
+    "showBrand": true,
+    "showAccount": true
+  },
+  "pages": [
+    {
+      "id": "overview",
+      "path": "/",
+      "title": "管理概览",
+      "component": "overview",
+      "icon": "layout-grid"
+    },
+    {
+      "id": "employees",
+      "path": "/admin",
+      "title": "员工身份",
+      "component": "employees",
+      "icon": "users-round"
+    },
+    {
+      "id": "roles",
+      "path": "/roles",
+      "title": "角色管理",
+      "component": "roles",
+      "icon": "shield-check"
+    },
+    {
+      "id": "applications",
+      "path": "/applications",
+      "title": "应用授权",
+      "component": "applications",
+      "icon": "cable"
+    },
+    {
+      "id": "settings",
+      "path": "/settings",
+      "title": "认证配置",
+      "component": "settings",
+      "icon": "settings"
+    }
+  ],
+  "navigation": {
+    "mode": "flat",
+    "defaultCollapsed": true,
+    "pageIds": [
+      "overview",
+      "employees",
+      "roles",
+      "applications",
+      "settings"
+    ]
+  },
+  "browser": {
+    "titleTemplate": "{title} · {name}"
+  }
+}

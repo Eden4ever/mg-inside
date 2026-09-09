@@ -1,0 +1,544 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <script>
+    if (location.protocol === 'file:' && !new URLSearchParams(location.search).has('legacy')) {
+      location.replace('http://localhost:5173');
+    }
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>营商环境指标知识库 - 原型</title>
+  <link rel="icon" href="logo.svg" type="image/svg+xml">
+  <!-- PROTOTYPE ONLY: 指标体系管理 -> 单个指标体系四栏研究工作台。 -->
+  <style>
+    :root {
+      --ink: #303133; --muted: #909399; --line: #dcdfe6; --line-strong: #c0c4cc;
+      --canvas: #f5f7fa; --paper: #fff; --teal: #409eff; --teal-dark: #337ecc;
+      --teal-soft: #ecf5ff; --blue: #409eff; --blue-soft: #ecf5ff;
+      --green: #67c23a; --green-soft: #f0f9eb; --amber: #e6a23c; --amber-soft: #fdf6ec;
+      --red: #f56c6c; --red-soft: #fef0f0; --shadow: 0 8px 24px rgba(0,0,0,.12);
+      --radius: 4px; --topbar: 56px; --detailbar: 76px;
+    }
+    * { box-sizing: border-box; }
+    html { color-scheme: light; }
+    body { margin: 0; min-width: 320px; color: var(--ink); background: var(--canvas); font-family: "Microsoft YaHei","PingFang SC",Arial,sans-serif; font-size: 14px; line-height: 1.55; letter-spacing: 0; }
+    button,input,textarea,select { font: inherit; letter-spacing: 0; }
+    button { cursor: pointer; }
+    button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible { outline: 3px solid rgba(39,100,176,.26); outline-offset: 2px; }
+    h1,h2,h3,p { margin-top: 0; }
+    h1 { margin-bottom: 3px; font-size: 19px; line-height: 1.35; }
+    h2 { margin-bottom: 7px; font-size: 17px; line-height: 1.4; }
+    h3 { margin-bottom: 6px; font-size: 14px; line-height: 1.4; }
+    .app-header { position: sticky; z-index: 50; top: 0; display: flex; min-height: var(--topbar); align-items: center; justify-content: space-between; gap: 16px; padding: 8px 18px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.98); }
+    .brand { display: flex; min-width: 0; align-items: center; gap: 10px; }
+    .brand-logo { display: block; width: 36px; height: 36px; flex: 0 0 auto; object-fit: contain; }
+    .brand-copy { min-width: 0; }
+    .brand-copy strong { display: block; font-size: 16px; }
+    .brand-copy span { color: var(--muted); font-size: 11px; }
+    .top-nav { display: flex; align-self: stretch; align-items: center; gap: 3px; }
+    .nav-item { height: 100%; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); padding: 0 13px; }
+    .nav-item.active { border-bottom-color: var(--teal); color: var(--teal-dark); font-weight: 700; }
+    .header-actions,.button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .button,.button-primary,.button-soft,.button-danger,.icon-button { min-height: 35px; border: 1px solid var(--line-strong); border-radius: 5px; background: #fff; color: var(--ink); padding: 7px 11px; white-space: nowrap; }
+    .button:hover,.icon-button:hover { background: #f0f3f1; }
+    .button-primary { border-color: var(--teal); background: var(--teal); color: #fff; font-weight: 700; }
+    .button-primary:hover { background: var(--teal-dark); }
+    .button-soft { border-color: #b8d7d1; background: var(--teal-soft); color: var(--teal-dark); }
+    .button-danger { border-color: #e3bbb8; background: var(--red-soft); color: var(--red); }
+    .icon-button { width: 35px; padding: 0; font-size: 18px; line-height: 33px; text-align: center; }
+    .button-link { border: 0; background: transparent; color: var(--blue); padding: 3px 4px; }
+    .button-link:hover { text-decoration: underline; }
+    .badge,.status,.evidence-tag { display: inline-flex; min-height: 22px; align-items: center; border-radius: 999px; padding: 2px 8px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .badge { background: var(--teal-soft); color: var(--teal-dark); }
+    .status.draft,.status.todo { background: #edf0ee; color: var(--muted); }
+    .status.researching,.status.running { background: var(--blue-soft); color: var(--blue); }
+    .status.review,.status.warn { background: var(--amber-soft); color: var(--amber); }
+    .status.published,.status.done { background: var(--green-soft); color: var(--green); }
+    .status.archived { background: #f1edf4; color: #70517e; }
+    .muted { color: var(--muted); }
+    .micro { color: var(--muted); font-size: 12px; }
+    .progress-track { overflow: hidden; height: 7px; border-radius: 999px; background: #e0e5e2; }
+    .progress-bar { height: 100%; border-radius: inherit; background: var(--teal); transition: width .25s ease; }
+    .progress-copy { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 5px; color: var(--muted); font-size: 12px; }
+
+    .systems-page { max-width: 1480px; margin: 0 auto; padding: 24px 26px 60px; }
+    .page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 20px; }
+    .page-heading p { margin: 0; color: var(--muted); }
+    .summary-band { display: grid; margin-bottom: 18px; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; grid-template-columns: repeat(4,minmax(0,1fr)); }
+    .summary-cell { min-width: 0; padding: 15px 18px; border-right: 1px solid var(--line); }
+    .summary-cell:last-child { border-right: 0; }
+    .summary-cell span { display: block; color: var(--muted); font-size: 12px; }
+    .summary-cell strong { display: block; margin-top: 2px; font-size: 23px; line-height: 1.3; }
+    .table-shell { overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: #fff; }
+    .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 13px; border-bottom: 1px solid var(--line); }
+    .filters { display: flex; min-width: 0; align-items: center; gap: 8px; }
+    .search-box { position: relative; min-width: min(330px,38vw); }
+    .search-box input { width: 100%; height: 35px; border: 1px solid var(--line-strong); border-radius: 5px; padding: 7px 10px 7px 32px; }
+    .search-box::before { position: absolute; top: 7px; left: 10px; content: "⌕"; color: var(--muted); font-size: 17px; }
+    .select-control { height: 35px; border: 1px solid var(--line-strong); border-radius: 5px; background: #fff; padding: 6px 26px 6px 9px; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { padding: 10px 12px; border-bottom: 1px solid var(--line); background: #f8faf9; color: #4c5551; font-size: 12px; text-align: left; }
+    .data-table td { padding: 13px 12px; border-bottom: 1px solid #e7ebe9; vertical-align: middle; }
+    .data-table tbody tr:last-child td { border-bottom: 0; }
+    .data-table tbody tr:hover { background: #f8fbfa; }
+    .system-name { display: block; margin-bottom: 3px; color: var(--ink); font-weight: 700; }
+    .system-code { color: var(--muted); font-size: 11px; }
+    .table-progress { width: 130px; }
+    .empty-state { padding: 38px; color: var(--muted); text-align: center; }
+
+    .system-detail { min-height: calc(100vh - var(--topbar)); background: #fff; }
+    .detail-header { display: flex; min-height: var(--detailbar); align-items: center; justify-content: space-between; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: #fff; }
+    .detail-title { display: flex; min-width: 0; align-items: center; gap: 11px; }
+    .detail-title-copy { min-width: 0; }
+    .breadcrumb { margin-bottom: 2px; color: var(--muted); font-size: 11px; }
+    .detail-title h1 { overflow: hidden; margin: 0; text-overflow: ellipsis; white-space: nowrap; font-size: 17px; }
+    .detail-subline { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .detail-progress { width: 145px; }
+    .ai-mobile-open { display: none; }
+    .workspace-layout { display: grid; height: calc(100vh - var(--topbar) - var(--detailbar)); min-height: 560px; grid-template-columns: 260px minmax(600px,1fr) 340px; }
+    .column { min-width: 0; min-height: 0; overflow: hidden; background: #fff; }
+    .monitor-column,.detail-column { border-right: 1px solid var(--line); }
+    .column-head { display: flex; min-height: 58px; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    .column-head h2 { margin: 0; font-size: 14px; }
+    .column-head p { margin: 1px 0 0; color: var(--muted); font-size: 11px; }
+    .mobile-tree-toggle { display: none; }
+    .column-body { height: calc(100% - 58px); overflow: auto; }
+    .monitor-tools { padding: 10px; border-bottom: 1px solid var(--line); }
+    .monitor-tools .search-box { min-width: 0; }
+    .monitor-tools .search-box input { height: 33px; }
+    .indicator-tree { padding: 5px 0 12px; }
+    .tree-node { display: grid; width: 100%; min-height: 36px; grid-template-columns: 16px minmax(0,1fr) auto; align-items: center; gap: 5px; border: 0; background: #fff; color: var(--ink); padding: 7px 10px; text-align: left; }
+    .tree-node:hover { background: #f5f7fa; }
+    .tree-node.level-1 { font-weight: 700; }
+    .tree-node.level-2 { padding-left: 24px; color: #606266; font-weight: 700; }
+    .tree-caret { width: 16px; color: var(--muted); font-size: 11px; text-align: center; transition: transform .16s ease; }
+    .tree-caret.expanded { transform: rotate(90deg); }
+    .tree-count { color: var(--muted); font-size: 11px; font-weight: 400; }
+    .tree-children { overflow: hidden; }
+    .tree-empty { padding: 28px 14px; color: var(--muted); text-align: center; }
+    .monitor-item { width: 100%; min-height: 56px; border: 0; border-left: 3px solid transparent; background: #fff; padding: 9px 10px 9px 43px; color: var(--ink); text-align: left; }
+    .monitor-item:hover { background: #f6f9f7; }
+    .monitor-item.active { border-left-color: var(--teal); background: var(--teal-soft); }
+    .monitor-item strong { display: block; margin-bottom: 4px; font-size: 12px; line-height: 1.45; }
+    .item-meta { display: flex; align-items: center; justify-content: space-between; gap: 6px; color: var(--muted); font-size: 11px; }
+    .tiny-progress { display: inline-flex; align-items: center; gap: 4px; }
+    .tiny-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); }
+    .detail-overview { display: flex; align-items: center; gap: 8px; }
+    .detail-overview-progress { width: 130px; }
+    .detail-index { position: sticky; z-index: 8; top: 0; display: flex; overflow-x: auto; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.98); scrollbar-width: thin; }
+    .detail-index-button { position: relative; display: flex; min-width: max-content; min-height: 45px; align-items: center; gap: 6px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); padding: 8px 11px; font-size: 11px; }
+    .detail-index-button:hover { background: #f5f7fa; color: var(--ink); }
+    .detail-index-button.active { border-bottom-color: var(--blue); color: var(--blue); font-weight: 700; }
+    .research-summary { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 14px; border-bottom: 8px solid var(--canvas); background: #fff; padding: 13px 16px; }
+    .research-summary strong { display: block; margin-bottom: 3px; font-size: 13px; }
+    .research-summary p { margin: 0; color: #606266; font-size: 12px; }
+    .section-number { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .state-dot { width: 8px; height: 8px; border-radius: 50%; background: #bcc5c1; }
+    .state-dot.done { background: var(--green); }
+    .state-dot.running { background: var(--blue); }
+    .state-dot.warn { background: var(--amber); }
+    .detail-column { background: var(--canvas); }
+    .detail-workhead { display: flex; min-height: 78px; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: #fff; }
+    .detail-workhead h2 { margin-bottom: 3px; }
+    .work-context { color: var(--muted); font-size: 12px; }
+    .detail-scroll { height: calc(100% - 78px); overflow: auto; padding-bottom: 60px; background: var(--canvas); scroll-behavior: smooth; }
+    .research-section { background: #fff; border-bottom: 8px solid var(--canvas); scroll-margin-top: 46px; }
+    .research-section.active { box-shadow: inset 3px 0 0 var(--blue); }
+    .research-section-head { position: sticky; z-index: 6; top: 45px; display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 60px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.98); }
+    .research-section-title { display: flex; min-width: 0; align-items: flex-start; gap: 10px; }
+    .research-section-title > .section-number { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border: 1px solid var(--line); border-radius: 4px; background: #f5f7fa; font-size: 12px; }
+    .research-section-title h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin: 0 0 2px; font-size: 15px; }
+    .research-section-title p { margin: 0; color: var(--muted); font-size: 11px; }
+    .research-section.collapsed .research-section-head { border-bottom: 0; }
+    .research-section.collapsed .section-number { background: #fff; }
+    .section-toggle { width: 32px; min-height: 32px; padding: 0; color: var(--muted); font-size: 13px; }
+    .research-group { background: #fff; border-bottom: 1px solid var(--line); }
+    .group-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 16px 8px; border-bottom: 1px solid #edf0ee; }
+    .group-title strong { font-size: 13px; }
+    .group-title span { color: var(--muted); font-size: 11px; }
+    .field-list { padding: 0 16px; }
+    .field-row { display: grid; grid-template-columns: 132px minmax(0,1fr) 24px; gap: 12px; padding: 13px 0; border-bottom: 1px solid #edf0ee; }
+    .field-row:last-child { border-bottom: 0; }
+    .field-label { padding-top: 8px; color: #404945; font-size: 12px; font-weight: 700; }
+    .required { color: var(--red); }
+    .field-control { min-width: 0; }
+    .field-control input,.field-control textarea,.field-control select { width: 100%; border: 1px solid var(--line-strong); border-radius: 5px; background: #fff; color: var(--ink); padding: 8px 9px; }
+    .field-control textarea { min-height: 86px; resize: vertical; }
+    .field-control input:focus,.field-control textarea:focus,.field-control select:focus { border-color: var(--teal); }
+    .field-value { min-height: 35px; padding: 7px 0; color: var(--ink); white-space: pre-wrap; }
+    .field-value.empty { color: var(--muted); }
+    .field-note { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; color: var(--muted); font-size: 11px; }
+    .evidence-tag { min-height: 19px; padding: 1px 6px; background: var(--blue-soft); color: var(--blue); font-size: 10px; }
+    .evidence-tag.confirmed { background: var(--green-soft); color: var(--green); }
+    .evidence-tag.pending { background: var(--amber-soft); color: var(--amber); }
+    .field-ai { width: 24px; height: 24px; margin-top: 5px; border: 0; border-radius: 50%; background: var(--teal-soft); color: var(--teal-dark); padding: 0; font-size: 10px; font-weight: 800; }
+    .suggestion { margin: 12px 16px 0; border: 1px solid #a9cec7; border-radius: 5px; background: #f3faf8; }
+    .suggestion-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 11px; border-bottom: 1px solid #cce2dd; }
+    .suggestion-body { padding: 10px 11px; }
+    .suggestion-body p { margin-bottom: 7px; }
+    .suggestion-body p:last-child { margin-bottom: 0; }
+    .suggestion-actions { display: flex; justify-content: flex-end; gap: 7px; padding: 8px 11px; border-top: 1px solid #cce2dd; }
+    .detail-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-top: 1px solid var(--line); background: #fafafa; }
+    .ai-column { display: grid; grid-template-rows: 58px auto minmax(130px,1fr) auto auto; background: #fff; }
+    .ai-identity { display: flex; align-items: center; gap: 9px; }
+    .ai-avatar { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border: 1px solid #a9cec7; border-radius: 50%; background: var(--teal-soft); color: var(--teal-dark); font-size: 12px; font-weight: 800; }
+    .ai-identity strong { display: block; font-size: 13px; }
+    .ai-identity span { display: block; color: var(--muted); font-size: 10px; }
+    .ai-close { display: none; }
+    .ai-context { padding: 10px 12px; border-bottom: 1px solid var(--line); background: #f8faf9; }
+    .context-path { display: block; overflow: hidden; margin-bottom: 4px; color: var(--teal-dark); text-overflow: ellipsis; white-space: nowrap; font-size: 11px; font-weight: 700; }
+    .context-alert { display: flex; align-items: center; gap: 6px; color: var(--amber); font-size: 11px; }
+    .chat-log { display: flex; min-height: 0; flex-direction: column; gap: 9px; overflow: auto; padding: 11px 12px; }
+    .message { max-width: 94%; border-radius: 6px; padding: 8px 9px; font-size: 12px; }
+    .message.ai { align-self: flex-start; border: 1px solid var(--line); background: #fff; }
+    .message.user { align-self: flex-end; background: var(--teal); color: #fff; }
+    .message p { margin-bottom: 4px; }
+    .message p:last-child { margin-bottom: 0; }
+    .quick-prompts { display: flex; flex-wrap: wrap; gap: 5px; padding: 8px 11px; border-top: 1px solid var(--line); }
+    .prompt-chip { border: 1px solid #b8d7d1; border-radius: 999px; background: var(--teal-soft); color: var(--teal-dark); padding: 4px 8px; font-size: 10px; }
+    .composer { display: grid; grid-template-columns: minmax(0,1fr) 34px; gap: 7px; padding: 9px 11px 11px; border-top: 1px solid var(--line); }
+    .composer input { min-width: 0; height: 34px; border: 1px solid var(--line-strong); border-radius: 5px; padding: 7px 9px; }
+    .send-button { border: 0; border-radius: 5px; background: var(--teal); color: #fff; font-size: 16px; }
+    .ai-floating-open { position: fixed; z-index: 45; right: 14px; bottom: 16px; box-shadow: var(--shadow); }
+
+    .modal-backdrop { position: fixed; z-index: 100; inset: 0; display: none; place-items: center; padding: 20px; background: rgba(20,28,24,.48); }
+    .modal-backdrop.open { display: grid; }
+    .modal { width: min(620px,100%); max-height: calc(100vh - 40px); overflow: auto; border-radius: 7px; background: #fff; box-shadow: var(--shadow); }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 17px; border-bottom: 1px solid var(--line); }
+    .modal-head h2 { margin: 0; }
+    .modal-body { padding: 16px 17px; }
+    .modal-foot { display: flex; justify-content: flex-end; gap: 8px; padding: 11px 17px; border-top: 1px solid var(--line); }
+    .modal-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .modal-field.full { grid-column: 1 / -1; }
+    .modal-field label { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 700; }
+    .modal-field input,.modal-field select,.modal-field textarea { width: 100%; border: 1px solid var(--line-strong); border-radius: 5px; padding: 8px 9px; }
+    .check-list { margin: 0; padding: 0; list-style: none; }
+    .check-item { display: grid; grid-template-columns: 22px 1fr auto; gap: 9px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+    .check-icon { display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; background: var(--green); color: #fff; font-size: 11px; }
+    .check-icon.warn { background: var(--amber); }
+    .toast { position: fixed; z-index: 120; top: 69px; left: 50%; display: flex; max-width: calc(100vw - 24px); align-items: center; gap: 8px; border: 1px solid #a9cec7; border-radius: 6px; background: #fff; padding: 9px 13px; box-shadow: var(--shadow); opacity: 0; pointer-events: none; transform: translate(-50%,-10px); transition: .2s ease; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+    @media (max-width: 1280px) {
+      .workspace-layout { grid-template-columns: 230px minmax(520px,1fr) 310px; }
+      .field-row { grid-template-columns: 110px minmax(0,1fr) 24px; }
+    }
+    @media (max-width: 1100px) {
+      .workspace-layout { grid-template-columns: 220px minmax(0,1fr); }
+      .ai-column { position: fixed; z-index: 60; top: calc(var(--topbar) + var(--detailbar)); right: 0; bottom: 0; width: min(360px,94vw); box-shadow: var(--shadow); }
+      .ai-close,.ai-mobile-open { display: inline-block; }
+      .detail-progress { display: none; }
+    }
+    @media (max-width: 800px) {
+      :root { --topbar: 52px; --detailbar: 104px; }
+      .app-header { padding: 7px 9px; }
+      .brand-copy span,.top-nav,.header-actions .button { display: none; }
+      .systems-page { padding: 16px 10px 50px; }
+      .page-heading { align-items: stretch; flex-direction: column; }
+      .summary-band { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .summary-cell:nth-child(2) { border-right: 0; }
+      .summary-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .table-toolbar,.filters { align-items: stretch; flex-direction: column; }
+      .search-box { min-width: 0; }
+      .table-shell { overflow-x: auto; }
+      .data-table { min-width: 930px; }
+      .detail-header { align-items: flex-start; flex-direction: column; padding: 8px 10px; }
+      .detail-header > .button-row { width: 100%; justify-content: flex-end; }
+      .detail-title h1 { white-space: normal; }
+      .workspace-layout { display: block; height: auto; min-height: calc(100vh - var(--topbar) - var(--detailbar)); }
+      .monitor-column { height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+      .monitor-column .column-head { min-height: 48px; }
+      .monitor-column .column-body { height: auto; }
+      .mobile-tree-toggle { display: inline-block; }
+      .monitor-column.collapsed-mobile .column-body { display: none; }
+      .monitor-tools { padding: 7px 9px; }
+      .indicator-tree { max-height: 430px; overflow-y: auto; }
+      .monitor-item { min-width: 0; }
+      .detail-column { height: auto; min-height: 650px; border-right: 0; }
+      .detail-scroll { height: auto; overflow: visible; }
+      .detail-workhead { align-items: flex-start; flex-direction: column; }
+      .detail-overview { width: 100%; justify-content: space-between; }
+      .detail-index { position: sticky; top: var(--topbar); }
+      .research-summary { grid-template-columns: 1fr; }
+      .research-section-head { top: calc(var(--topbar) + 45px); align-items: stretch; flex-direction: column; }
+      .research-section-head > .button-row { justify-content: flex-end; }
+      .field-row { grid-template-columns: 1fr 24px; }
+      .field-label { grid-column: 1 / -1; padding-top: 0; }
+      .ai-column { top: auto; right: 6px; bottom: 6px; left: 6px; width: auto; height: min(650px,86vh); border: 1px solid var(--line-strong); border-radius: 6px; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .modal-field.full { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"><span aria-hidden="true">✓</span><span id="toastText"></span></div>
+
+  <div class="modal-backdrop" id="createModal" role="dialog" aria-modal="true" aria-labelledby="createTitle">
+    <div class="modal"><div class="modal-head"><h2 id="createTitle">新建指标体系</h2><button class="icon-button" type="button" data-modal-close="createModal" aria-label="关闭">×</button></div>
+      <form id="createForm"><div class="modal-body"><div class="modal-grid">
+        <div class="modal-field full"><label for="systemName">指标体系名称</label><input id="systemName" required value="省级营商环境监测指标体系"></div>
+        <div class="modal-field"><label for="systemYear">评价年度</label><input id="systemYear" type="number" min="2020" value="2026"></div>
+        <div class="modal-field"><label for="systemVersion">版本号</label><input id="systemVersion" value="V1.0"></div>
+        <div class="modal-field"><label for="systemRegion">适用地区</label><select id="systemRegion"><option>河南省</option><option>全国</option><option>自定义地区</option></select></div>
+        <div class="modal-field"><label for="systemOrg">发布单位</label><input id="systemOrg" value="省发展改革委"></div>
+        <div class="modal-field full"><label for="systemDesc">指标体系说明</label><textarea id="systemDesc" rows="3">用于营商环境监测指标的结构化研究与迭代优化。</textarea></div>
+      </div></div><div class="modal-foot"><button class="button" type="button" data-modal-close="createModal">取消</button><button class="button-primary" type="submit">创建并进入</button></div></form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="qualityModal" role="dialog" aria-modal="true" aria-labelledby="qualityTitle">
+    <div class="modal"><div class="modal-head"><div><h2 id="qualityTitle">指标体系质量检查</h2><p class="micro" style="margin:2px 0 0">当前研究版本 V0.6</p></div><button class="icon-button" type="button" data-modal-close="qualityModal" aria-label="关闭">×</button></div>
+      <div class="modal-body"><ul class="check-list">
+        <li class="check-item"><span class="check-icon">✓</span><div><strong>指标目录结构完整</strong><div class="micro">一级指标至监测项关系有效。</div></div><span class="status done">通过</span></li>
+        <li class="check-item"><span class="check-icon">✓</span><div><strong>政策来源可以追溯</strong><div class="micro">当前监测项关联3条研究依据。</div></div><span class="status done">通过</span></li>
+        <li class="check-item"><span class="check-icon warn">!</span><div><strong>分母口径待确认</strong><div class="micro">需要确认是否排除农民专业合作社。</div></div><span class="status warn">待确认</span></li>
+        <li class="check-item"><span class="check-icon warn">!</span><div><strong>县级整改案例不足</strong><div class="micro">建议补充一个县级信用修复案例。</div></div><span class="status warn">需补充</span></li>
+      </ul></div><div class="modal-foot"><button class="button" type="button" data-modal-close="qualityModal">关闭</button><button class="button-primary" type="button" data-action="fix-quality">让AI继续完善</button></div>
+    </div>
+  </div>
+
+  <script>
+    const systems = [
+      { id:'henan-2026',name:'河南省营商环境评价指标体系',code:'HNBEE-2026',year:2026,version:'V1.0',region:'河南省',items:186,progress:36,status:'researching',updated:'2026-08-21 10:42' },
+      { id:'credit-2026',name:'城市信用监测预警指标体系',code:'CITY-CREDIT-2026',year:2026,version:'V2.0',region:'全国',items:27,progress:82,status:'review',updated:'2026-08-20 16:18' },
+      { id:'pilot-2025',name:'开发区营商环境监测指标体系',code:'PARK-BEE-2025',year:2025,version:'V1.3',region:'试点开发区',items:94,progress:100,status:'published',updated:'2026-07-30 09:06' }
+    ];
+    const indicatorTree = [
+      { id:'credit-env',name:'信用环境',children:[
+        { id:'credit-supervision',name:'信用监管',children:[
+          { id:'penalty',name:'受到行政处罚企业情况',code:'001',progress:36,issues:2 },
+          { id:'repair',name:'信用修复办理时效',code:'002',progress:58,issues:1 },
+          { id:'disclosure',name:'“双公示”信息及时率',code:'003',progress:20,issues:3 }
+        ]}
+      ]},
+      { id:'financing-support',name:'融资支持',children:[
+        { id:'inclusive-finance',name:'普惠融资',children:[
+          { id:'finance',name:'政府采购合同融资规模',code:'014',progress:12,issues:0 },
+          { id:'loan',name:'普惠小微贷款余额增速',code:'015',progress:0,issues:0 }
+        ]}
+      ]}
+    ];
+    const monitoringItems = indicatorTree.flatMap(level1=>level1.children.flatMap(level2=>level2.children.map(item=>({...item,level1:level1.name,level2:level2.name,group:`${level1.name} / ${level2.name}`}))));
+    const sections = [
+      { id:'portrait',name:'指标画像',count:'6/8',state:'warn' },
+      { id:'policy',name:'政策溯源与标杆案例',count:'5/7',state:'warn' },
+      { id:'data',name:'技术解码与数据链路',count:'9/10',state:'running' },
+      { id:'quality',name:'质量诊断与问题归因',count:'2/7',state:'todo' },
+      { id:'governance',name:'管理体制与责任边界',count:'0/5',state:'todo' },
+      { id:'rectify',name:'分层整改与行动计划',count:'1/10',state:'todo' },
+      { id:'optimize',name:'指标优化迭代',count:'0/6',state:'todo' },
+      { id:'contacts',name:'责任单位与联络机制',count:'4/4',state:'done' }
+    ];
+    const sectionFields = {
+      portrait:{ intro:'界定“考什么”，明确指标身份、考核范围与基本计量方式。',groups:[{ title:'指标定义',fields:[
+        {label:'一级指标',value:'信用环境',type:'input',meta:'已确认'},
+        {label:'二级指标',value:'信用监管',type:'input',meta:'已确认'},
+        {label:'三级指标',value:'受到行政处罚企业情况',type:'textarea',meta:'用户提供'},
+        {label:'指标属性',value:'正向指标',type:'select',options:['正向指标','逆向指标','中性指标'],meta:'已确认'},
+        {label:'考核周期',value:'季度',type:'select',options:['月度','季度','年度'],meta:'已确认'},
+        {label:'计量方式',value:'比率类',type:'select',options:['比率类','数量类','时长类','评分类'],meta:'已确认'},
+        {label:'考核权重',value:'',type:'input',meta:'待核实'},
+        {label:'全国前沿值',value:'',type:'input',meta:'待研究'}]}]},
+      policy:{ intro:'回答“为什么考”，追溯政策源头并借鉴标杆地区经验。',groups:[{ title:'政策依据与趋势',fields:[
+        {label:'政策源头',value:'《国务院办公厅关于运用大数据加强对市场主体服务和监管的若干意见》（国办发〔2015〕51号）首次提出行政许可和行政处罚信息“7个工作日内上网公开”。',type:'textarea',meta:'政策依据'},
+        {label:'政策意图',value:'以公示促透明，以考核促修复，以修复促信用，推动“双公示”数据高质量归集。',type:'textarea',meta:'AI研究·已确认'},
+        {label:'时效性研判',value:'国办发〔2025〕22号、《信用修复管理办法》及2026版城市信用监测指标均为现行依据。',type:'textarea',meta:'3条依据'},
+        {label:'趋势预判',value:'未来1—2年将进一步统一信用修复入口、缩短办理时间，并持续压减低价值指标。',type:'textarea',meta:'AI推断·待复核'}]},
+        { title:'标杆地区典型案例',fields:[
+        {label:'省辖市案例',value:'无锡市发布国内首个《企业信用修复实施指南》团体标准，并通过专项行动推动符合条件企业完成修复退出。',type:'textarea',meta:'公开案例'},
+        {label:'县级案例',value:'',type:'textarea',meta:'待补充'},
+        {label:'市辖区案例',value:'',type:'textarea',meta:'待补充'}]}
+      ]},
+      data:{ intro:'解析“怎么考、数据从哪来”，拆解口径并梳理数据全链条。',groups:[
+        { title:'计算公式与统计口径',fields:[
+          {label:'计算公式',value:'指标值 = 截至监测期末仍在公示的受行政处罚企业数量 ÷ 城市存续企业总量 × 100%',type:'textarea',meta:'政策依据'},
+          {label:'分子定义',value:'监测期末仍在“信用中国（河南）”网站公示，且尚未完成信用修复的受行政处罚企业数量。',type:'textarea',meta:'已核实'},
+          {label:'分母定义',value:'市场监管部门登记、监测期末处于存续状态的企业法人总量。',type:'textarea',meta:'待确认排除项'},
+          {label:'排除项',value:'已注销、吊销企业不计入分母；已经完成信用修复并撤下公示的企业不计入分子。',type:'textarea',meta:'现行政策'},
+          {label:'核心驱动变量',value:'',type:'textarea',meta:'待研究'}]},
+        { title:'数据来源与流转',fields:[
+          {label:'数据来源',value:'省信用信息共享平台 + 市场监管企业登记数据库',type:'input',meta:'部门业务系统'},
+          {label:'采集方式',value:'系统自动抓取 + 人工校核',type:'select',options:['系统自动抓取 + 人工校核','人工填报','系统推送','第三方导入'],meta:'已确认'},
+          {label:'流转路径',value:'行政处罚决定机关 → 市级信用信息共享平台 → 省级信用平台 → “信用中国（河南）”公示端 → 监测系统抓取。',type:'textarea',meta:'AI梳理·待复核'},
+          {label:'统计节点',value:'监测期末系统自动抓取在公示企业名单，与同期企业登记数据库比对。',type:'textarea',meta:'待确认'},
+          {label:'刷新周期',value:'季度',type:'select',options:['实时','每日','每月','季度','年度'],meta:'待确认'}]}
+      ]},
+      quality:{ intro:'判断“数据是否可信、问题为何发生”，形成问题归因链。',groups:[{ title:'质量诊断与问题归因',fields:[
+        {label:'真实性风险',value:'部分处罚信息可能存在迟报、漏报或选择性上报风险。',type:'textarea',meta:'AI初稿'},
+        {label:'完整性风险',value:'部门归集标准不统一，部分处罚信息未进入省级平台。',type:'textarea',meta:'AI初稿'},
+        {label:'一致性检查',value:'',type:'textarea',meta:'待研究'},
+        {label:'地方问题归类',value:'',type:'textarea',meta:'待研究'},
+        {label:'共性与个性',value:'',type:'textarea',meta:'待研究'},
+        {label:'问题原因',value:'',type:'textarea',meta:'能力不足 / 客观限制 / 体制障碍'},
+        {label:'影响研判',value:'',type:'textarea',meta:'待研究'}]}]},
+      governance:{ intro:'厘清行政管理体制归属及“条条”与“块块”的权责边界。',groups:[{ title:'管理体制分析',fields:[
+        {label:'行政管理体制',value:'',type:'textarea',meta:'待研究'},
+        {label:'垂直管理责任',value:'',type:'textarea',meta:'待研究'},
+        {label:'属地管理责任',value:'',type:'textarea',meta:'待研究'},
+        {label:'权力责任边界',value:'',type:'textarea',meta:'待研究'},
+        {label:'跨层级协同机制',value:'',type:'textarea',meta:'待研究'}]}]},
+      rectify:{ intro:'解决“怎么改”，形成分层建议、行动安排和预期成效。',groups:[{ title:'分层整改建议',fields:[
+        {label:'省级建议',value:'',type:'textarea',meta:'待生成'},{label:'市级建议',value:'',type:'textarea',meta:'待生成'},
+        {label:'县级建议',value:'',type:'textarea',meta:'待生成'},{label:'市辖区建议',value:'',type:'textarea',meta:'待生成'},
+        {label:'统一答复话术',value:'',type:'textarea',meta:'待生成'}]},
+        { title:'行动计划与成效',fields:[
+        {label:'行动要点',value:'',type:'textarea',meta:'待生成'},{label:'责任分工',value:'',type:'textarea',meta:'待生成'},
+        {label:'完成时限',value:'',type:'input',meta:'待确定'},{label:'预期成效',value:'',type:'textarea',meta:'待生成'},
+        {label:'轻重缓急',value:'根据地区实际表现确定',type:'select',options:['立即整改','分步推进','持续优化','根据地区实际表现确定'],meta:'待确认'}]}
+      ]},
+      optimize:{ intro:'思考“如何更科学”，从五类调整方向提出优化建议。',groups:[{ title:'指标优化评估',fields:[
+        {label:'必要性评估',value:'',type:'textarea',meta:'待研究'},{label:'可考性判断',value:'',type:'textarea',meta:'待研究'},
+        {label:'导向合理性',value:'',type:'textarea',meta:'待研究'},{label:'差异化调整',value:'',type:'textarea',meta:'待研究'},
+        {label:'替代方案',value:'',type:'textarea',meta:'待研究'},{label:'基层减负',value:'',type:'textarea',meta:'待研究'}]}]},
+      contacts:{ intro:'明确“谁来干”，维护各层级牵头、执行和配合单位。',groups:[{ title:'责任单位与联络机制',fields:[
+        {label:'省级责任单位',value:'省发展改革委财金处',type:'input',meta:'已确认'},
+        {label:'市级责任单位',value:'市发展改革委',type:'input',meta:'已确认'},
+        {label:'县级责任单位',value:'县发展改革委',type:'input',meta:'已确认'},
+        {label:'市辖区责任单位',value:'区发展改革委',type:'input',meta:'已确认'}]}]}
+    };
+    const state = { screen:'systems',systemId:'henan-2026',itemId:'penalty',sectionId:'portrait',detailMode:'view',editDraft:null,systemSearch:'',itemSearch:'',expandedNodes:['credit-env','credit-supervision','financing-support','inclusive-finance'],collapsedSections:[],mobileTreeOpen:window.innerWidth>800,aiOpen:true,suggestion:false,scrollTarget:null,messages:[
+      {role:'ai',text:'我正在研究“技术解码与数据链路”。现有材料能够确认计算公式，但分母排除范围仍需人工确认。'},
+      {role:'user',text:'先按国家城市信用监测口径继续，并标记不确定内容。'},
+      {role:'ai',text:'好的。我不会覆盖已确认内容，新增结论会同时提供依据和可信状态。'}
+    ]};
+    const esc = value => String(value ?? '').replace(/[&<>'"]/g,char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'})[char]);
+    const statusText = status => ({draft:'草稿',researching:'研究中',review:'待发布',published:'已发布',archived:'已归档'})[status] || status;
+
+    function renderHeader() {
+      return `<header class="app-header"><div class="brand"><img class="brand-logo" src="logo.svg" alt="元引"><div class="brand-copy"><strong>营商环境指标知识库</strong><span>结构化研究 · AI辅助生产</span></div></div><nav class="top-nav" aria-label="主导航"><button class="nav-item" type="button" data-action="home">工作台</button><button class="nav-item active" type="button" data-action="back-systems">指标体系</button><button class="nav-item" type="button" data-action="materials">研究资料</button></nav><div class="header-actions"><span class="badge">原型</span><button class="button" type="button" data-action="help">帮助</button><button class="icon-button" type="button" aria-label="用户菜单" title="用户菜单">用</button></div></header>`;
+    }
+    function renderSystemsPage() {
+      const rows = systems.filter(system => `${system.name}${system.code}${system.year}${system.region}`.toLowerCase().includes(state.systemSearch.toLowerCase()));
+      return `${renderHeader()}<main class="systems-page"><div class="page-heading"><div><h1>指标体系管理</h1><p>维护指标体系、年度版本和监测项目录。</p></div><div class="button-row"><button class="button" type="button" data-action="import">导入Excel</button><button class="button-primary" type="button" data-action="new-system">新建指标体系</button></div></div><section class="summary-band" aria-label="指标体系概览"><div class="summary-cell"><span>指标体系</span><strong>${systems.length}</strong></div><div class="summary-cell"><span>监测项总数</span><strong>${systems.reduce((sum,item)=>sum+item.items,0)}</strong></div><div class="summary-cell"><span>研究进行中</span><strong>${systems.filter(item=>item.status==='researching').length}</strong></div><div class="summary-cell"><span>待确认问题</span><strong>28</strong></div></section><section class="table-shell"><div class="table-toolbar"><div class="filters"><div class="search-box"><input id="systemSearch" value="${esc(state.systemSearch)}" aria-label="搜索指标体系" placeholder="搜索体系名称、编号或年度"></div><select class="select-control" aria-label="年度筛选"><option>全部年度</option><option>2026</option><option>2025</option></select><select class="select-control" aria-label="状态筛选"><option>全部状态</option><option>研究中</option><option>待发布</option><option>已发布</option></select></div><span class="micro">共 ${rows.length} 个指标体系</span></div><table class="data-table"><thead><tr><th>指标体系</th><th>年度 / 版本</th><th>适用地区</th><th>监测项</th><th>研究进度</th><th>状态</th><th>最后更新</th><th>操作</th></tr></thead><tbody>${rows.map(system=>`<tr><td><span class="system-name">${esc(system.name)}</span><span class="system-code">${system.code}</span></td><td>${system.year}<br><span class="micro">${system.version}</span></td><td>${system.region}</td><td>${system.items}</td><td><div class="table-progress"><div class="progress-copy"><span>完成度</span><strong>${system.progress}%</strong></div><div class="progress-track"><div class="progress-bar" style="width:${system.progress}%"></div></div></div></td><td><span class="status ${system.status}">${statusText(system.status)}</span></td><td><span class="micro">${system.updated}</span></td><td><button class="button-link" type="button" data-action="open-system" data-id="${system.id}">进入体系</button><button class="button-link" type="button" data-action="duplicate">复制</button></td></tr>`).join('')}</tbody></table>${rows.length?'':'<div class="empty-state">没有找到匹配的指标体系。</div>'}</section></main>`;
+    }
+    function countTreeLeaves(node) {
+      return node.children ? node.children.reduce((sum,child)=>sum+countTreeLeaves(child),0) : 1;
+    }
+    function filteredIndicatorTree() {
+      const query=state.itemSearch.trim().toLowerCase();
+      if(!query)return indicatorTree;
+      return indicatorTree.map(level1=>({...level1,children:level1.children.map(level2=>({...level2,children:level2.children.filter(item=>`${level1.name}${level2.name}${item.name}${item.code}`.toLowerCase().includes(query))})).filter(level2=>level2.children.length)})).filter(level1=>level1.children.length);
+    }
+    function renderTreeNode(node,level) {
+      if(level===3)return `<button class="monitor-item ${state.itemId===node.id?'active':''}" type="button" data-action="select-item" data-id="${node.id}" title="选择三级指标：${esc(node.name)}"><strong>${esc(node.name)}</strong><div class="item-meta"><span>三级 · ${node.code}</span><span class="tiny-progress"><span class="tiny-dot"></span>${node.progress}%${node.issues?` · ${node.issues}项待确认`:''}</span></div></button>`;
+      const expanded=Boolean(state.itemSearch)||state.expandedNodes.includes(node.id);
+      return `<div class="tree-branch"><button class="tree-node level-${level}" type="button" data-action="toggle-tree" data-id="${node.id}" aria-expanded="${expanded}"><span class="tree-caret ${expanded?'expanded':''}">▶</span><span>${esc(node.name)}</span><span class="tree-count">${countTreeLeaves(node)}</span></button>${expanded?`<div class="tree-children">${node.children.map(child=>renderTreeNode(child,level+1)).join('')}</div>`:''}</div>`;
+    }
+    function renderMonitorColumn() {
+      const tree=filteredIndicatorTree();
+      const item=monitoringItems.find(item=>item.id===state.itemId)||monitoringItems[0];
+      return `<aside class="column monitor-column ${state.mobileTreeOpen?'':'collapsed-mobile'}"><div class="column-head"><div><h2>指标树</h2><p>${state.mobileTreeOpen?`一级 / 二级 / 三级 · ${monitoringItems.length}项`:`当前：${esc(item.name)}`}</p></div><div class="button-row"><button class="icon-button mobile-tree-toggle" type="button" data-action="toggle-tree-panel" aria-label="${state.mobileTreeOpen?'收起':'展开'}指标树" title="${state.mobileTreeOpen?'收起':'展开'}指标树">${state.mobileTreeOpen?'⌃':'⌄'}</button><button class="icon-button" type="button" data-action="add-item" aria-label="新增指标" title="新增指标">+</button></div></div><div class="column-body"><div class="monitor-tools"><div class="search-box"><input id="itemSearch" value="${esc(state.itemSearch)}" aria-label="搜索指标" placeholder="搜索三级指标或编号"></div></div><div class="indicator-tree" role="tree" aria-label="指标层级">${tree.length?tree.map(node=>renderTreeNode(node,1)).join(''):'<div class="tree-empty">没有找到匹配的三级指标</div>'}</div></div></aside>`;
+    }
+    const sectionStateText = value => value==='done'?'已完成':value==='running'?'研究中':value==='warn'?'需补充':'未开始';
+    function renderField(field,index,sectionId) {
+      const editing=state.detailMode==='edit'&&state.sectionId===sectionId;
+      const currentValue=editing&&state.editDraft?state.editDraft[index]:field.value;
+      let control='';
+      if(!editing) control=`<div class="field-value ${currentValue?'':'empty'}">${currentValue?esc(currentValue):'暂未填写'}</div>`;
+      else if(field.type==='textarea') control=`<textarea data-field-index="${index}">${esc(currentValue)}</textarea>`;
+      else if(field.type==='select') control=`<select data-field-index="${index}">${field.options.map(option=>`<option ${option===currentValue?'selected':''}>${esc(option)}</option>`).join('')}</select>`;
+      else control=`<input data-field-index="${index}" value="${esc(currentValue)}">`;
+      const pending=/待|推断|生成/.test(field.meta);
+      return `<div class="field-row"><label class="field-label">${esc(field.label)} ${editing?'<span class="required">*</span>':''}</label><div class="field-control">${control}<div class="field-note"><span class="evidence-tag ${pending?'pending':'confirmed'}">${esc(field.meta)}</span>${editing?(currentValue?'<span>修改将在保存后提交</span>':'<span>内容未填写</span>'):''}</div></div>${editing?`<button class="field-ai" type="button" data-action="field-ai" data-label="${esc(field.label)}" aria-label="让AI研究${esc(field.label)}" title="让AI研究">AI</button>`:'<span></span>'}</div>`;
+    }
+    function renderResearchSection(section,index) {
+      const data=sectionFields[section.id];
+      const editing=state.detailMode==='edit'&&state.sectionId===section.id;
+      const collapsed=state.collapsedSections.includes(section.id)&&!editing;
+      let fieldIndex=0;
+      const suggestion=state.suggestion&&state.sectionId===section.id?`<div class="suggestion"><div class="suggestion-head"><strong>AI专家建议</strong><span class="status review">待采纳</span></div><div class="suggestion-body"><p><strong>建议补充：</strong>同一企业状态在省信用平台与市场监管登记库之间可能存在同步时间差，应在统计节点增加企业状态一致性校验。</p><p class="micro">依据：当前数据流转路径及已识别的完整性风险。</p></div><div class="suggestion-actions"><button class="button" type="button" data-action="reject-suggestion">拒绝</button><button class="button-primary" type="button" data-action="accept-suggestion">接受建议</button></div></div>`:'';
+      const actions=editing?`<button class="button-soft" type="button" data-action="generate-section">AI生成本模块</button>`:`<button class="button" type="button" data-action="show-evidence" data-id="${section.id}">研究依据</button><button class="button-primary" type="button" data-action="edit-detail" data-id="${section.id}">编辑</button>`;
+      const footer=editing?`<div class="detail-footer"><span class="micro">正在编辑“${esc(section.name)}”</span><div class="button-row"><button class="button" type="button" data-action="cancel-edit">取消</button><button class="button" type="button" data-action="save-edit">保存并退出</button><button class="button-primary" type="button" data-action="complete-section">确认本模块</button></div></div>`:'';
+      const body=collapsed?'':`${suggestion}${data.groups.map(group=>`<div class="research-group"><div class="group-title"><strong>${esc(group.title)}</strong><span>${group.fields.filter(field=>field.value).length}/${group.fields.length} 已填写</span></div><div class="field-list">${group.fields.map(field=>renderField(field,fieldIndex++,section.id)).join('')}</div></div>`).join('')}${footer}`;
+      return `<section class="research-section ${state.sectionId===section.id?'active':''} ${collapsed?'collapsed':''}" id="section-${section.id}" data-section-id="${section.id}"><div class="research-section-head"><div class="research-section-title"><span class="section-number">${String(index+1).padStart(2,'0')}</span><div><h3>${esc(section.name)} <span class="status ${section.state}">${sectionStateText(section.state)}</span>${editing?'<span class="status running">编辑中</span>':''}</h3><p>${esc(data.intro)} · ${section.count} 已填写</p></div></div><div class="button-row">${actions}<button class="button section-toggle" type="button" data-action="toggle-section" data-id="${section.id}" aria-expanded="${!collapsed}" aria-label="${collapsed?'展开':'收起'}${esc(section.name)}" title="${collapsed?'展开模块':'收起模块'}">${collapsed?'⌄':'⌃'}</button></div></div>${body}</section>`;
+    }
+    function renderDetailColumn() {
+      const item=monitoringItems.find(item=>item.id===state.itemId)||monitoringItems[0];
+      const completed=sections.filter(section=>section.state==='done').length;
+      return `<section class="column detail-column"><div class="detail-workhead"><div><div class="work-context">${esc(item.group)} / 三级指标 ${item.code}</div><h2>${esc(item.name)} <span class="status ${state.detailMode==='view'?'draft':'running'}">${state.detailMode==='view'?'查看':'编辑'}</span></h2><div class="micro">八个研究模块构成指标全生命周期研究闭环</div></div><div class="detail-overview"><div class="detail-overview-progress"><div class="progress-copy"><span>模块完成</span><strong>${completed}/${sections.length}</strong></div><div class="progress-track"><div class="progress-bar" style="width:${completed/sections.length*100}%"></div></div></div><button class="icon-button" type="button" data-action="collapse-done" aria-label="收起已完成模块" title="收起已完成模块">⇡</button><button class="icon-button" type="button" data-action="expand-all" aria-label="展开全部模块" title="展开全部模块">⇣</button></div></div><div class="detail-scroll"><nav class="detail-index" aria-label="研究模块导航">${sections.map((section,index)=>`<button class="detail-index-button ${state.sectionId===section.id?'active':''}" type="button" data-action="jump-section" data-id="${section.id}"><span class="state-dot ${section.state}"></span><span>${String(index+1).padStart(2,'0')} ${esc(section.name)}</span></button>`).join('')}</nav><section class="research-summary"><div><strong>研究结论摘要</strong><p>该指标重点关注行政处罚信息公示与信用修复协同情况。当前计算口径基本明确，仍需核实分母排除范围及跨部门数据同步时差。</p></div><button class="button" type="button" data-action="generate-summary">AI更新摘要</button></section>${sections.map(renderResearchSection).join('')}</div></section>`;
+    }
+    const renderChat=()=>state.messages.map(message=>`<div class="message ${message.role}"><p>${esc(message.text)}</p>${message.role==='ai'?'<span class="micro">AI指标专家 · 刚刚</span>':''}</div>`).join('');
+    function renderAiColumn() {
+      const item=monitoringItems.find(item=>item.id===state.itemId)||monitoringItems[0];
+      const section=sections.find(section=>section.id===state.sectionId)||sections[0];
+      if(!state.aiOpen) return `<button class="button-primary ai-floating-open" type="button" data-action="toggle-ai">打开AI指标专家</button>`;
+      return `<aside class="column ai-column"><div class="column-head"><div class="ai-identity"><div class="ai-avatar">AI</div><div><strong>AI指标专家</strong><span>正在辅助当前研究模块</span></div></div><button class="icon-button ai-close" type="button" data-action="toggle-ai" aria-label="关闭AI专家">×</button></div><div class="ai-context"><span class="context-path">${esc(item.name)} / ${esc(section.name)}</span><span class="context-alert">● ${item.issues||0}项内容需要人工确认</span></div><div class="chat-log" id="chatLog">${renderChat()}</div><div class="quick-prompts"><button class="prompt-chip" type="button" data-prompt="生成当前模块初稿">生成本模块</button><button class="prompt-chip" type="button" data-prompt="核对政策依据">核对政策</button><button class="prompt-chip" type="button" data-prompt="检查统计口径">检查口径</button><button class="prompt-chip" type="button" data-prompt="查找逻辑冲突">检查冲突</button></div><form class="composer" id="chatForm"><input id="chatInput" aria-label="向AI指标专家提问" placeholder="告诉专家要研究或修改什么"><button class="send-button" aria-label="发送" title="发送">↑</button></form></aside>`;
+    }
+    function renderSystemDetail() {
+      const system=systems.find(system=>system.id===state.systemId)||systems[0];
+      return `${renderHeader()}<main class="system-detail"><div class="detail-header"><div class="detail-title"><button class="icon-button" type="button" data-action="back-systems" aria-label="返回指标体系" title="返回">←</button><div class="detail-title-copy"><div class="breadcrumb">指标体系管理 / ${system.year}年度 / ${system.version}</div><h1>${esc(system.name)}</h1><div class="detail-subline"><span class="status ${system.status}">${statusText(system.status)}</span><span>${system.items}个监测项</span><span>更新于 ${system.updated}</span></div></div></div><div class="detail-progress"><div class="progress-copy"><span>体系研究进度</span><strong>${system.progress}%</strong></div><div class="progress-track"><div class="progress-bar" style="width:${system.progress}%"></div></div></div><div class="button-row"><button class="button ai-mobile-open" type="button" data-action="toggle-ai">AI专家</button><button class="button" type="button" data-action="quality">质量检查</button><button class="button" type="button" data-action="export">导出</button><button class="button-primary" type="button" data-action="publish">提交发布</button></div></div><div class="workspace-layout">${renderMonitorColumn()}${renderDetailColumn()}${renderAiColumn()}</div></main>`;
+    }
+    function render() {
+      document.getElementById('app').innerHTML=state.screen==='systems'?renderSystemsPage():renderSystemDetail();
+      requestAnimationFrame(()=>{const log=document.getElementById('chatLog');if(log)log.scrollTop=log.scrollHeight;if(state.scrollTarget){const container=document.querySelector('.detail-scroll');const target=document.getElementById(`section-${state.scrollTarget}`);const index=document.querySelector('.detail-index');if(container&&target)container.scrollTo({top:Math.max(0,target.offsetTop-(index?.offsetHeight||0)),behavior:'instant'});state.scrollTarget=null;}});
+    }
+    function currentFields(){return sectionFields[state.sectionId].groups.flatMap(group=>group.fields);}
+    function syncPortraitHierarchy(){const item=monitoringItems.find(item=>item.id===state.itemId)||monitoringItems[0];const fields=sectionFields.portrait.groups[0].fields;fields[0].value=item.level1;fields[1].value=item.level2;fields[2].value=item.name;}
+    function beginEdit(){state.detailMode='edit';state.editDraft=currentFields().map(field=>field.value);}
+    function openModal(id){document.getElementById(id).classList.add('open');document.querySelector(`#${id} input,#${id} button`)?.focus();}
+    function closeModal(id){document.getElementById(id).classList.remove('open');}
+    let toastTimer;
+    function toast(message){clearTimeout(toastTimer);document.getElementById('toastText').textContent=message;const node=document.getElementById('toast');node.classList.add('show');toastTimer=setTimeout(()=>node.classList.remove('show'),2300);}
+    function sendMessage(text){
+      const value=text.trim();if(!value)return;state.messages.push({role:'user',text:value});let reply='收到。我会基于当前三级指标和研究模块继续分析，新增内容不会直接覆盖已确认结论。';
+      if(/口径/.test(value))reply='我已重新检查统计口径。计算公式可以确认，但“城市存续企业总量”是否排除农民专业合作社仍需人工确认。';
+      if(/政策/.test(value))reply='当前可关联3份现行政策文件。我会区分政策原文、研究推断和待核实内容。';
+      if(/生成|初稿/.test(value)){reply='本模块初稿已经生成，详情已切换到编辑状态，请审阅建议后选择接受或拒绝。';beginEdit();state.suggestion=true;state.scrollTarget=state.sectionId;}
+      state.messages.push({role:'ai',text:reply});render();
+    }
+    document.addEventListener('click',event=>{
+      const actionNode=event.target.closest('[data-action]');
+      if(actionNode){
+        const action=actionNode.dataset.action;
+        if(action==='open-system'){state.systemId=actionNode.dataset.id;state.screen='detail';state.sectionId='portrait';state.detailMode='view';state.editDraft=null;state.aiOpen=window.innerWidth>1100;render();}
+        else if(action==='back-systems'||action==='home'){state.screen='systems';render();}
+        else if(action==='new-system')openModal('createModal');
+        else if(action==='toggle-tree-panel'){state.mobileTreeOpen=!state.mobileTreeOpen;render();}
+        else if(action==='toggle-tree'){const id=actionNode.dataset.id;state.expandedNodes=state.expandedNodes.includes(id)?state.expandedNodes.filter(nodeId=>nodeId!==id):[...state.expandedNodes,id];render();}
+        else if(action==='select-item'){state.itemId=actionNode.dataset.id;state.sectionId='portrait';state.detailMode='view';state.editDraft=null;state.suggestion=false;state.scrollTarget='portrait';if(window.innerWidth<=800)state.mobileTreeOpen=false;syncPortraitHierarchy();state.messages.push({role:'ai',text:`已切换三级指标。我将基于“${monitoringItems.find(item=>item.id===state.itemId).name}”重新建立研究上下文。`});render();}
+        else if(action==='toggle-section'){const id=actionNode.dataset.id;if(state.detailMode==='edit'&&state.sectionId===id)toast('请先保存或取消当前模块的修改');else{state.collapsedSections=state.collapsedSections.includes(id)?state.collapsedSections.filter(sectionId=>sectionId!==id):[...state.collapsedSections,id];render();}}
+        else if(action==='collapse-done'){state.collapsedSections=sections.filter(section=>section.state==='done'&&!(state.detailMode==='edit'&&state.sectionId===section.id)).map(section=>section.id);render();toast('已收起完成模块');}
+        else if(action==='expand-all'){state.collapsedSections=[];state.scrollTarget=state.sectionId;render();toast('已展开全部模块');}
+        else if(action==='jump-section'){const id=actionNode.dataset.id;if(state.detailMode==='edit'&&state.sectionId!==id){document.getElementById(`section-${id}`)?.scrollIntoView({behavior:'smooth',block:'start'});toast(`“${sections.find(section=>section.id===state.sectionId).name}”仍在编辑中`);}else{state.sectionId=id;state.collapsedSections=state.collapsedSections.filter(sectionId=>sectionId!==id);state.scrollTarget=id;render();}}
+        else if(action==='edit-detail'){const id=actionNode.dataset.id;if(state.detailMode==='edit'&&state.sectionId!==id){toast('请先保存或取消当前模块的修改');}else{state.sectionId=id;state.collapsedSections=state.collapsedSections.filter(sectionId=>sectionId!==id);beginEdit();state.scrollTarget=id;render();}}
+        else if(action==='cancel-edit'){state.detailMode='view';state.editDraft=null;state.suggestion=false;state.scrollTarget=state.sectionId;render();toast('已取消修改');}
+        else if(action==='save-edit'){currentFields().forEach((field,index)=>field.value=state.editDraft[index]);state.detailMode='view';state.editDraft=null;state.suggestion=false;state.scrollTarget=state.sectionId;render();toast('修改已保存');}
+        else if(action==='toggle-ai'){state.aiOpen=!state.aiOpen;render();}
+        else if(action==='generate-section'){if(state.detailMode!=='edit')beginEdit();state.suggestion=true;state.aiOpen=true;state.scrollTarget=state.sectionId;state.messages.push({role:'ai',text:`已完成“${sections.find(section=>section.id===state.sectionId).name}”初稿，建议内容已放入详情区等待采纳。`});render();toast('AI已生成当前模块建议');}
+        else if(action==='generate-summary'){state.aiOpen=true;state.messages.push({role:'user',text:'请基于八个研究模块更新研究结论摘要'});state.messages.push({role:'ai',text:'已综合当前八个研究模块形成摘要建议，待人工核对后再更新正式结论。'});render();toast('AI已生成研究结论摘要建议');}
+        else if(action==='field-ai'){state.aiOpen=true;state.messages.push({role:'user',text:`请研究“${actionNode.dataset.label}”`});state.messages.push({role:'ai',text:`我已聚焦“${actionNode.dataset.label}”。会先核对现有依据，再给出可采纳建议。`});render();}
+        else if(action==='accept-suggestion'){state.suggestion=false;const section=sections.find(section=>section.id===state.sectionId);section.state='done';const total=section.count.split('/')[1];section.count=`${total}/${total}`;state.scrollTarget=state.sectionId;render();toast('已采纳AI建议并保存新版本');}
+        else if(action==='reject-suggestion'){state.suggestion=false;state.scrollTarget=state.sectionId;render();toast('已拒绝建议，原内容未改变');}
+        else if(action==='complete-section'){currentFields().forEach((field,index)=>field.value=state.editDraft?.[index]??field.value);const section=sections.find(section=>section.id===state.sectionId);section.state='done';const index=sections.indexOf(section);if(sections[index+1]){if(sections[index+1].state==='todo')sections[index+1].state='running';state.sectionId=sections[index+1].id;}state.detailMode='view';state.editDraft=null;state.scrollTarget=state.sectionId;render();toast('模块已确认，进入下一模块');}
+        else if(action==='quality')openModal('qualityModal');
+        else if(action==='fix-quality'){closeModal('qualityModal');state.aiOpen=true;state.messages.push({role:'ai',text:'我会继续补充县级案例并核对分母排除范围，结果将作为建议等待采纳。'});render();toast('AI已开始完善问题项');}
+        else if(action==='duplicate')toast('已复制为新的草稿版本');
+        else if(action==='import')toast('已打开Excel导入入口');
+        else if(action==='export')toast('已生成指标体系成果预览');
+        else if(action==='publish')toast('已提交发布审核');
+        else if(action==='show-evidence'){if(actionNode.dataset.id)state.sectionId=actionNode.dataset.id;toast('当前模块关联3条依据，其中1条待复核');}
+        else if(action==='mark-na')toast('当前模块已标记为不适用');
+        else if(action==='add-item')toast('已打开新增监测项入口');
+        else if(action==='materials')toast('研究资料模块暂未展开');
+        else if(action==='help')toast('这是可交互HTML原型');
+      }
+      const prompt=event.target.closest('[data-prompt]');if(prompt)sendMessage(prompt.dataset.prompt);
+      const close=event.target.closest('[data-modal-close]');if(close)closeModal(close.dataset.modalClose);
+    });
+    document.addEventListener('input',event=>{
+      if(event.target.matches('[data-field-index]')&&state.editDraft)state.editDraft[Number(event.target.dataset.fieldIndex)]=event.target.value;
+      if(event.target.id==='systemSearch'){state.systemSearch=event.target.value;render();const input=document.getElementById('systemSearch');if(input){input.focus();input.setSelectionRange(input.value.length,input.value.length);}}
+      if(event.target.id==='itemSearch'){state.itemSearch=event.target.value;render();const input=document.getElementById('itemSearch');if(input){input.focus();input.setSelectionRange(input.value.length,input.value.length);}}
+    });
+    document.addEventListener('submit',event=>{
+      if(event.target.id==='chatForm'){event.preventDefault();sendMessage(document.getElementById('chatInput').value);}
+      if(event.target.id==='createForm'){event.preventDefault();const newSystem={id:`system-${Date.now()}`,name:document.getElementById('systemName').value,code:`BEE-${document.getElementById('systemYear').value}`,year:Number(document.getElementById('systemYear').value),version:document.getElementById('systemVersion').value,region:document.getElementById('systemRegion').value,items:0,progress:0,status:'draft',updated:'刚刚'};systems.unshift(newSystem);state.systemId=newSystem.id;state.screen='detail';state.detailMode='view';state.editDraft=null;state.aiOpen=window.innerWidth>1100;closeModal('createModal');render();toast('指标体系已创建');}
+    });
+    document.querySelectorAll('.modal-backdrop').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal)closeModal(modal.id);}));
+    window.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.modal-backdrop.open').forEach(modal=>closeModal(modal.id));});
+    render();
+  </script>
+</body>
+</html>

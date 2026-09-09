@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "expert-database.api",
+  "appId": "expert-database",
+  "name": "指标体系查询服务",
+  "version": "1.1.0",
+  "description": "指标知识库 已明确登记的应用接口",
+  "operations": [
+    {
+      "operationId": "systems",
+      "method": "GET",
+      "path": "/systems",
+      "summary": "查询可访问指标体系",
+      "effect": "read"
+    },
+    {
+      "operationId": "system",
+      "method": "GET",
+      "path": "/systems/{id}",
+      "summary": "查询指标体系",
+      "effect": "read"
+    },
+    {
+      "operationId": "libraries",
+      "method": "GET",
+      "path": "/semantic-libraries",
+      "summary": "查询语义库",
+      "effect": "read"
+    }
+  ]
+}

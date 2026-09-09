@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "serviceId": "resource-manager.api",
+  "appId": "resource-manager",
+  "name": "资源台账与采集服务",
+  "version": "1.1.0",
+  "description": "资源管理 已明确登记的应用接口",
+  "operations": [
+    {
+      "operationId": "overview",
+      "method": "GET",
+      "path": "/overview",
+      "summary": "查询资源池、服务器与部署",
+      "effect": "read"
+    },
+    {
+      "operationId": "refresh",
+      "method": "POST",
+      "path": "/resources/{id}/refresh",
+      "summary": "立即采集服务器",
+      "effect": "write"
+    },
+    {
+      "operationId": "metadata",
+      "method": "POST",
+      "path": "/resources/{id}/metadata",
+      "summary": "更新资源资料",
+      "effect": "write"
+    }
+  ]
+}

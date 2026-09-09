@@ -1,4 +1,5 @@
 /** JSON Schema 值集合包含关系。仅证明支持的规则；未证明包含不等于已证明不兼容。 */
+import {hasComposition,proveComposition} from './schema-composition';
 export type Inclusion = {compatible:boolean;issues:Array<{path:string;reason:string}>};
 type Schema=boolean|Record<string,any>;
 const annotations=new Set(['title','description','examples','example','deprecated','$comment','$schema']);
@@ -12,7 +13,7 @@ function equal(a:any,b:any){return stringify(a)===stringify(b);}
 function lower(schema:any){let bound=[-Infinity,false] as [number,boolean];if(schema.minimum!==undefined)bound=[schema.minimum,false];if(schema.exclusiveMinimum!==undefined&&(schema.exclusiveMinimum>bound[0]||schema.exclusiveMinimum===bound[0]))bound=[schema.exclusiveMinimum,true];return bound;}
 function upper(schema:any){let bound=[Infinity,false] as [number,boolean];if(schema.maximum!==undefined)bound=[schema.maximum,false];if(schema.exclusiveMaximum!==undefined&&(schema.exclusiveMaximum<bound[0]||schema.exclusiveMaximum===bound[0]))bound=[schema.exclusiveMaximum,true];return bound;}
 
-/** 展开本平台允许的同文档引用；循环、引用兄弟约束和体积超限交给人工审阅。 */
+/** 展开本平台允许的同文档引用；兄弟约束按交集保留，循环和体积超限交给人工审阅。 */
 export function expandComparisonSchema(document:any,schema:Schema):Schema {
  let nodes=0;
  function visit(value:any,seen:Set<string>,depth:number):any{
@@ -21,9 +22,10 @@ export function expandComparisonSchema(document:any,schema:Schema):Schema {
   if(!value||typeof value!=='object'||Array.isArray(value))throw Error('Schema 格式无效');
   if(value.$ref){
    const ref=value.$ref;if(typeof ref!=='string'||!/^#\/components\/schemas\/[A-Za-z0-9._-]+$/.test(ref)||seen.has(ref))throw Error('Schema 引用循环或不受支持');
-   if(Object.keys(value).some(key=>key!=='$ref'&&!annotations.has(key)))throw Error('引用同时声明额外约束，需审阅');
    const target=document?.components?.schemas?.[ref.split('/')[3]];if(target===undefined)throw Error('Schema 引用不存在');
-   return visit(target,new Set([...seen,ref]),depth+1);
+   const expanded=visit(target,new Set([...seen,ref]),depth+1);
+   const siblings=Object.fromEntries(Object.entries(value).filter(([key])=>key!=='$ref'&&!annotations.has(key)));
+   return Object.keys(siblings).length?{allOf:[expanded,visit(siblings,seen,depth+1)]}:expanded;
   }
   const result:any={};
   for(const [key,child] of Object.entries(value)){
@@ -46,7 +48,16 @@ export function proveSchemaInclusion(source:Schema,target:Schema):Inclusion {
   if(++nodes>12000||depth>64)return fail(path,'结构超过自动比较上限');
   a=shape(a);b=shape(b);
   if(equal(a,b)||a===false||b===true||b!==false&&Object.keys(b).length===0)return true;
-  if(a===true)a={};if(b===false)return fail(path,'目标不再接受任何值');
+  if(a===true)a={};
+  if(hasComposition(a)||hasComposition(b)){
+   const result=proveComposition(a,b,{basicKeys:supported,same:equal,step:()=>{if(++nodes>12000)throw Error('组合结构超过自动比较上限');},includes:(left,right)=>{
+    const at=issues.length;const ok=visit(left,right,path,depth+1);issues.splice(at);return ok;
+   }});
+   if(result.compatible)return true;
+   for(const issue of result.issues)fail(path+issue.path,issue.reason);
+   return false;
+  }
+  if(b===false)return fail(path,'目标不再接受任何值');
   const x=a as Record<string,any>,y=b as Record<string,any>;
   const unknown=[...new Set([...Object.keys(x),...Object.keys(y)])].filter(key=>!supported.has(key));
   if(unknown.length)return fail(path,'涉及需审阅的约束：'+unknown.join('、'));

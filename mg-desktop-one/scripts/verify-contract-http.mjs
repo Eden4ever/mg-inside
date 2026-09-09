@@ -62,7 +62,18 @@ try{
   await request('/activation',{body:{...rollback,allowContractChange:true}});
   const restored=await current();assert.equal(restored.active.manifest.version,'1.1.0');assert.equal(restored.active.activeRevision,wide.active.activeRevision+1);
   assert.equal(restored.catalog.audit.length,wide.catalog.audit.length+1);
-  console.log('HTTP 发布回归通过：兼容切换、收紧拦截、拒绝不写入、明确审阅、管理员权限、CSRF、失效会话和并发修订。身份为替身，存储为临时 JSON。');
+  const combined=structuredClone(registration);combined.manifest.version='1.3.0';combined.contract.info.version='1.3.0';
+  combined.contract.components.schemas.MetadataInput.properties.owner={type:'string',anyOf:[{maxLength:200},{maxLength:300}]};
+  await request('/publications',{body:combined,status:201});
+  await request('/activation',{body:{serviceId,version:'1.3.0',expectedRevision:restored.active.activeRevision}});
+  const expanded=await current();assert.equal(expanded.active.manifest.version,'1.3.0');
+  const overlapping=structuredClone(combined);overlapping.manifest.version='1.4.0';overlapping.contract.info.version='1.4.0';
+  const owner=overlapping.contract.components.schemas.MetadataInput.properties.owner;owner.oneOf=owner.anyOf;delete owner.anyOf;
+  await request('/publications',{body:overlapping,status:201});const registered=await current();
+  const overlapRejected=await request('/activation',{body:{serviceId,version:'1.4.0',expectedRevision:expanded.active.activeRevision},status:409});
+  assert.match(overlapRejected.message,/契约差异/);
+  const afterOverlap=await current();assert.equal(afterOverlap.active.manifest.version,'1.3.0');assert.equal(afterOverlap.active.activeRevision,expanded.active.activeRevision);assert.deepEqual(afterOverlap.catalog.audit,registered.catalog.audit);
+  console.log('HTTP 发布回归通过：基本及 anyOf 兼容切换、oneOf 重叠分支拦截、拒绝不写入、明确审阅、管理员权限、CSRF、失效会话和并发修订。身份为替身，存储为临时 JSON。');
 }finally{
   if(child&&child.exitCode===null){const exited=once(child,'exit');child.kill();await exited;}
   identity.closeAllConnections();await new Promise(resolve=>identity.close(resolve));

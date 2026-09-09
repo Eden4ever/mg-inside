@@ -21,12 +21,14 @@ it('必填、对象额外字段与数组约束不能被忽略',()=>{
  expect(proveSchemaInclusion({type:'array'},{type:'array',uniqueItems:true}).compatible).toBe(false);
 });
 
-it('展开引用保留名为 description 的业务字段，循环和兄弟约束不误报兼容',()=>{
+it('展开引用保留业务字段和兄弟约束，循环不误报兼容',()=>{
  const document={components:{schemas:{Item:{type:'object',properties:{description:{type:'string',maxLength:10}}},Cycle:{$ref:'#/components/schemas/Cycle'}}}};
  const expanded=expandComparisonSchema(document,{$ref:'#/components/schemas/Item'});
  expect(expanded).toEqual(document.components.schemas.Item);
  expect(()=>expandComparisonSchema(document,{$ref:'#/components/schemas/Cycle'})).toThrow('循环');
- expect(()=>expandComparisonSchema(document,{$ref:'#/components/schemas/Item',additionalProperties:false})).toThrow('额外约束');
+ const constrained=expandComparisonSchema(document,{$ref:'#/components/schemas/Item',additionalProperties:false});
+ expect(constrained).toEqual({allOf:[expanded,{additionalProperties:false}]});
+ expect(proveSchemaInclusion(expanded,constrained).compatible).toBe(false);
  expect(proveSchemaInclusion({type:'string',format:'email'},{type:'string',format:'uuid'}).compatible).toBe(false);
  expect(proveSchemaInclusion({type:'string',allOf:[{minLength:1}]},{type:'string',allOf:[{minLength:2}]}).compatible).toBe(false);
 });

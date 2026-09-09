@@ -71,3 +71,12 @@ it('有效认证方案缺失或间接引用不能因引用文本未变而放行'
  for(const d of [a,b])d.components={securitySchemes:{session:{$ref:'#/components/headers/Session'}}};
  expect(review(a,b).some(c=>c.description.includes('尚未解析'))).toBe(true);
 });
+it('组合结构在请求和响应中保持相反方向，并返回排他条件的具体位置',()=>{
+ const a=document(),b=document();
+ body(a).properties.name={type:'string',anyOf:[{maxLength:10},{maxLength:20}]};
+ body(b).properties.name={type:'string',oneOf:[{maxLength:10},{maxLength:20}]};
+ expect(review(a,b).some(c=>c.path?.includes('/properties/name/oneOf/')&&c.description.includes('排他'))).toBe(true);
+ expect(review(b,a)).toEqual([]);
+ const c=document(),d=document();result(c).properties.id={anyOf:[{type:'number'},{type:'integer'}]};result(d).properties.id={oneOf:[{type:'number'},{type:'integer'}]};
+ expect(review(c,d)).toEqual([]);expect(review(d,c).some(c=>c.description.includes('响应结构'))).toBe(true);
+});

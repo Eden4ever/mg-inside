@@ -42,7 +42,7 @@ onMounted(async () => { if (typeof route.query.role === 'string') { mode.value =
 </script>
 
 <template><div class="primary-page users-page" v-loading="loading">
-  <div class="primary-page-heading"><div><h1>应用授权</h1><p>按用户或角色分配访问权限。有效授权为用户直接授权与所有角色授权的并集。</p></div><el-button :icon="Refresh" @click="load">刷新</el-button></div>
+  <div class="primary-page-heading"><div><h1>应用授权</h1><p>按用户或角色分配访问权限。有效授权包含用户、角色和管理范围授权。</p></div><el-button :icon="Refresh" @click="load">刷新</el-button></div>
   <el-alert v-if="error" :title="error" type="error" :closable="false" />
   <div class="authorization-subject"><el-radio-group v-model="mode" aria-label="授权管理视角" :disabled="saving"><el-radio-button value="user">用户</el-radio-button><el-radio-button value="role">角色</el-radio-button></el-radio-group>
     <el-select v-model="selected" filterable :disabled="saving" :aria-label="mode === 'user' ? '选择用户' : '选择角色'" :placeholder="mode === 'user' ? '选择用户' : '选择角色'"><el-option v-for="choice in choices" :key="choice.id" :value="choice.id" :label="choice.label" /></el-select>
@@ -52,8 +52,8 @@ onMounted(async () => { if (typeof route.query.role === 'string') { mode.value =
   <p v-else-if="currentRole" class="authorization-summary">{{ currentRole.name }} · {{ currentRole.members.length }} 位成员。{{ currentRole.key === 'platform-admin' ? '内置平台管理角色，应用访问仍需明确授权。' : '角色提供应用访问授权。' }}</p>
   <section v-if="selected" class="table-wrap table-panel"><div class="users-list-toolbar table-toolbar"><el-input v-model="query" :prefix-icon="Search" clearable placeholder="搜索应用" aria-label="搜索应用" /><span class="count">{{ rows.length }} 个应用</span></div>
     <el-table :data="rows" height="100%"><el-table-column label="应用" min-width="160"><template #default="{row}"><strong>{{ row.name }}</strong><small class="subtext">{{ row.clientId }}</small></template></el-table-column>
-      <el-table-column :label="mode === 'user' ? '用户直接授权' : '角色授权'" width="145"><template #default="{row}"><el-switch :model-value="row.direct" :disabled="saving || !row.enabled" :aria-label="`${row.name}${mode === 'user' ? '直接授权' : '角色授权'}`" @change="toggle(row)" /></template></el-table-column>
-      <el-table-column v-if="mode === 'user'" label="有效来源" min-width="230"><template #default="{row}"><div class="authorization-sources"><el-tag v-for="source in row.sources" :key="source.roleId || 'user'" size="small" effect="plain">{{ source.type === 'user' ? '用户直接授权' : `角色：${source.name}` }}</el-tag><span v-if="!row.sources.length">无授权来源</span></div></template></el-table-column>
+      <el-table-column :label="mode === 'user' ? '用户直接授权' : '角色授权'" width="145"><template #default="{row}"><el-switch :model-value="row.direct" :disabled="saving || !row.enabled || (mode==='role'&&['division-admin','organization-admin'].includes(currentRole?.key||''))" :aria-label="`${row.name}${mode === 'user' ? '直接授权' : '角色授权'}`" @change="toggle(row)" /></template></el-table-column>
+      <el-table-column v-if="mode === 'user'" label="有效来源" min-width="230"><template #default="{row}"><div class="authorization-sources"><el-tag v-for="source in row.sources" :key="source.scopeId || source.roleId || 'user'" size="small" effect="plain">{{ source.type === 'user' ? '用户直接授权' : `${source.type==='scope'?'管理范围':'角色'}：${source.name}` }}</el-tag><span v-if="!row.sources.length">无授权来源</span></div></template></el-table-column>
       <el-table-column label="访问状态" width="130"><template #default="{row}"><el-tag :type="(mode === 'user' ? row.effective : row.direct && row.enabled) ? 'success' : 'info'" effect="plain">{{ !row.enabled ? '应用已停用' : mode === 'user' ? (row.effective ? '允许访问' : '无有效授权') : row.direct ? '已授予角色' : '未授权' }}</el-tag></template></el-table-column>
       <el-table-column v-if="mode === 'user'" label="历史账号映射" min-width="150"><template #default="{row}"><span :title="row.localUserId || '新用户由业务应用自动建立身份'">{{ row.localUserId || '中心自动同步' }}</span></template></el-table-column>
     </el-table>

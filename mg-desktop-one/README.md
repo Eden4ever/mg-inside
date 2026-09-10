@@ -7,7 +7,8 @@
 ## 目录职责
 
 - `mg-platform`：唯一公共前端源码，包括框架、页头、导航、页面容器、会话客户端与桌面协议。三个既有应用及个人中心直接引用，不生成副本。
-- `mg-desktop-one`：桌面、窗口管理、应用目录、统一 API 代理、偏好。
+- `mg-desktop-one`：桌面前端、窗口管理及迁移验证。
+- `mg-platform-kernel`：Java 桌面后端，负责应用目录、统一 API 代理、偏好与服务治理。
 - `mg-personal-one`：个人资料、账号安全、桌面偏好。硬件安全密钥仍回统一认证原站点管理，保持已有 WebAuthn 来源与凭证绑定。
 - `mg-auth-one-identity`：统一令牌与身份管理、员工及应用授权、认证配置。
 - `mg-token-one`：同一仓库提供门户、控制台和文档三个独立桌面入口，继续共用业务后端。
@@ -32,10 +33,16 @@ Token One 三个入口使用各自应用 ID 独立授权；统一认证模式下
 在桌面目录运行：
 
 ```powershell
-node node_modules/tsx/dist/cli.mjs --env-file=.runtime/local/desktop.env apps/server/src/main.ts
+npm run dev:server
 # 另一个终端
 npm run dev:web
 ```
+
+`dev:server` 启动同级 `mg-platform-kernel` 的 Java JAR，默认读取 `.runtime/local/desktop.env`，可通过 `DESKTOP_ENV_FILE` 指定配置。首次启动前在内核项目执行 `scripts/java-maven.ps1 package`；优先使用 `JAVA_HOME`，其次使用项目便携 Java 25。
+
+应用注册现在仅从 `SERVICE_DATABASE_URL` 指向的数据库读取；缺少配置时不再回退内置目录。先按 [应用注册唯一来源](../mg-platform-kernel/docs/application-registration.md) 显式迁移注册清单；既有数据库可执行 `desktop-applications schema` 升级结构。`npm run test:applications` 使用独立 PostgreSQL 与 JAR 验证完整注册读取链路，不占用现有本地端口。
+
+旧 `apps/server` 暂时保留用于兼容对照和离线治理工具，默认开发入口已切换为 Java。内核构建仍引用旧目录中的 OpenAPI Schema，删除旧后端前需要迁移该资源及相关构建、验证脚本。
 
 其余应用在各自目录启动，显式传入上述环境文件。中心前端由后端提供，改动后在 `mg-auth-one-identity/web` 构建，再在 `mg-auth-one-identity` 执行 `node scripts/copy-static.mjs`。个人中心使用 `npm run dev`。现有本地服务不要重复占用端口，也不要停止非本任务服务。
 

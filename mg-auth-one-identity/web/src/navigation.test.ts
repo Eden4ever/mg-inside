@@ -4,6 +4,8 @@ import { identityAuthorizePath, managementReturnPath } from './navigation';
 describe('管理页与认证域名的返回路径边界', () => {
   it('仅允许已知管理页并保留用户和角色筛选', () => {
     expect(managementReturnPath('/roles')).toBe('/roles');
+    expect(managementReturnPath('/divisions')).toBe('/divisions');
+    expect(managementReturnPath('/organizations')).toBe('/organizations');
     expect(managementReturnPath('/applications?role=role-1&token=secret')).toBe('/applications?role=role-1');
     for (const path of ['//evil.invalid', '/\\evil.invalid', 'https://evil.invalid', '/apps/identity/roles', '/api/unified/authorize?client_id=x']) expect(managementReturnPath(path)).toBe('/');
   });

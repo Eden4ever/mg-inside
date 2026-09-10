@@ -3,6 +3,9 @@ import type { Prisma, PrismaClient } from '@prisma/client';
 
 type Database = PrismaClient | Prisma.TransactionClient;
 export const PLATFORM_ADMIN_KEY = 'platform-admin';
+export const DIVISION_ADMIN_KEY = 'division-admin';
+export const ORGANIZATION_ADMIN_KEY = 'organization-admin';
+export const SCOPED_ADMIN_KEYS = [DIVISION_ADMIN_KEY, ORGANIZATION_ADMIN_KEY];
 export type RoleSummary = { id: string; key: string | null; name: string };
 export const roleSelection = { id: true, key: true, name: true } as const;
 export const compatibilityRole = (roles: Array<{ key?: string | null }>): 'system_admin' | 'member' =>
@@ -10,6 +13,9 @@ export const compatibilityRole = (roles: Array<{ key?: string | null }>): 'syste
 
 /** 只初始化角色，不从废弃列重复导入成员，也不自动授予应用访问。 */
 export async function ensurePlatformAdministratorRole(db: Database) {
+  for (const [key, name] of [[DIVISION_ADMIN_KEY, '行政区划管理员'], [ORGANIZATION_ADMIN_KEY, '组织机构管理员']]) {
+    await db.role.upsert({ where: { key }, create: { key, name, description: '仅管理指定范围内配置的应用授权。' }, update: {} });
+  }
   return db.role.upsert({ where: { key: PLATFORM_ADMIN_KEY },
     create: { key: PLATFORM_ADMIN_KEY, name: '平台管理员', description: '管理平台用户、角色、应用授权和认证配置；应用访问仍需显式授权。' }, update: {} });
 }

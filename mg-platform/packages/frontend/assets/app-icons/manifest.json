@@ -203,5 +203,13 @@
       87.799,
       76.077
     ]
+  },
+  "low-alt-cockpit": {
+    "src": "low-alt-cockpit.svg",
+    "inset": 0,
+    "shape": "original",
+    "symbol": "plane",
+    "palette": "ocean",
+    "image": "low-alt-cockpit-fluent.svg"
   }
 }

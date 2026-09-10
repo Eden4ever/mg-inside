@@ -5,7 +5,7 @@ import type { ApplicationDialogController } from '@mg-inside/frontend';
 import { request, normalizeExternalUrl, type ApplicationInput, type ManagedApplication } from '../api';
 const props = defineProps<{ params: Record<string, unknown>; controller: ApplicationDialogController }>();
 const applicationId = typeof props.params.applicationId === 'string' ? props.params.applicationId : '';
-const form = reactive<ApplicationInput>({ name: '', url: '', description: '', icon: 'knowledge' });
+const form = reactive<ApplicationInput>({ name: '', url: '', description: '', developer: '', icon: 'knowledge' });
 const baseline = ref(JSON.stringify(form)), loading = ref(Boolean(applicationId)), saving = ref(false), finished = ref(false), loadError = ref(''), formError = ref('');
 const dirty = computed(() => !loading.value && JSON.stringify(form) !== baseline.value);
 const readController = new AbortController(); let disposed = false, prompt: Promise<boolean> | undefined;
@@ -25,7 +25,7 @@ async function load() {
     if (disposed) return;
     const item = data.items.find(value => value.id === applicationId);
     if (!item || item.kind !== 'external' || !item.editable) throw new Error('此应用不可编辑，可能已被移除');
-    Object.assign(form, { name: item.name, url: item.entryUrl, description: item.description, icon: item.icon }); baseline.value = JSON.stringify(form);
+    Object.assign(form, { name: item.name, url: item.entryUrl, description: item.description, developer: item.developer || '', icon: item.icon }); baseline.value = JSON.stringify(form);
   } catch (error) { if (!disposed) loadError.value = (error as Error).message; }
   finally { if (!disposed) loading.value = false; }
 }
@@ -36,7 +36,8 @@ async function save() {
     const name = form.name.trim();
     if (!name || name.length > 80) throw new Error('应用名称不能为空，最多 80 个字符');
     if (form.description.trim().length > 200) throw new Error('说明最多 200 个字符');
-    input = { name, description: form.description.trim(), url: normalizeExternalUrl(form.url), icon: form.icon };
+    if (form.developer.trim().length > 120) throw new Error('开发者名称最多 120 个字符');
+    input = { name, description: form.description.trim(), developer: form.developer.trim(), url: normalizeExternalUrl(form.url), icon: form.icon };
   } catch (error) { formError.value = (error as Error).message; return; }
   saving.value = true;
   try {
@@ -52,9 +53,14 @@ onUnmounted(() => { disposed = true; readController.abort(); clearGuard(); });
   <div class="external-application-editor">
     <div v-if="loading" class="editor-state" role="status">正在读取外链应用…</div>
     <div v-else-if="loadError" class="editor-state"><el-alert :title="loadError" type="error" :closable="false" show-icon /><el-button @click="load">重试</el-button></div>
-    <el-form v-else label-position="top" :disabled="saving || finished" @submit.prevent="save"><el-form-item label="应用名称" required><el-input v-model="form.name" maxlength="80" placeholder="例如：团队文档" aria-label="应用名称" /></el-form-item><el-form-item label="网页地址" required><el-input v-model="form.url" maxlength="2048" placeholder="https://example.com" aria-label="网页地址" /></el-form-item><el-form-item label="说明"><el-input v-model="form.description" type="textarea" :rows="3" maxlength="200" show-word-limit aria-label="应用说明" /></el-form-item></el-form>
+    <el-form v-else label-position="top" :disabled="saving || finished" @submit.prevent="save">
+      <el-form-item label="应用名称" required><el-input v-model="form.name" maxlength="80" aria-label="应用名称" /></el-form-item>
+      <el-form-item label="开发者"><el-input v-model="form.developer" maxlength="120" aria-label="开发者" /></el-form-item>
+      <el-form-item label="网页地址" required><el-input v-model="form.url" maxlength="2048" placeholder="https://example.com" aria-label="网页地址" /></el-form-item>
+      <el-form-item label="图标"><el-select v-model="form.icon" aria-label="应用图标"><el-option v-for="option in [{value:'knowledge',label:'知识'}, {value:'token',label:'模型'}, {value:'identity',label:'身份'}, {value:'personal',label:'个人'}]" :key="option.value" :label="option.label" :value="option.value" /></el-select></el-form-item>
+      <el-form-item label="说明"><el-input v-model="form.description" type="textarea" :rows="3" maxlength="200" show-word-limit aria-label="应用说明" /></el-form-item>
+    </el-form>
     <el-alert v-if="formError" :title="formError" type="error" :closable="false" show-icon />
-    <p class="editor-note">部分网站不允许在桌面窗口内显示，需要在浏览器中打开；添加外链不会改变该网站的安全限制。</p>
     <footer class="editor-actions"><el-button :disabled="saving || finished" @click="controller.cancel()">取消</el-button><el-button type="primary" :loading="saving" :disabled="loading || Boolean(loadError) || finished" @click="save">{{ applicationId ? '保存修改' : '添加应用' }}</el-button></footer>
   </div>
 </template>

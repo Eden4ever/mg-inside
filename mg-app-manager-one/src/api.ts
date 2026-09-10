@@ -1,7 +1,8 @@
 import { desktop, platformSession } from './desktop';
-export type ApplicationIcon = 'knowledge' | 'token' | 'identity' | 'personal';
-export interface ManagedApplication { id: string; name: string; description: string; kind: 'system' | 'default' | 'internal' | 'external'; version?:string|null; editable: boolean; available: boolean; entryUrl: string; defaultPath: string; icon: ApplicationIcon; minWidth: number; minHeight: number }
-export interface ApplicationInput { name: string; url: string; description: string; icon: ApplicationIcon }
+export type ApplicationIcon = string;
+export interface ManagedApplication { runtimeReady?: boolean }
+export interface ManagedApplication { id: string; name: string; description: string; developer?: string; registeredVersion?: string; kind: 'system' | 'default' | 'internal' | 'external'; version?:string|null; editable: boolean; available: boolean; enabled?: boolean; revision?: number; createdAt?: string; updatedAt?: string; entryUrl: string; defaultPath: string; allowedPaths?: string[]; icon: ApplicationIcon; minWidth: number; minHeight: number; defaultMaximized?: boolean }
+export interface ApplicationInput { name: string; url: string; description: string; developer: string; icon: ApplicationIcon }
 export async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const mutation = !['GET', 'HEAD'].includes(options.method || 'GET');
   const end = mutation ? desktop.beginRequest() : () => {};

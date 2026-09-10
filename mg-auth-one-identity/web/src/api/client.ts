@@ -1,12 +1,13 @@
 import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/browser';
 import { desktop, usesDesktopAuthentication } from '../desktop';
-import { applicationPresentation } from '@mg-inside/frontend';
 export interface SessionUser {userId:string;username:string|null;name:string;departmentName:string|null;role:string;authSource:string;identityAuthorized?:boolean;roles?:Array<{id:string;key:string|null;name:string}>}
-export interface ManagedUser {id:string;username:string|null;displayName:string;departmentName:string|null;role:string;roles?:Array<{id:string;key:string|null;name:string}>;status:string;lastLoginAt:string|null;createdAt:string;updatedAt:string;wecomBound:boolean;wecomIdentities:Array<{id:string;externalUserId:string}>;zentaoIdentities?:Array<{id:string;account:string;server:string}>}
+export interface ManagedUser {id:string;username:string|null;displayName:string;departmentName:string|null;role:string;roles?:Array<{id:string;key:string|null;name:string}>;organizations?:Array<{id:string;name:string;enabled:boolean;isPrimary:boolean;title?:string|null}>;status:string;lastLoginAt:string|null;createdAt:string;updatedAt:string;wecomBound:boolean;wecomIdentities:Array<{id:string;externalUserId:string}>;zentaoIdentities?:Array<{id:string;account:string;server:string}>}
 export interface Application {clientId:string;name:string;enabled:boolean;foundation:boolean;memberships:Array<{userId:string;localUserId:string|null;enabled:boolean}>}
 export interface MyApplication {clientId:string;name:string;url:string|null}
 export interface ManagedRole {id:string;key:string|null;name:string;description:string;members:Array<{userId:string}>;applications:Array<{clientId:string;enabled:boolean}>}
-export interface ApplicationAccess {clientId:string;name:string;enabled:boolean;direct:boolean;localUserId:string|null;effective:boolean;foundation:boolean;sources:Array<{type:'user'|'role';roleId?:string;name?:string}>}
+export interface Division {id:string;parentId:string|null;code:string;name:string;type:string;level:number;standard:boolean;enabled:boolean;managedDivisions:Array<{officialId:string}>; _count?:{children:number;organizations:number;hostingZones:number}}
+export interface Organization {id:string;name:string;creditCode:string;type:string;divisionId:string|null;enabled:boolean;division:Division|null;plaques:Array<{id:string;name:string}>;_count?:{members:number}}
+export interface ApplicationAccess {clientId:string;name:string;enabled:boolean;direct:boolean;localUserId:string|null;effective:boolean;foundation:boolean;sources:Array<{type:'user'|'role'|'scope';roleId?:string;scopeId?:string;name?:string}>}
 export interface AccountSecurityState {recentRecovery?:boolean;mfaEnabled:boolean;methods:string[];email:string|null;totpBound:boolean;keys:Array<{id:string;name:string;createdAt:string;lastUsedAt:string|null}>}
 export interface MailSettings {enabled:boolean;host:string;port:number;security:'tls'|'starttls';username:string;fromAddress:string;fromName:string;revision:number;hasPassword:boolean}
 let csrfToken='';
@@ -22,10 +23,10 @@ export async function request<T=any>(path:string,options:RequestInit={}):Promise
 }
 export const send=<T=any>(path:string,body:unknown,method='POST')=>request<T>(path,{method,body:JSON.stringify(body)});
 export const api = {
-  users:()=>request<ManagedUser[]>('/users'), applications:async()=> (await request<Application[]>('/applications')).map(app => ({ ...app, name: applicationPresentation(app.clientId)?.name || app.name })), myApplications:()=>request<MyApplication[]>('/applications/mine'),
+  users:()=>request<ManagedUser[]>('/users'), applications:()=>request<Application[]>('/applications'), myApplications:()=>request<MyApplication[]>('/applications/mine'),
   createUser:(body:unknown)=>send<ManagedUser>('/users',body), updateUser:(id:string,body:unknown)=>send<ManagedUser>(`/users/${encodeURIComponent(id)}`,body,'PATCH'),
   grant:(client:string,user:string,localUserId:string|null,enabled:boolean)=>send(`/applications/${encodeURIComponent(client)}/users/${encodeURIComponent(user)}`,{localUserId,enabled},'PUT'),
-  userApplications:async(id:string)=>(await request<ApplicationAccess[]>(`/applications/users/${encodeURIComponent(id)}`)).map(app => ({ ...app, name: applicationPresentation(app.clientId)?.name || app.name })),
+  userApplications:(id:string)=>request<ApplicationAccess[]>(`/applications/users/${encodeURIComponent(id)}`),
   roles:()=>request<ManagedRole[]>('/roles'),
   createRole:(body:{name:string;description:string})=>send<ManagedRole>('/roles',body),
   updateRole:(id:string,body:{name:string;description:string})=>send<ManagedRole>(`/roles/${encodeURIComponent(id)}`,body,'PATCH'),
@@ -33,6 +34,9 @@ export const api = {
   roleMember:(id:string,userId:string,enabled:boolean)=>send(`/roles/${encodeURIComponent(id)}/members/${encodeURIComponent(userId)}`,{enabled},'PUT'),
   roleGrant:(id:string,clientId:string,enabled:boolean)=>send(`/roles/${encodeURIComponent(id)}/applications/${encodeURIComponent(clientId)}`,{enabled},'PUT'),
   userRoles:(userId:string,roleIds:string[])=>send(`/roles/users/${encodeURIComponent(userId)}`,{roleIds},'PUT'),
+  divisions:()=>request<Division[]>('/divisions'), organizations:()=>request<Organization[]>('/organizations'), userOrganizations:(id:string)=>request<Array<{organizationId:string;isPrimary:boolean;organization:Organization}>>(`/users/${encodeURIComponent(id)}/organizations`),
+  createDivision:(body:unknown)=>send<Division>('/divisions',body), updateDivision:(id:string,body:unknown)=>send<Division>(`/divisions/${encodeURIComponent(id)}`,body,'PATCH'), removeDivision:(id:string)=>send(`/divisions/${encodeURIComponent(id)}`,{},'DELETE'),
+  createOrganization:(body:unknown)=>send<Organization>('/organizations',body), updateOrganization:(id:string,body:unknown)=>send<Organization>(`/organizations/${encodeURIComponent(id)}`,body,'PATCH'), removeOrganization:(id:string)=>send(`/organizations/${encodeURIComponent(id)}`,{},'DELETE'),
   changePassword:(currentPassword:string,newPassword:string)=>send('/auth/change-password',{currentPassword,newPassword}),
   accountSecurity:()=>request<AccountSecurityState>('/account-security'),
   authorizeSecurity:(password:string,code?:unknown,method?:string)=>send<{token:string}>('/account-security/authorize',{password,code,method}),

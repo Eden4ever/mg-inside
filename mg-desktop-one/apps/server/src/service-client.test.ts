@@ -22,13 +22,14 @@ describe('公共服务客户端',()=>{
     await Promise.resolve();await Promise.resolve();await Promise.resolve();expect(done).not.toHaveBeenCalled();
     deliver({ok:true});await result;expect(done).toHaveBeenCalledTimes(1);
   });
-  it('已登记操作走统一出口，未登记操作保留旧代理',()=>{
-    expect(serviceRequestUrl('https://desktop.example','resource-manager','/overview')).toBe('https://desktop.example/api/services/apps/resource-manager/overview');
-    expect(serviceRequestUrl('https://desktop.example','files','/entries?page=2')).toContain('/api/services/apps/files/entries?page=2');
-    expect(serviceRequestUrl('https://desktop.example','token-one','/portal/models')).toContain('/api/services/apps/token-one/portal/models');
+  it('统一由服务端注册库决定路由，前端不按静态清单分流',()=>{
+    expect(serviceRequestUrl('https://desktop.example','resource-manager','/overview')).toBe('https://desktop.example/api/apps/resource-manager/overview');
+    expect(serviceRequestUrl('https://desktop.example','files','/entries?page=2')).toContain('/api/apps/files/entries?page=2');
+    expect(serviceRequestUrl('https://desktop.example','token-one','/portal/models')).toContain('/api/apps/token-one/portal/models');
     expect(serviceRequestUrl('https://desktop.example','token-one-console','/portal/models')).toContain('/api/apps/token-one-console/portal/models');
     expect(serviceRequestUrl('https://desktop.example','files','/unregistered')).toContain('/api/apps/files/unregistered');
     expect(()=>serviceRequestUrl('https://desktop.example','files','/../secret')).toThrow();
+    expect(()=>serviceRequestUrl('https://desktop.example','../other','/entries')).toThrow();
     expect(serviceInvocationUrl('https://desktop.example','files.api','get',{id:'123'})).toContain('?path.id=123');
   });
   it('写请求带 CSRF，失败不重试并释放忙碌状态',async()=>{
@@ -37,7 +38,7 @@ describe('公共服务客户端',()=>{
     vi.stubGlobal('fetch',fetch);
     const client=createApplicationClient({origin:'https://desktop.example',appId:'resource-manager',session:{csrf:async()=>'csrf-test',clear},onExpired:expired,beginRequest});
     await expect(client.request('/resources/server1/metadata',{method:'POST',body:'{}'})).rejects.toMatchObject({status:403,requestId:'request-test'});
-    expect(fetch).toHaveBeenCalledTimes(1);expect(fetch.mock.calls[0][0]).toContain('/api/services/apps/');
+    expect(fetch).toHaveBeenCalledTimes(1);expect(fetch.mock.calls[0][0]).toContain('/api/apps/');
     expect(fetch.mock.calls[0][1].headers.get('X-CSRF-Token')).toBe('csrf-test');
     expect(done).toHaveBeenCalledTimes(1);expect(expired).not.toHaveBeenCalled();
   });

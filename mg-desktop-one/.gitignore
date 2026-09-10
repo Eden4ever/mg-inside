@@ -5,3 +5,4 @@ dist/
 private/
 test-results/
 playwright-report/
+**/target/

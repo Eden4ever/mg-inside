@@ -9,6 +9,9 @@ export const router=createRouter({history:createWebHistory(import.meta.env.BASE_
   {path:'/admin',component:()=>import('./components/Users.vue'),meta:{title:'员工身份',admin:true}},
   {path:'/applications',component:()=>import('./components/Applications.vue'),meta:{title:'应用授权',admin:true}},
   {path:'/roles',component:()=>import('./components/Roles.vue'),meta:{title:'角色管理',admin:true}},
+  {path:'/divisions',component:()=>import('./components/Divisions.vue'),meta:{title:'行政区划管理',admin:true}},
+  {path:'/organizations',component:()=>import('./components/Organizations.vue'),meta:{title:'组织机构管理',admin:true}},
+  {path:'/scopes',component:()=>import('./components/Scopes.vue'),meta:{title:'范围应用权限',admin:true}},
   {path:'/access-denied',component:()=>import('./components/AccessDenied.vue'),meta:{title:'管理访问受限',foundation:true}},
   {path:'/account',component:()=>import('./components/AccessDenied.vue'),meta:{title:'正在前往个人中心',foundation:true}},
   {path:'/settings',component:()=>import('./components/Settings.vue'),meta:{title:'认证配置',admin:true}},
@@ -28,7 +31,11 @@ router.beforeEach(async to=>{
   const unifiedNext=!usesDesktopAuthentication&&identityAuthorizePath(sessionStorage.getItem('identity-unified-return'),location.origin);
   if(unifiedNext){sessionStorage.removeItem('identity-unified-return');location.assign(unifiedNext);return false}
   if(!to.meta.foundation&&!user.value.identityAuthorized)return '/access-denied';
-  if(to.meta.admin&&!user.value.roles?.some(role=>role.key==='platform-admin'))return '/access-denied';
+  if(to.meta.admin&&!user.value.roles?.some(role=>role.key==='platform-admin')) {
+    const scoped=user.value.roles?.some(role=>['division-admin','organization-admin'].includes(role.key||''));
+    if(scoped&&to.path==='/')return '/scopes';
+    if(!scoped||to.path!=='/scopes')return '/access-denied';
+  }
   return true;
 });
 desktop.configure({onNavigate:async path=>{await router.push(path)}});

@@ -1,4 +1,4 @@
-const managementPaths = new Set(['/', '/admin', '/applications', '/roles', '/account', '/settings', '/access-denied']);
+const managementPaths = new Set(['/', '/admin', '/applications', '/roles', '/divisions', '/organizations', '/account', '/settings', '/access-denied']);
 
 /** 登录返回值只接受管理路由，不接受外部地址、桌面挂载前缀或认证端点。 */
 export function managementReturnPath(input: unknown): string {

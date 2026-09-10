@@ -2,6 +2,7 @@ import { Body, Controller, Get, Inject, Param, Put, Req, ConflictException } fro
 import { PrismaService } from './prisma.service';
 import { actorFromRequest, requireRole, FoundationIdentity, type AuthenticatedRequest } from './auth';
 import { effectiveApplications, applicationAccess, ensureIdentityAdministrator, isFoundationApplication, lockAuthorization } from './application-access';
+import { kernelApplications, applicationReference } from './kernel-applications';
 
 @Controller('applications')
 export class ApplicationsController {
@@ -9,9 +10,9 @@ export class ApplicationsController {
   @FoundationIdentity() @Get('mine')
   async mine(@Req() req: AuthenticatedRequest) {
     const actor = actorFromRequest(req);
-    const links: Record<string, string> = { 'token-one': 'https://token.meta-gravity.com', 'expert-database': 'https://yshj.meta-gravity.com/knowledge-base-inside' };
+    const applications = await kernelApplications();
     const rows = await effectiveApplications(this.prisma, actor.userId);
-    return rows.filter(row => row.effective).map(row => ({ ...row, url: process.env.NODE_ENV === 'production' ? links[row.clientId] || null : null }));
+    return rows.filter(row => row.effective).map(row => { const app=applications.find(a=>a.id===row.clientId); return { ...row, url: app?.runtimeReady ? app.entryUrl : null }; });
   }
   @Get('users/:userId')
   async forUser(@Param('userId') userId: string, @Req() req: AuthenticatedRequest) {
@@ -22,8 +23,9 @@ export class ApplicationsController {
   @Get()
   async list(@Req() req: AuthenticatedRequest) {
     requireRole(actorFromRequest(req), ['system_admin']);
-    const applications = await this.prisma.application.findMany({ include: { memberships: { select: { userId: true, localUserId: true, enabled: true } } } });
-    return applications.map(app => ({ ...app, foundation: isFoundationApplication(app.clientId) }));
+    const applications = await kernelApplications();
+    const memberships = await this.prisma.applicationUser.findMany({select:{clientId:true,userId:true,localUserId:true,enabled:true}});
+    return applications.map(app => ({ ...app, clientId:app.id, memberships:memberships.filter(m=>m.clientId===app.id), foundation: app.kind==='default' || isFoundationApplication(app.id) }));
   }
   @Put(':clientId/users/:userId')
   async grant(@Param('clientId') clientId: string, @Param('userId') userId: string,
@@ -34,7 +36,8 @@ export class ApplicationsController {
     const localUserId = body.localUserId?.trim() || null;
     return this.prisma.$transaction(async tx => {
       await lockAuthorization(tx);
-      const app = await tx.application.findUnique({ where: { clientId } });
+      const app = await applicationReference(tx,clientId);
+      if(app.kind==='default')throw new ConflictException('基础应用无需分配授权');
       const user = await tx.user.findUnique({ where: { id: userId } });
       if (!app || !user) throw new ConflictException('应用或用户不存在');
       const existing = await tx.applicationUser.findUnique({ where: { clientId_userId: { clientId, userId } } });

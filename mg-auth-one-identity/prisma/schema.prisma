@@ -47,10 +47,83 @@ model User {
   recoveryCodes   RecoveryCode[]
   sessions         AuthSession[]
   auditLogs        AuditLog[]
+  loginAttempts    LoginAttempt[]
   wecomIdentities  WeComIdentity[]
   zentaoIdentities ZentaoIdentity[]
   applications ApplicationUser[]
   roles UserRole[]
+  organizations UserOrganization[]
+  managementScopes ScopeAdministrator[]
+  scopeGrants ScopeGrant[]
+}
+
+model Division {
+  id           String       @id @default(uuid())
+  parentId     String?
+  code         String       @unique
+  name         String
+  type         String       @default("district")
+  level        Int          @default(1)
+  standard     Boolean      @default(true)
+  enabled      Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  parent       Division?    @relation("DivisionTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children     Division[]   @relation("DivisionTree")
+  organizations Organization[]
+  managedDivisions DivisionMapping[] @relation("ManagedDivisions")
+  hostingZones DivisionMapping[] @relation("HostingZones")
+  managementScope ManagementScope?
+  @@index([parentId])
+  @@index([name])
+}
+
+model DivisionMapping {
+  zoneId String
+  officialId String
+  zone Division @relation("ManagedDivisions", fields: [zoneId], references: [id], onDelete: Cascade)
+  official Division @relation("HostingZones", fields: [officialId], references: [id], onDelete: Restrict)
+  @@id([zoneId, officialId])
+  @@index([officialId])
+}
+
+model Organization {
+  id          String    @id @default(uuid())
+  name        String
+  creditCode  String    @unique
+  type        String    @default("institution")
+  divisionId  String?
+  enabled     Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  division    Division? @relation(fields: [divisionId], references: [id], onDelete: Restrict)
+  plaques     OrganizationPlaque[]
+  members     UserOrganization[]
+  managementScope ManagementScope?
+  @@index([divisionId])
+  @@index([name])
+}
+
+model UserOrganization {
+  userId         String
+  organizationId String
+  isPrimary      Boolean      @default(false)
+  title          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  @@id([userId, organizationId])
+  @@index([organizationId])
+}
+
+model OrganizationPlaque {
+  id             String       @id @default(uuid())
+  organizationId String
+  name           String
+  createdAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  @@unique([organizationId, name])
 }
 
 model ZentaoIdentity {
@@ -66,10 +139,50 @@ model ZentaoIdentity {
 
 model Application {
   clientId String @id
-  name String
-  enabled Boolean @default(true)
   memberships ApplicationUser[]
   roles RoleApplication[]
+  scopeApplications ScopeApplication[]
+  @@map("ApplicationReference")
+}
+
+model ManagementScope {
+  id String @id @default(uuid())
+  divisionId String? @unique
+  organizationId String? @unique
+  division Division? @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  organization Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  administrators ScopeAdministrator[]
+  applications ScopeApplication[]
+}
+
+model ScopeAdministrator {
+  scopeId String
+  userId String
+  scope ManagementScope @relation(fields: [scopeId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([scopeId, userId])
+  @@index([userId])
+}
+
+model ScopeApplication {
+  scopeId String
+  clientId String
+  scope ManagementScope @relation(fields: [scopeId], references: [id], onDelete: Cascade)
+  application Application @relation(fields: [clientId], references: [clientId], onDelete: Restrict)
+  grants ScopeGrant[]
+  @@id([scopeId, clientId])
+  @@index([clientId])
+}
+
+model ScopeGrant {
+  scopeId String
+  clientId String
+  userId String
+  createdAt DateTime @default(now())
+  scopeApplication ScopeApplication @relation(fields: [scopeId, clientId], references: [scopeId, clientId], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@id([scopeId, clientId, userId])
+  @@index([userId, clientId])
 }
 
 model Role {
@@ -257,6 +370,29 @@ model WeComLoginState {
   createdAt        DateTime  @default(now())
 
   @@index([expiresAt, usedAt])
+}
+
+/// 登录尝试流水：成功与失败都追加，作为安全中心「登录历史」的唯一来源。
+/// 失败必须在计数事务提交后写入，不能因回滚丢失；账号不存在时 userId 为空但保留输入账号。
+model LoginAttempt {
+  id          String   @id @default(uuid())
+  userId      String?
+  username    String
+  displayName String?
+  result      String
+  reason      String?
+  source      String
+  secondMethod String?
+  ipAddress   String?
+  userAgent   String?
+  sessionId   String?
+  at          DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([at])
+  @@index([userId, at])
+  @@index([username, at])
+  @@index([result, at])
 }
 
 model AuditLog {

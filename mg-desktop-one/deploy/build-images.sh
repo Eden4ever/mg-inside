@@ -8,13 +8,14 @@ test -d "$release_dir"
 test "$(realpath "$release_dir")" = "$release_dir"
 cd "$release_dir"
 sha256sum --check --quiet SHA256SUMS
-for image in mg-desktop-service mg-files-service mg-identity-service; do
+for image in mg-desktop-service mg-service-registry-admin mg-files-service mg-identity-service; do
   if docker image inspect "$image:$release_id" >/dev/null 2>&1; then
     echo "镜像已存在，禁止覆盖：$image:$release_id" >&2
     exit 1
   fi
 done
 docker build -f deploy/desktop.Dockerfile -t "mg-desktop-service:$release_id" .
+docker build -f deploy/service-admin.Dockerfile -t "mg-service-registry-admin:$release_id" .
 docker build -f deploy/files.Dockerfile -t "mg-files-service:$release_id" .
 docker build -f deploy/identity.Dockerfile -t "mg-identity-service:$release_id" .
 echo "新镜像已构建，尚未切换生产服务。"

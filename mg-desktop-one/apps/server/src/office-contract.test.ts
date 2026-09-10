@@ -16,7 +16,8 @@ it('Office 六个公共操作通过真实 HTTP 验证，保存以签名回调落
  try{
   const {manifest,contract}=JSON.parse(await readFile('../mg-office-one/services/registration.json','utf8'));
   const doc=validateContract(contract,manifest);expect(doc.servers[0].url).toBe('/api/office');
-  expect(()=>validateContract({...contract,servers:[{url:'/api'}]},manifest)).toThrow('相对路径');
+  expect(()=>validateContract({...contract,servers:[{url:'//external.example/api'}]},manifest)).toThrow('相对路径');
+  expect(validateContract({...contract,servers:[{url:'/provider/office'}]},manifest).servers[0].url).toBe('/provider/office');
   expect(manifest.operations.some((op:any)=>op.path.includes('integrations'))).toBe(false);
   const secret='office-http-contract-test-secret-'.repeat(2),content=await readFile('../mg-files-one/server/office-templates/document.docx');let engineError=0,command:any;
   engine=createServer(async(req,res)=>{

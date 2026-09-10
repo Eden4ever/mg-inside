@@ -21,24 +21,28 @@
       "path": "/services",
       "title": "服务目录",
       "component": "services",
-      "icon": "box",
-      "description": "查看应用提供的 API、版本与调用方式。"
+      "icon": "box"
     },
     {
       "id": "activity",
       "path": "/activity",
-      "title": "调用记录",
+      "title": "统计分析",
       "component": "services",
-      "icon": "clock",
-      "description": "查看统一出口的请求结果与耗时。"
+      "icon": "clock"
+    },
+    {
+      "id": "tags",
+      "path": "/services/tags",
+      "title": "标签管理",
+      "component": "services",
+      "icon": "layout-grid"
     },
     {
       "id": "register",
       "path": "/register",
       "title": "注册服务",
       "component": "services",
-      "icon": "file-text",
-      "description": "导入应用服务清单，发布经过校验的接口。"
+      "icon": "file-text"
     }
   ],
   "navigation": {
@@ -47,7 +51,7 @@
     "pageIds": [
       "services",
       "activity",
-      "register"
+      "tags"
     ]
   },
   "browser": {

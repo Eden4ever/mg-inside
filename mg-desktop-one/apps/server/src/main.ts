@@ -101,7 +101,15 @@ async function session(req: IncomingMessage) {
 }
 async function grantedApplications(token: string) {
   const authorized = new Set((await unifiedIdentity.applications(token)).map(a => a.id));
-  const candidates = registry.filter(app => essentialApplicationIds.has(app.id) || authorized.has(app.authorizationAppId || app.id));
+  const candidates: RegisteredApp[] = [];
+  for (const app of registry) {
+    if (essentialApplicationIds.has(app.id) || authorized.has(app.authorizationAppId || app.id)) { candidates.push(app); continue; }
+    // 新登记 audience 在目录接口同步异常时仍以中心的精确内省为最终授权依据，不能因目录缺项误放开。
+    if (app.id === 'low-alt-cockpit') {
+      try { await unifiedIdentity.introspect(token, app.authorizationAppId || app.id); candidates.push(app); }
+      catch { /* 未获该 audience 授权时保持不可见。 */ }
+    }
+  }
   return (await Promise.all(candidates.map(async app => await hasRequiredRole(app, token) ? app : null))).filter((app): app is RegisteredApp => app !== null);
 }
 function csrf(req: IncomingMessage, value: string) {

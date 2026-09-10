@@ -20,7 +20,8 @@ export function validateContract(input:unknown,manifest:ServiceManifest):Service
   if(!input||typeof input!=='object'||Array.isArray(input))throw new ContractError('OpenAPI 契约必须是 JSON 对象');
   if(Buffer.byteLength(JSON.stringify(input))>512*1024)throw new ContractError('OpenAPI 契约不能超过 512 KiB');
   let count=0;
-  const providerBase=manifest.appId==='office-one'?'/api/office':'/api';
+  const providerBase=(input as any).servers?.[0]?.url ?? '/';
+  if(typeof providerBase!=='string'||!/^\/(?:[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\/?)?$/.test(providerBase))throw new ContractError('契约服务器必须是安全的提供方相对路径');
   const schemas:unknown[]=[];
   function inspect(value:any,depth=0){
     if(++count>30000||depth>48)throw new ContractError('OpenAPI 契约结构过大或嵌套过深');

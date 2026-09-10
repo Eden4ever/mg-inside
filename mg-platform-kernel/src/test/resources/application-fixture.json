@@ -1,0 +1,285 @@
+[
+  {
+    "id": "service-manager",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "服务管理",
+    "description": "服务目录、API 出口与调用记录",
+    "entryUrl": "http://127.0.0.1:14381",
+    "upstream": "http://127.0.0.1:14200/api",
+    "defaultPath": "/services",
+    "allowedPaths": [
+      "/services",
+      "/activity",
+      "/register"
+    ],
+    "allowedApiPaths": [
+      "/auth/me"
+    ],
+    "icon": "service-manager",
+    "kind": "system",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 820,
+    "minHeight": 560,
+    "defaultMaximized": false
+  },
+  {
+    "id": "resource-manager",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "资源管理",
+    "description": "资源池、服务器与应用部署状态",
+    "entryUrl": "http://127.0.0.1:14371",
+    "upstream": "http://127.0.0.1:14370/api",
+    "defaultPath": "/pools",
+    "allowedPaths": [
+      "/pools",
+      "/servers",
+      "/deployments",
+      "/audit"
+    ],
+    "allowedApiPaths": [
+      "/overview",
+      "/resources"
+    ],
+    "icon": "resource-manager",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 820,
+    "minHeight": 560,
+    "defaultMaximized": false
+  },
+  {
+    "id": "low-alt-cockpit",
+    "runtimePolicy": { "apiMode": "registered" },
+    "name": "低空驾驶舱",
+    "description": "区域低空运行总览、任务调度与空域监管",
+    "entryUrl": "https://lowalt.meta-gravity.com",
+    "upstream": "https://lowalt.meta-gravity.com/cockpit/api",
+    "defaultPath": "/cockpit/",
+    "allowedPaths": [
+      "/cockpit"
+    ],
+    "allowedApiPaths": [],
+    "icon": "low-alt-cockpit",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 1024,
+    "minHeight": 640,
+    "defaultMaximized": true
+  },
+  {
+    "id": "office-one",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "Office One",
+    "description": "在线编辑文档、表格与演示文稿",
+    "entryUrl": "http://127.0.0.1:14361",
+    "upstream": "http://127.0.0.1:14350/api/office",
+    "defaultPath": "/documents",
+    "allowedPaths": [
+      "/documents"
+    ],
+    "allowedApiPaths": [
+      "/status",
+      "/documents",
+      "/sessions"
+    ],
+    "icon": "office-one",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 820,
+    "minHeight": 560,
+    "defaultMaximized": false
+  },
+  {
+    "id": "files",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "文件",
+    "description": "个人文件、桌面、收藏与回收站",
+    "entryUrl": "http://127.0.0.1:14351",
+    "upstream": "http://127.0.0.1:14350/api",
+    "defaultPath": "/my-files",
+    "allowedPaths": [
+      "/my-files",
+      "/recent",
+      "/favorites",
+      "/trash",
+      "/dialogs"
+    ],
+    "allowedApiPaths": null,
+    "icon": "files",
+    "kind": "default",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 760,
+    "minHeight": 480,
+    "defaultMaximized": false
+  },
+  {
+    "id": "personal-center",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "个人中心",
+    "description": "个人资料、账号安全与全局偏好",
+    "entryUrl": "http://127.0.0.1:14331",
+    "upstream": "http://127.0.0.1:14200/api",
+    "defaultPath": "/profile",
+    "allowedPaths": [
+      "/profile",
+      "/security",
+      "/preferences",
+      "/notifications"
+    ],
+    "allowedApiPaths": [
+      "/auth/me",
+      "/auth/change-password",
+      "/auth/logout",
+      "/account-security"
+    ],
+    "icon": "personal-center",
+    "kind": "default",
+    "authorizationAppId": "personal-center",
+    "requiredRole": null,
+    "minWidth": 680,
+    "minHeight": 480,
+    "defaultMaximized": false
+  },
+  {
+    "id": "app-manager",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "应用管理",
+    "description": "查看平台应用，管理自己的外链应用",
+    "entryUrl": "http://127.0.0.1:14341",
+    "upstream": "http://127.0.0.1:14200/api",
+    "defaultPath": "/applications",
+    "allowedPaths": [
+      "/applications"
+    ],
+    "allowedApiPaths": [
+      "/auth/me"
+    ],
+    "icon": "app-manager",
+    "kind": "system",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 760,
+    "minHeight": 480,
+    "defaultMaximized": false
+  },
+  {
+    "id": "expert-database",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "指标知识库",
+    "description": "指标体系、依据材料与研究工作台",
+    "entryUrl": "http://127.0.0.1:14321",
+    "upstream": "http://127.0.0.1:14320/api",
+    "defaultPath": "/systems",
+    "allowedPaths": [
+      "/systems",
+      "/semantic-libraries",
+      "/model-management",
+      "/mail-settings",
+      "/users",
+      "/profile"
+    ],
+    "allowedApiPaths": null,
+    "icon": "expert-database",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 900,
+    "minHeight": 520,
+    "defaultMaximized": true
+  },
+  {
+    "id": "token-one",
+    "runtimePolicy": { "apiMode": "compatibility" },
+    "name": "Token One",
+    "description": "模型服务、API 调试与使用管理",
+    "entryUrl": "http://127.0.0.1:14311",
+    "upstream": "http://127.0.0.1:14310/api",
+    "defaultPath": "/dashboard",
+    "allowedPaths": [
+      "/dashboard",
+      "/my-usage",
+      "/playground"
+    ],
+    "allowedApiPaths": null,
+    "icon": "token-one",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 700,
+    "minHeight": 480,
+    "defaultMaximized": false
+  },
+  {
+    "id": "token-one-console",
+    "runtimePolicy": { "apiMode": "compatibility", "versionOwnerAppId": "token-one", "rolePath": "/auth/me/token-one-console" },
+    "name": "Token One 控制台",
+    "description": "模型、用户、额度与网关管理",
+    "entryUrl": "http://127.0.0.1:14311",
+    "upstream": "http://127.0.0.1:14310/api",
+    "defaultPath": "/admin/stats",
+    "allowedPaths": [
+      "/admin"
+    ],
+    "allowedApiPaths": null,
+    "icon": "token-one-console",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 900,
+    "minHeight": 520,
+    "defaultMaximized": false
+  },
+  {
+    "id": "token-one-docs",
+    "runtimePolicy": { "apiMode": "compatibility", "versionOwnerAppId": "token-one", "allowedApiMethods": ["GET", "HEAD"] },
+    "name": "Token One 文档",
+    "description": "接入说明、接口文档与开发指南",
+    "entryUrl": "http://127.0.0.1:14311",
+    "upstream": "http://127.0.0.1:14310/api",
+    "defaultPath": "/docs",
+    "allowedPaths": [
+      "/docs"
+    ],
+    "allowedApiPaths": [
+      "/auth/me/token-one-docs",
+      "/public/models"
+    ],
+    "icon": "token-one-docs",
+    "kind": "internal",
+    "authorizationAppId": null,
+    "requiredRole": null,
+    "minWidth": 760,
+    "minHeight": 480,
+    "defaultMaximized": false
+  },
+  {
+    "id": "identity",
+    "runtimePolicy": { "apiMode": "compatibility", "rolePointer": "/user/role" },
+    "name": "统一身份认证",
+    "description": "账号、角色与应用访问授权",
+    "entryUrl": "http://127.0.0.1:14200",
+    "upstream": "http://127.0.0.1:14200/api",
+    "defaultPath": "/",
+    "allowedPaths": [
+      "/",
+      "/admin",
+      "/roles",
+      "/applications",
+      "/settings",
+      "/access-denied"
+    ],
+    "allowedApiPaths": null,
+    "icon": "identity",
+    "kind": "system",
+    "authorizationAppId": null,
+    "requiredRole": "system_admin",
+    "minWidth": 680,
+    "minHeight": 480,
+    "defaultMaximized": false
+  }
+]

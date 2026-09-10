@@ -14,10 +14,14 @@ import { MailConfigController } from './mail-config.controller';
 import { ApplicationsController } from './applications.controller';
 import { ZentaoAuthService } from './zentao-auth';
 import { RolesController } from './roles.controller';
+import { LoginAttemptService } from './login-attempt';
+import { LoginAttemptController } from './login-attempt.controller';
+import { OrganizationController } from './organization.controller';
+import { ScopeController } from './scope.controller';
 
 @Module({
-  controllers: [AuthController, UsersController, AccountSecurityController, MailConfigController, ApplicationsController, RolesController],
+  controllers: [AuthController, UsersController, AccountSecurityController, MailConfigController, ApplicationsController, RolesController, LoginAttemptController, OrganizationController, ScopeController],
   providers: [PrismaService, AuthService, WeComAuthService, ZentaoAuthService, AccountSecurityService, SecurityKeyService,
-    EmailOtpService, MailConfigService, { provide: APP_GUARD, useClass: SessionAuthGuard }],
+    EmailOtpService, MailConfigService, LoginAttemptService, { provide: APP_GUARD, useClass: SessionAuthGuard }],
 })
 export class AppModule {}

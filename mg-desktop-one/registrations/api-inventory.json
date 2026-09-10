@@ -1,0 +1,6160 @@
+{
+  "schemaVersion": 1,
+  "categories": [
+    {
+      "id": "system",
+      "name": "系统服务"
+    },
+    {
+      "id": "application",
+      "name": "应用服务"
+    },
+    {
+      "id": "data",
+      "name": "数据服务"
+    },
+    {
+      "id": "component",
+      "name": "组件服务"
+    },
+    {
+      "id": "engine",
+      "name": "引擎服务"
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "business",
+      "name": "业务接口"
+    },
+    {
+      "id": "management",
+      "name": "管理接口"
+    },
+    {
+      "id": "self",
+      "name": "本人账号"
+    },
+    {
+      "id": "identity",
+      "name": "身份协议"
+    },
+    {
+      "id": "machine",
+      "name": "机器集成"
+    },
+    {
+      "id": "external",
+      "name": "外部开放协议"
+    },
+    {
+      "id": "platform",
+      "name": "平台控制面"
+    },
+    {
+      "id": "probe",
+      "name": "健康探针"
+    },
+    {
+      "id": "asset",
+      "name": "页面与静态资源"
+    }
+  ],
+  "entries": [
+    {
+      "id": "api-324c8cbd093f7b371aed5216",
+      "provider": "desktop-one",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · GET /api/applications",
+      "method": "GET",
+      "path": "/api/applications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-b62efaf707d033f96a442f63",
+      "provider": "desktop-one",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · POST /api/applications",
+      "method": "POST",
+      "path": "/api/applications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-2ccdf02a99a8e4358b951359",
+      "provider": "desktop-one",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · DELETE /api/applications/{id}",
+      "method": "DELETE",
+      "path": "/api/applications/{id}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-0875e967e593f0b13eaefbba",
+      "provider": "desktop-one",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · PUT /api/applications/{id}",
+      "method": "PUT",
+      "path": "/api/applications/{id}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-2842e827aa46b04342d86f41",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "应用网关",
+      "boundary": "platform",
+      "auth": "目标应用 audience、路径白名单与服务状态",
+      "summary": "应用网关 · ANY /api/apps/{appId}/{path*}",
+      "method": "ANY",
+      "path": "/api/apps/{appId}/{path*}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
+        "line": 139
+      },
+      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
+    },
+    {
+      "id": "api-3fd39cadf0d1eb0c073e7f4d",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "公开",
+      "summary": "运行健康 · ANY /api/health",
+      "method": "ANY",
+      "path": "/api/health",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 46
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-29aff39fd4db43d853353860",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · DELETE /api/notifications",
+      "method": "DELETE",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 106
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-5c750d5219da5008a581771d",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/notifications",
+      "method": "GET",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 106
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-2b1ae28c241951308dbc26a9",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · PATCH /api/notifications",
+      "method": "PATCH",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 106
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-307bcf4e8f45603b44bae739",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · POST /api/notifications",
+      "method": "POST",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 106
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-1d02d0af62fd8b18dfd762f0",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/preferences",
+      "method": "GET",
+      "path": "/api/preferences",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 111
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-eba77b4d7da987f28fb255d3",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · PUT /api/preferences",
+      "method": "PUT",
+      "path": "/api/preferences",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 111
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-1f465825c92a2f4beb2200be",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · GET /api/service-registry",
+      "method": "GET",
+      "path": "/api/service-registry",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 57
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-f6ea5dbef1a182913e7d55c9",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/activation",
+      "method": "POST",
+      "path": "/api/service-registry/activation",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 95
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-8d17ee299d56c2fc5b3a29c1",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "API 台账",
+      "boundary": "platform",
+      "auth": "服务管理授权及管理员角色；写入须 CSRF",
+      "summary": "API 台账 · GET /api/service-registry/api-inventory",
+      "method": "GET",
+      "path": "/api/service-registry/api-inventory",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 49
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-28a767e5109a5e2ff6e91b5b",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "API 台账",
+      "boundary": "platform",
+      "auth": "服务管理授权及管理员角色；写入须 CSRF",
+      "summary": "API 台账 · POST /api/service-registry/api-inventory",
+      "method": "POST",
+      "path": "/api/service-registry/api-inventory",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 49
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-a6f3854a3a5f4f3fdaf77059",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · GET /api/service-registry/insights",
+      "method": "GET",
+      "path": "/api/service-registry/insights",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 55
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-d13bd82810a041df4a1799e7",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/lifecycle",
+      "method": "POST",
+      "path": "/api/service-registry/lifecycle",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 107
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-86ff4623ed0b04f1dd0b9415",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/publications",
+      "method": "POST",
+      "path": "/api/service-registry/publications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 74
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-0774e89fe8834dc9c9d7b010",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · GET /api/service-registry/workspace",
+      "method": "GET",
+      "path": "/api/service-registry/workspace",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 54
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-1ff92409d80c7a5af8a35786",
+      "provider": "desktop-one",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/workspace",
+      "method": "POST",
+      "path": "/api/service-registry/workspace",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 54
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-32c2a962eda5de35d7ce3895",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "应用网关",
+      "boundary": "platform",
+      "auth": "目标应用 audience、路径白名单与服务状态",
+      "summary": "应用网关 · ANY /api/services/apps/{appId}/{path*}",
+      "method": "ANY",
+      "path": "/api/services/apps/{appId}/{path*}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
+        "line": 45
+      },
+      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
+    },
+    {
+      "id": "api-a26f5e145e793a5833e8e061",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "应用网关",
+      "boundary": "platform",
+      "auth": "目标应用 audience、路径白名单与服务状态",
+      "summary": "应用网关 · ANY /api/services/invoke/{serviceId}/{operationId}",
+      "method": "ANY",
+      "path": "/api/services/invoke/{serviceId}/{operationId}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
+        "line": 46
+      },
+      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
+    },
+    {
+      "id": "api-b3b3bfe7bee61e5278618a79",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/session",
+      "method": "GET",
+      "path": "/api/session",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 78
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-209a264913f20c3f85d9c83e",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "桌面登录",
+      "boundary": "identity",
+      "auth": "PKCE、状态 Cookie 与统一身份",
+      "summary": "桌面登录 · GET /auth/callback",
+      "method": "GET",
+      "path": "/auth/callback",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 58
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-6de4046155d9d250464ae5cf",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · POST /auth/logout",
+      "method": "POST",
+      "path": "/auth/logout",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 85
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-7bca766ca020facc77f955ca",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "personal-center",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · POST /auth/renew",
+      "method": "POST",
+      "path": "/auth/renew",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 86
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-9da3d0c0e66069c2ed25f3d4",
+      "provider": "desktop-one",
+      "appIds": [
+        "desktop-one",
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "桌面登录",
+      "boundary": "identity",
+      "auth": "PKCE、状态 Cookie 与统一身份",
+      "summary": "桌面登录 · GET /auth/start",
+      "method": "GET",
+      "path": "/auth/start",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 47
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-95f928476cf8157b896b051e",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · GET /account-security",
+      "method": "GET",
+      "path": "/api/account-security",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 8
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-ab1daaea9053c697f2659cb0",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/authorize",
+      "method": "POST",
+      "path": "/api/account-security/authorize",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-b8ecf2db87ce44783e6ee1cc",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/authorize/email",
+      "method": "POST",
+      "path": "/api/account-security/authorize/email",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 10
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-1d0c1d738806219487fabefd",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/authorize/key",
+      "method": "POST",
+      "path": "/api/account-security/authorize/key",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 11
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-0a6e36453208753445187389",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/email/confirm",
+      "method": "POST",
+      "path": "/api/account-security/email/confirm",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 16
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-09d8a741054caec5f896b5d2",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/email/remove",
+      "method": "POST",
+      "path": "/api/account-security/email/remove",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 17
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-4dd5b464f5576b28a9ec49e4",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/email/start",
+      "method": "POST",
+      "path": "/api/account-security/email/start",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 15
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-c2acfcb4a759fe865777e58b",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/key/confirm",
+      "method": "POST",
+      "path": "/api/account-security/key/confirm",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 13
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-df9de241bc0b92e78ae0d4fb",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/key/remove",
+      "method": "POST",
+      "path": "/api/account-security/key/remove",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 14
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-6a9cda944e5003ec0ee4cb74",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/key/start",
+      "method": "POST",
+      "path": "/api/account-security/key/start",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 12
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-c4165938d42f02db748aa011",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/mfa",
+      "method": "POST",
+      "path": "/api/account-security/mfa",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 21
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-62ef9c3f3658a08a9fabb68c",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/totp/confirm",
+      "method": "POST",
+      "path": "/api/account-security/totp/confirm",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 19
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-cff8114602a8b9a3a8936386",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/totp/remove",
+      "method": "POST",
+      "path": "/api/account-security/totp/remove",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 20
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-c457d07ffd298b503c8b27b2",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/totp/start",
+      "method": "POST",
+      "path": "/api/account-security/totp/start",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/account-security.controller.ts",
+        "line": 18
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-007ec2719492944cd6de6a51",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/change-password",
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 85
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-0553947f6cbb1eaac4531a05",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/login",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 22
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-d8df5aaa0dc422ff4747276a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/logout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 78
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-a7850ce3d829ee227681af45",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /auth/me",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-52e431fe45cd26d1efafb1c6",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/mfa",
+      "method": "POST",
+      "path": "/api/auth/mfa",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 57
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-8782696acd80317599750de7",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/mfa/email",
+      "method": "POST",
+      "path": "/api/auth/mfa/email",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 70
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-b7fc74bf873979db6ed9d00f",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/mfa/key",
+      "method": "POST",
+      "path": "/api/auth/mfa/key",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 74
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-d09ff06df9651aa788da5451",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/pending",
+      "method": "GET",
+      "path": "/api/auth/pending",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 36
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-0f0c26cd9d08b0fe9a4c1a7f",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/setup",
+      "method": "POST",
+      "path": "/api/auth/setup",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 43
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-3f28f0675e2f5874ed44aa1d",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/sso/callback",
+      "method": "GET",
+      "path": "/api/auth/sso/callback",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/identity.controller.ts",
+        "line": 21
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-fb0b767cac7d37422ccd68b5",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/sso/start",
+      "method": "GET",
+      "path": "/api/auth/sso/start",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/identity.controller.ts",
+        "line": 16
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-11bb7474605ad7bd52b2676a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/sso/status",
+      "method": "GET",
+      "path": "/api/auth/sso/status",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/identity.controller.ts",
+        "line": 14
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-6c816d4c0b1a080d01066f3b",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/wecom/callback",
+      "method": "GET",
+      "path": "/api/auth/wecom/callback",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 107
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-6b5bfead1ef12229abce2330",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/wecom/start",
+      "method": "POST",
+      "path": "/api/auth/wecom/start",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 98
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-24bcdaedd54116fe844a8372",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/wecom/status",
+      "method": "GET",
+      "path": "/api/auth/wecom/status",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/auth.controller.ts",
+        "line": 92
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-4f6a1eaab5ca4fc98f6389dd",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "健康探针",
+      "summary": "运行健康 · GET /health",
+      "method": "GET",
+      "path": "/api/health",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 17
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-d9176b0520580362e2dca340",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · GET /indicator-versions/{versionId}",
+      "method": "GET",
+      "path": "/api/indicator-versions/{versionId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 29
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-264d2f10c1029e717c4a00a4",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · GET /indicator-versions/{versionId}/audit-logs",
+      "method": "GET",
+      "path": "/api/indicator-versions/{versionId}/audit-logs",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 43
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6ff36899cf893ff4845dcfb3",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · POST /indicator-versions/{versionId}/clone",
+      "method": "POST",
+      "path": "/api/indicator-versions/{versionId}/clone",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 41
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7252e99c98df5a5a40b81c63",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · POST /indicator-versions/{versionId}/import",
+      "method": "POST",
+      "path": "/api/indicator-versions/{versionId}/import",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 48
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-aeb5e5b8c3fc520aa1a4fc55",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · POST /indicator-versions/{versionId}/import/preflight",
+      "method": "POST",
+      "path": "/api/indicator-versions/{versionId}/import/preflight",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 46
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-8200fdf2c68537b8df9f7be4",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · GET /indicator-versions/{versionId}/indicators/{nodeId}/evidence",
+      "method": "GET",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/evidence",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 64
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-d90f5de8287163e196b13d49",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · DELETE /indicator-versions/{versionId}/indicators/{nodeId}/evidence/{evidenceId}",
+      "method": "DELETE",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/evidence/{evidenceId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 70
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-0559460475850dd3835ba64d",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · PUT /indicator-versions/{versionId}/indicators/{nodeId}/evidence/{evidenceId}",
+      "method": "PUT",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/evidence/{evidenceId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 68
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-ad8c8a1db8962aee2e6d71e0",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · PATCH /indicator-versions/{versionId}/indicators/{nodeId}/modules/{moduleKey}",
+      "method": "PATCH",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/modules/{moduleKey}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 55
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-64819a2db6a9277eb664c807",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · POST /indicator-versions/{versionId}/indicators/{nodeId}/modules/{moduleKey}/evidence",
+      "method": "POST",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/modules/{moduleKey}/evidence",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 66
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-9fbc120a5fbcef6942ab72fe",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · GET /indicator-versions/{versionId}/indicators/{nodeId}/revisions",
+      "method": "GET",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/revisions",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 58
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7c080ab2e87a5d848284471a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · PATCH /indicator-versions/{versionId}/indicators/{nodeId}/summary",
+      "method": "PATCH",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/summary",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 53
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-24f95caaaae980adc0590088",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · GET /indicator-versions/{versionId}/indicators/{nodeId}/workspace",
+      "method": "GET",
+      "path": "/api/indicator-versions/{versionId}/indicators/{nodeId}/workspace",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-381b3d1ae1e1bb41bfc892d9",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · POST /indicator-versions/{versionId}/nodes",
+      "method": "POST",
+      "path": "/api/indicator-versions/{versionId}/nodes",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 33
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c84b6293680125054596505e",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · DELETE /indicator-versions/{versionId}/nodes/{nodeId}",
+      "method": "DELETE",
+      "path": "/api/indicator-versions/{versionId}/nodes/{nodeId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 39
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-e8cc86f7592d4a5bc473138e",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · PATCH /indicator-versions/{versionId}/nodes/{nodeId}",
+      "method": "PATCH",
+      "path": "/api/indicator-versions/{versionId}/nodes/{nodeId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 35
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-a327cac78aaccc57c297ca1f",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · POST /indicator-versions/{versionId}/nodes/reorder",
+      "method": "POST",
+      "path": "/api/indicator-versions/{versionId}/nodes/reorder",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 37
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6e209cdc096c0b8166b06061",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标版本",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标版本 · GET /indicator-versions/{versionId}/tree",
+      "method": "GET",
+      "path": "/api/indicator-versions/{versionId}/tree",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 31
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-dc70a32ef25b9f52231a9934",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "邮件配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "邮件配置 · GET /mail-settings",
+      "method": "GET",
+      "path": "/api/mail-settings",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/mail-config.controller.ts",
+        "line": 8
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-706d5c56c8c27802f8823f2a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "邮件配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "邮件配置 · PUT /mail-settings",
+      "method": "PUT",
+      "path": "/api/mail-settings",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/mail-config.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-0da55f5d0af377ba08b21759",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "邮件配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "邮件配置 · POST /mail-settings/test",
+      "method": "POST",
+      "path": "/api/mail-settings/test",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/mail-config.controller.ts",
+        "line": 10
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-0f0d90368c9cf166458f178c",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "模型配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "模型配置 · GET /model-management",
+      "method": "GET",
+      "path": "/api/model-management",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/model-config.controller.ts",
+        "line": 8
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6bf39437bd78ba6905ae4cd4",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "模型配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "模型配置 · PUT /model-management",
+      "method": "PUT",
+      "path": "/api/model-management",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/model-config.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-22a374d4c4b2d993b29ec0b7",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "模型配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "模型配置 · POST /model-management/test",
+      "method": "POST",
+      "path": "/api/model-management/test",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/model-config.controller.ts",
+        "line": 10
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-41f29907d641ee09007b067b",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "语义库",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "语义库 · GET /semantic-libraries",
+      "method": "GET",
+      "path": "/api/semantic-libraries",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/semantic.controller.ts",
+        "line": 7
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-b10b3b2e21a3c2e0bc67d833",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "语义库",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "语义库 · POST /semantic-libraries",
+      "method": "POST",
+      "path": "/api/semantic-libraries",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/semantic.controller.ts",
+        "line": 8
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c90775efba77d0a6b15a9b2a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "语义库",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "语义库 · DELETE /semantic-libraries/{id}",
+      "method": "DELETE",
+      "path": "/api/semantic-libraries/{id}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/semantic.controller.ts",
+        "line": 12
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-49ea6fb4a7d6b7496f91abb6",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "语义库",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "语义库 · GET /semantic-libraries/{id}",
+      "method": "GET",
+      "path": "/api/semantic-libraries/{id}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/semantic.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-b16cbfba278b841df30c5021",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "语义库",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "语义库 · POST /semantic-libraries/{id}/build",
+      "method": "POST",
+      "path": "/api/semantic-libraries/{id}/build",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/semantic.controller.ts",
+        "line": 10
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-b69b43b9185adcabeaafac3a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "语义库",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "语义库 · POST /semantic-libraries/{id}/search",
+      "method": "POST",
+      "path": "/api/semantic-libraries/{id}/search",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/semantic.controller.ts",
+        "line": 11
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-95b91fdfbf3d53881103af04",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · GET /systems",
+      "method": "GET",
+      "path": "/api/systems",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 19
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-9baea2b9c22d7d5d07247d29",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · POST /systems",
+      "method": "POST",
+      "path": "/api/systems",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 20
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6aa4ab6dfb7a328f10d635f1",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · DELETE /systems/{systemId}",
+      "method": "DELETE",
+      "path": "/api/systems/{systemId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 24
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-2f06617755e03008d273f28a",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · GET /systems/{systemId}",
+      "method": "GET",
+      "path": "/api/systems/{systemId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 26
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-a001983571b5335379608401",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · PATCH /systems/{systemId}",
+      "method": "PATCH",
+      "path": "/api/systems/{systemId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 22
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-481b6635bd41d6514f65a924",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · GET /systems/{systemId}/access",
+      "method": "GET",
+      "path": "/api/systems/{systemId}/access",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/system-access.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-e9143d5bdfcf94d073591820",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · DELETE /systems/{systemId}/access/{userId}",
+      "method": "DELETE",
+      "path": "/api/systems/{systemId}/access/{userId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/system-access.controller.ts",
+        "line": 24
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-732b324c840fade818162780",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · PUT /systems/{systemId}/access/{userId}",
+      "method": "PUT",
+      "path": "/api/systems/{systemId}/access/{userId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/system-access.controller.ts",
+        "line": 19
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-f179ae8471e106d702d2021e",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · GET /systems/{systemId}/access/researchers",
+      "method": "GET",
+      "path": "/api/systems/{systemId}/access/researchers",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/system-access.controller.ts",
+        "line": 14
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-cdb476a271f4b204d29350e4",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · GET /systems/{systemId}/templates",
+      "method": "GET",
+      "path": "/api/systems/{systemId}/templates",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 13
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-cc4790507fc612fa90098c01",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "指标体系",
+      "boundary": "business",
+      "auth": "应用用户会话及资源权限",
+      "summary": "指标体系 · PUT /systems/{systemId}/templates",
+      "method": "PUT",
+      "path": "/api/systems/{systemId}/templates",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/api.controller.ts",
+        "line": 14
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-390c44a88c24bdddcd7cd789",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · GET /users",
+      "method": "GET",
+      "path": "/api/users",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-25cbb4fed68f915e3a834ab7",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users",
+      "method": "POST",
+      "path": "/api/users",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 34
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-35cd3ead96a10b19fa309e3b",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · PATCH /users/{userId}",
+      "method": "PATCH",
+      "path": "/api/users/{userId}",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 39
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-81383d1f3d32a67107174fbb",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/reset-password",
+      "method": "POST",
+      "path": "/api/users/{userId}/reset-password",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 44
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-1d757e090ed66a308fe6644f",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/wecom-identities",
+      "method": "POST",
+      "path": "/api/users/{userId}/wecom-identities",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 49
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-0ddd2588955e4227dd00bc52",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/wecom-identities/{identityId}/unbind",
+      "method": "POST",
+      "path": "/api/users/{userId}/wecom-identities/{identityId}/unbind",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 54
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-12851823d01ee8f6400cda2c",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · GET /users/researchers",
+      "method": "GET",
+      "path": "/api/users/researchers",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 16
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-ad3296f7819a643b494a2c71",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/wecom-sync",
+      "method": "POST",
+      "path": "/api/users/wecom-sync",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 27
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-7d8e454c718f2bf595f0caa7",
+      "provider": "expert-database",
+      "appIds": [
+        "expert-database"
+      ],
+      "category": "data",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · GET /users/wecom-sync/status",
+      "method": "GET",
+      "path": "/api/users/wecom-sync/status",
+      "source": {
+        "file": "mg-expert-database/apps/api/src/users.controller.ts",
+        "line": 21
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。 独立认证与统一身份模式的可用性由提供方配置决定。"
+    },
+    {
+      "id": "api-e9c01470c8606bc93b35ac84",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "self",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "当前文件用户",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 49
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-47c5fa54fb74798bcfe5fcdf",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "桌面文件",
+      "method": "GET",
+      "path": "/api/desktop",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 50
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-edfcb41bd502eed38f426162",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "查询文件",
+      "method": "GET",
+      "path": "/api/entries",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 51
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-37331de0b5df46958770d42f",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "移至回收站",
+      "method": "DELETE",
+      "path": "/api/entries/{id}",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-43bc84025b690cc631bbbec8",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "查询文件元数据",
+      "method": "GET",
+      "path": "/api/entries/{id}",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-53410b3f15804b8c7bd8c6b9",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "更新文件",
+      "method": "PATCH",
+      "path": "/api/entries/{id}",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-0ae202898f012e081a0c4a04",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "登记最近访问",
+      "method": "POST",
+      "path": "/api/entries/{id}/access",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-4e3fd50b4c2d0e2bfdcec114",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "下载文件",
+      "method": "GET",
+      "path": "/api/entries/{id}/content",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-8a02b8f46e053b75de2d0021",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "移动文件",
+      "method": "POST",
+      "path": "/api/entries/{id}/move",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-6c98d6b0f2b1116d50201781",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "永久删除文件",
+      "method": "DELETE",
+      "path": "/api/entries/{id}/permanent",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-eb39c57672980faecb8453d0",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "恢复文件",
+      "method": "POST",
+      "path": "/api/entries/{id}/restore",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 55
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-615cb24aae163aaf46372f90",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "查询文件夹",
+      "method": "GET",
+      "path": "/api/folders",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 52
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-635a3ebc087005a14a01f52a",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "创建文件夹",
+      "method": "POST",
+      "path": "/api/folders",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 52
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-f0c2a4a90677caaefae5a29d",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 文档",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "查询文档",
+      "method": "GET",
+      "path": "/api/office/documents",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 28
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-ebd067cdb4910ef8d79fb588",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 文档",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "新建文档",
+      "method": "POST",
+      "path": "/api/office/documents",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 28
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-7ab62e341754c72f59358c52",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 文档",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "打开文档",
+      "method": "POST",
+      "path": "/api/office/documents/{id}/open",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 41
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-d988f54c2f4a5bf32b72410b",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 文档",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "查询编辑与保存状态",
+      "method": "GET",
+      "path": "/api/office/sessions/{id}",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 43
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-eb79525847bea8f70744bca2",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 文档",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "保存文档",
+      "method": "POST",
+      "path": "/api/office/sessions/{id}/save",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 45
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-c0b809266fafe241f1b60cf7",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 文档",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "编辑服务配置状态",
+      "method": "GET",
+      "path": "/api/office/status",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 27
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-ad54cf733b0c16e32f4a6e0d",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "文件管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "上传文件",
+      "method": "POST",
+      "path": "/api/uploads",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 54
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-125b44963256426cab73a75f",
+      "provider": "files",
+      "appIds": [
+        "files"
+      ],
+      "category": "application",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "公开",
+      "summary": "运行健康 · GET /health",
+      "method": "GET",
+      "path": "/health",
+      "source": {
+        "file": "mg-files-one/server/http.ts",
+        "line": 19
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-97f7dbbd597b3920293aecca",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 集成",
+      "boundary": "machine",
+      "auth": "会话签名令牌；回调校验 ONLYOFFICE 签名",
+      "summary": "Office 集成 · POST /integrations/office/{id}/callback",
+      "method": "POST",
+      "path": "/integrations/office/{id}/callback",
+      "source": {
+        "file": "mg-files-one/server/office.ts",
+        "line": 96
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-a9d549afbb1dab9ce73efb4a",
+      "provider": "files",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "component",
+      "domain": "Office 集成",
+      "boundary": "machine",
+      "auth": "会话签名令牌；回调校验 ONLYOFFICE 签名",
+      "summary": "Office 集成 · GET /integrations/office/{id}/document",
+      "method": "GET",
+      "path": "/integrations/office/{id}/document",
+      "source": {
+        "file": "mg-files-one/server/office.ts",
+        "line": 89
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-59967f06636ba6cc4f775bcd",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /",
+      "method": "GET",
+      "path": "/",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-11814ff2fde2f20e19c51027",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /.well-known/oauth-authorization-server",
+      "method": "GET",
+      "path": "/.well-known/oauth-authorization-server",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-4a6bb542161fd8b499d46fc7",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /.well-known/oauth-authorization-server",
+      "method": "OPTIONS",
+      "path": "/.well-known/oauth-authorization-server",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-9b2c1d2800c69a21c762d58e",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /.well-known/openid-configuration",
+      "method": "GET",
+      "path": "/.well-known/openid-configuration",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-36027ea81989bde4bfb217e0",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /.well-known/openid-configuration",
+      "method": "OPTIONS",
+      "path": "/.well-known/openid-configuration",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-a8ed0e2a359a1ff54b5412ae",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /access-denied",
+      "method": "GET",
+      "path": "/access-denied",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-222cdbee78965607da4940b6",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /account",
+      "method": "GET",
+      "path": "/account",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-b8a8d619747a45cc9e580013",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /admin",
+      "method": "GET",
+      "path": "/admin",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-36c072db582d8ef5df86044c",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · GET /account-security",
+      "method": "GET",
+      "path": "/api/account-security",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 9
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-7a818443e88f51058f919ca2",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/authorize",
+      "method": "POST",
+      "path": "/api/account-security/authorize",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 10
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-992c482086dd1fcc547b1262",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/authorize/email",
+      "method": "POST",
+      "path": "/api/account-security/authorize/email",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 11
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-3e86eff552407ba580fa46e9",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/authorize/key",
+      "method": "POST",
+      "path": "/api/account-security/authorize/key",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 12
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-21c24a74cae02d8b484536ef",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/email/confirm",
+      "method": "POST",
+      "path": "/api/account-security/email/confirm",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 17
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-168ba63bef9bb59e96b037f7",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/email/remove",
+      "method": "POST",
+      "path": "/api/account-security/email/remove",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 18
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-a6408e7d0582e870227bd4dc",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/email/start",
+      "method": "POST",
+      "path": "/api/account-security/email/start",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 16
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-559b617b0889bb68780190d2",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/key/confirm",
+      "method": "POST",
+      "path": "/api/account-security/key/confirm",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 14
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-ac4f2bd9f3c5cce423fac7eb",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/key/remove",
+      "method": "POST",
+      "path": "/api/account-security/key/remove",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 15
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-b752dcc72bec39b75b09758a",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/key/start",
+      "method": "POST",
+      "path": "/api/account-security/key/start",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 13
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-ce58d6820da3af31ba754a77",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/mfa",
+      "method": "POST",
+      "path": "/api/account-security/mfa",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 22
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-bd8e49c6374cf54dbfe540f9",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/totp/confirm",
+      "method": "POST",
+      "path": "/api/account-security/totp/confirm",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 20
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-40962e7b9b70277cc31ff55c",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/totp/remove",
+      "method": "POST",
+      "path": "/api/account-security/totp/remove",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 21
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-0e9adc7419eb36ef834e3862",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "账号安全",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "账号安全 · POST /account-security/totp/start",
+      "method": "POST",
+      "path": "/api/account-security/totp/start",
+      "source": {
+        "file": "mg-auth-one-identity/src/account-security.controller.ts",
+        "line": 19
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-437c9909a243281800771ca4",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "应用授权",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "应用授权 · GET /applications",
+      "method": "GET",
+      "path": "/api/applications",
+      "source": {
+        "file": "mg-auth-one-identity/src/applications.controller.ts",
+        "line": 22
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7586a796ed54698b1b8d1c87",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "应用授权",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "应用授权 · PUT /applications/{clientId}/users/{userId}",
+      "method": "PUT",
+      "path": "/api/applications/{clientId}/users/{userId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/applications.controller.ts",
+        "line": 28
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-bc5065bc931e8f15b97aa91f",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /applications/mine",
+      "method": "GET",
+      "path": "/api/applications/mine",
+      "source": {
+        "file": "mg-auth-one-identity/src/applications.controller.ts",
+        "line": 9
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-ac4be2739eb03666ba0aaac2",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "应用授权",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "应用授权 · GET /applications/users/{userId}",
+      "method": "GET",
+      "path": "/api/applications/users/{userId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/applications.controller.ts",
+        "line": 16
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7348ada0272a8b1172922d4d",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/change-password",
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 102
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-f3494230af9b138a3c4547e8",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/login",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 39
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-a54bd1ca5c961bfb3683a6f5",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/logout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 95
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-0b85849fb500368633655162",
+      "provider": "identity",
+      "appIds": [
+        "identity",
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /auth/me",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 68
+      },
+      "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
+    },
+    {
+      "id": "api-b2fd4265e8a2e47aff9ddff0",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/mfa",
+      "method": "POST",
+      "path": "/api/auth/mfa",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 74
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-a53d4aac1c4830786e281ebf",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/mfa/email",
+      "method": "POST",
+      "path": "/api/auth/mfa/email",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 87
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-212ed6532d526d818eb5de99",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/mfa/key",
+      "method": "POST",
+      "path": "/api/auth/mfa/key",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 91
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-2f3bc20932cf388d605af453",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/pending",
+      "method": "GET",
+      "path": "/api/auth/pending",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 53
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-6c44c2fc295289687b1c1f5d",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/setup",
+      "method": "POST",
+      "path": "/api/auth/setup",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 60
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-aa175eeefcdeddd6e67c217f",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/wecom/callback",
+      "method": "GET",
+      "path": "/api/auth/wecom/callback",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 124
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-cb84720dabc06da07a1f1d4d",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/wecom/start",
+      "method": "POST",
+      "path": "/api/auth/wecom/start",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 115
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-ce36bc55999b653a75314353",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/wecom/status",
+      "method": "GET",
+      "path": "/api/auth/wecom/status",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 109
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-4b691563b307f572f2e09b5d",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/zentao/login",
+      "method": "POST",
+      "path": "/api/auth/zentao/login",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 27
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-cc8ee7abdb356ea16fc4f8cc",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/zentao/status",
+      "method": "GET",
+      "path": "/api/auth/zentao/status",
+      "source": {
+        "file": "mg-auth-one-identity/src/auth.controller.ts",
+        "line": 24
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-aaa816ec13f8d890637c3181",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "机器目录同步",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "机器目录同步 · POST /directory/logout",
+      "method": "POST",
+      "path": "/api/directory/logout",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 140
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-729844476d6dc3e8b36f1e85",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "机器目录同步",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "机器目录同步 · POST /directory/session",
+      "method": "POST",
+      "path": "/api/directory/session",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 132
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-48045aa6b7797f66fed1f2d6",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "机器目录同步",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "机器目录同步 · GET /directory/users",
+      "method": "GET",
+      "path": "/api/directory/users",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 106
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-481709908b25bf5ab27e3a1e",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "行政区划",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "行政区划 · GET /divisions",
+      "method": "GET",
+      "path": "/api/divisions",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 48
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-07d933c0cd4a4c6da8b772ae",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "行政区划",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "行政区划 · POST /divisions",
+      "method": "POST",
+      "path": "/api/divisions",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-59df5f6957360b9803bfc27e",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "行政区划",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "行政区划 · DELETE /divisions/{id}",
+      "method": "DELETE",
+      "path": "/api/divisions/{id}",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 98
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c788338d190189e4b2e51d73",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "行政区划",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "行政区划 · PATCH /divisions/{id}",
+      "method": "PATCH",
+      "path": "/api/divisions/{id}",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 52
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-bfea2e20855ce52d9d0bf401",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "登录审计",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "登录审计 · GET /login-attempts",
+      "method": "GET",
+      "path": "/api/login-attempts",
+      "source": {
+        "file": "mg-auth-one-identity/src/login-attempt.controller.ts",
+        "line": 10
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-af3f5be9ec471006ade1709a",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "邮件配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "邮件配置 · GET /mail-settings",
+      "method": "GET",
+      "path": "/api/mail-settings",
+      "source": {
+        "file": "mg-auth-one-identity/src/mail-config.controller.ts",
+        "line": 8
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-de712d617ab586d4e41852db",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "邮件配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "邮件配置 · PUT /mail-settings",
+      "method": "PUT",
+      "path": "/api/mail-settings",
+      "source": {
+        "file": "mg-auth-one-identity/src/mail-config.controller.ts",
+        "line": 9
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-ebc58fa82bc5a1ccebbce46e",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "邮件配置",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "邮件配置 · POST /mail-settings/test",
+      "method": "POST",
+      "path": "/api/mail-settings/test",
+      "source": {
+        "file": "mg-auth-one-identity/src/mail-config.controller.ts",
+        "line": 10
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-5fa275a59c34315b14417988",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "组织机构",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "组织机构 · GET /organizations",
+      "method": "GET",
+      "path": "/api/organizations",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 108
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7ef907881fc48ea035dc7cbb",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "组织机构",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "组织机构 · POST /organizations",
+      "method": "POST",
+      "path": "/api/organizations",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 129
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-542bb924b122e66767c1ef80",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "组织机构",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "组织机构 · DELETE /organizations/{id}",
+      "method": "DELETE",
+      "path": "/api/organizations/{id}",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 154
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-d9c60d062f8df6bd6e2e9669",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "组织机构",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "组织机构 · PATCH /organizations/{id}",
+      "method": "PATCH",
+      "path": "/api/organizations/{id}",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 130
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-e9bce3f17b0a0fae39a3b537",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "组织机构",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "组织机构 · GET /organizations/{id}/members",
+      "method": "GET",
+      "path": "/api/organizations/{id}/members",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 125
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-8bd86cd77ecb4822ae1e0fdb",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · GET /roles",
+      "method": "GET",
+      "path": "/api/roles",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 21
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-00aba40ab5b216ce7d387f24",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · POST /roles",
+      "method": "POST",
+      "path": "/api/roles",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 27
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-125401ed1de010cea5ca598a",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · DELETE /roles/{roleId}",
+      "method": "DELETE",
+      "path": "/api/roles/{roleId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 53
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-ec1c871c59e2f31608d014d1",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · PATCH /roles/{roleId}",
+      "method": "PATCH",
+      "path": "/api/roles/{roleId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 43
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-319a510949103aa11f08e60b",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · PUT /roles/{roleId}/applications/{clientId}",
+      "method": "PUT",
+      "path": "/api/roles/{roleId}/applications/{clientId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 82
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-18d0e8b3031001fb66731c49",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · PUT /roles/{roleId}/members/{userId}",
+      "method": "PUT",
+      "path": "/api/roles/{roleId}/members/{userId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 66
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c0a9c3abbb415c19d1464d0b",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "角色权限",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "角色权限 · PUT /roles/users/{userId}",
+      "method": "PUT",
+      "path": "/api/roles/users/{userId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/roles.controller.ts",
+        "line": 33
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-e80a2e96993033aa6759f82d",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "数据范围",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "数据范围 · GET /scopes",
+      "method": "GET",
+      "path": "/api/scopes",
+      "source": {
+        "file": "mg-auth-one-identity/src/scope.controller.ts",
+        "line": 11
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6c015a6d8e3d9b71491edaed",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "数据范围",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "数据范围 · PUT /scopes/{id}/applications/{clientId}/users/{userId}",
+      "method": "PUT",
+      "path": "/api/scopes/{id}/applications/{clientId}/users/{userId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/scope.controller.ts",
+        "line": 50
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-2a19a02d47ab79d08661f719",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "数据范围",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "数据范围 · GET /scopes/{id}/members",
+      "method": "GET",
+      "path": "/api/scopes/{id}/members",
+      "source": {
+        "file": "mg-auth-one-identity/src/scope.controller.ts",
+        "line": 44
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c61bc8d43122da02a7fc199f",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "数据范围",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "数据范围 · PUT /scopes/{kind}/{id}",
+      "method": "PUT",
+      "path": "/api/scopes/{kind}/{id}",
+      "source": {
+        "file": "mg-auth-one-identity/src/scope.controller.ts",
+        "line": 21
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-b9fee7acfff85180ff192d6a",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "统一身份协议",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "统一身份协议 · POST /unified/applications",
+      "method": "POST",
+      "path": "/api/unified/applications",
+      "source": {
+        "file": "mg-auth-one-identity/src/unified-token.mjs",
+        "line": 121
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-9574ac832840a49e8d454b45",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "统一身份协议",
+      "boundary": "identity",
+      "auth": "中心会话、应用白名单与 PKCE",
+      "summary": "统一身份协议 · GET /unified/authorize",
+      "method": "GET",
+      "path": "/api/unified/authorize",
+      "source": {
+        "file": "mg-auth-one-identity/src/unified-token.mjs",
+        "line": 128
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-45dadd88957be727e878ea40",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "统一身份协议",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "统一身份协议 · POST /unified/exchange",
+      "method": "POST",
+      "path": "/api/unified/exchange",
+      "source": {
+        "file": "mg-auth-one-identity/src/unified-token.mjs",
+        "line": 116
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-629d0708e6e766b0afe0edf5",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "统一身份协议",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "统一身份协议 · POST /unified/introspect",
+      "method": "POST",
+      "path": "/api/unified/introspect",
+      "source": {
+        "file": "mg-auth-one-identity/src/unified-token.mjs",
+        "line": 101
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-708402352207184ee35d5e77",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "统一身份协议",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "统一身份协议 · POST /unified/renew",
+      "method": "POST",
+      "path": "/api/unified/renew",
+      "source": {
+        "file": "mg-auth-one-identity/src/unified-token.mjs",
+        "line": 111
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-739dacd987c8113eb23f8367",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "统一身份协议",
+      "boundary": "identity",
+      "auth": "机器凭据与应用授权/作用域",
+      "summary": "统一身份协议 · POST /unified/revoke",
+      "method": "POST",
+      "path": "/api/unified/revoke",
+      "source": {
+        "file": "mg-auth-one-identity/src/unified-token.mjs",
+        "line": 105
+      },
+      "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
+    },
+    {
+      "id": "api-1ace5e829fc75f855efe7c55",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · GET /users",
+      "method": "GET",
+      "path": "/api/users",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 16
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-68856d1330150185ea8e002b",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users",
+      "method": "POST",
+      "path": "/api/users",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 37
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-0c6d314e2d52aa1cb3e0ebea",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · PATCH /users/{userId}",
+      "method": "PATCH",
+      "path": "/api/users/{userId}",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 42
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6e999ecf3098dd3f5a99bd31",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · GET /users/{userId}/organizations",
+      "method": "GET",
+      "path": "/api/users/{userId}/organizations",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 111
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-46546df38581fd13c562de99",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · PUT /users/{userId}/organizations",
+      "method": "PUT",
+      "path": "/api/users/{userId}/organizations",
+      "source": {
+        "file": "mg-auth-one-identity/src/organization.controller.ts",
+        "line": 116
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-55b51e7fc94a51916f6f681f",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/reset-password",
+      "method": "POST",
+      "path": "/api/users/{userId}/reset-password",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 47
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-4af234b658076d9ce1bfa29c",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/wecom-identities",
+      "method": "POST",
+      "path": "/api/users/{userId}/wecom-identities",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 52
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6bba7307f0737c6d3cd00990",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/wecom-identities/{identityId}/unbind",
+      "method": "POST",
+      "path": "/api/users/{userId}/wecom-identities/{identityId}/unbind",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 57
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-3012f229ee71e3575a3f6284",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/{userId}/zentao-identity",
+      "method": "POST",
+      "path": "/api/users/{userId}/zentao-identity",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 11
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-f5f9360bca9a210216a90c3e",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · POST /users/wecom-sync",
+      "method": "POST",
+      "path": "/api/users/wecom-sync",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 30
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-205b22aab67dca1ef7932d86",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "提供方会话与管理权限",
+      "summary": "用户目录 · GET /users/wecom-sync/status",
+      "method": "GET",
+      "path": "/api/users/wecom-sync/status",
+      "source": {
+        "file": "mg-auth-one-identity/src/users.controller.ts",
+        "line": 24
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-df04b51edc48299fee7247ea",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /applications",
+      "method": "GET",
+      "path": "/applications",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-3b722fb7a6c378811ff3ca3c",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "静态资源路径白名单",
+      "summary": "页面资源 · GET /assets/{file}",
+      "method": "GET",
+      "path": "/assets/{file}",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 154
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-1e3844af94d38ef61c0afe37",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /auth",
+      "method": "GET",
+      "path": "/auth",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-9a08640a8f9aa40e1e1d79e7",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /auth/{uid}",
+      "method": "GET",
+      "path": "/auth/{uid}",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-ecad96a9207a414258337d0c",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /divisions",
+      "method": "GET",
+      "path": "/divisions",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-86b50083165ef73054a742a7",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "健康探针",
+      "summary": "运行健康 · GET /health",
+      "method": "GET",
+      "path": "/health",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 151
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-082de5c8886fbb5c6183b131",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 交互",
+      "boundary": "identity",
+      "auth": "中心会话与 OIDC 交互状态",
+      "summary": "OIDC 交互 · GET /interaction/{uid}",
+      "method": "GET",
+      "path": "/interaction/{uid}",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 57
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-08cb47989f9d7f81ff76973b",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /jwks",
+      "method": "GET",
+      "path": "/jwks",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-f1514b03197c49718a58718c",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /jwks",
+      "method": "OPTIONS",
+      "path": "/jwks",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-1adfde7df362a33ddfc76ac5",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /login",
+      "method": "GET",
+      "path": "/login",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-dbc5dbb278051fcb71bca362",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /me",
+      "method": "GET",
+      "path": "/me",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-4bec7a928592d58343d415be",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /me",
+      "method": "OPTIONS",
+      "path": "/me",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-3eafdc042cb1053c7b0cc626",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · POST /me",
+      "method": "POST",
+      "path": "/me",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-68f0f75930b03f47436fa9f7",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /organizations",
+      "method": "GET",
+      "path": "/organizations",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-b2bc23b974173b1ebffb2214",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /request",
+      "method": "OPTIONS",
+      "path": "/request",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-20352c26445acb4f831c7af4",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · POST /request",
+      "method": "POST",
+      "path": "/request",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-f4cde04d17cbdd44f495c31a",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /roles",
+      "method": "GET",
+      "path": "/roles",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-d83dd07c8a6aaefe91ccef4f",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /scopes",
+      "method": "GET",
+      "path": "/scopes",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-f662843c9c3b3c97d0a36556",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /session/end",
+      "method": "GET",
+      "path": "/session/end",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-38839961db6ef15030abb582",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · POST /session/end/confirm",
+      "method": "POST",
+      "path": "/session/end/confirm",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-a3976597d6fd067a94d0275d",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · GET /session/end/success",
+      "method": "GET",
+      "path": "/session/end/success",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-f9ef9f6c18beb7a9c6d910ab",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "页面资源",
+      "boundary": "asset",
+      "auth": "公开页面壳；数据接口独立鉴权",
+      "summary": "页面资源 · GET /settings",
+      "method": "GET",
+      "path": "/settings",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 152
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-79d833594c5b6e10cd485afd",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /token",
+      "method": "OPTIONS",
+      "path": "/token",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-feaa68b27794e418a8d1cc1e",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · POST /token",
+      "method": "POST",
+      "path": "/token",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-f81354ded8c8e0749dd87494",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · OPTIONS /token/revocation",
+      "method": "OPTIONS",
+      "path": "/token/revocation",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-2aa37753ab543e89f60db90c",
+      "provider": "identity",
+      "appIds": [
+        "identity"
+      ],
+      "category": "system",
+      "domain": "OIDC 标准协议",
+      "boundary": "identity",
+      "auth": "OIDC 协议；公开发现与 JWKS，其余按端点校验会话或客户端凭据",
+      "summary": "OIDC 标准协议 · POST /token/revocation",
+      "method": "POST",
+      "path": "/token/revocation",
+      "source": {
+        "file": "mg-auth-one-identity/src/oidc.mjs",
+        "line": 27
+      },
+      "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
+    },
+    {
+      "id": "api-db575ca5bac50c3513631d96",
+      "provider": "onlyoffice",
+      "appIds": [
+        "office-one"
+      ],
+      "category": "engine",
+      "domain": "Office 命令",
+      "boundary": "machine",
+      "auth": "ONLYOFFICE JWT",
+      "summary": "Office 命令 · POST /coauthoring/CommandService.ashx",
+      "method": "POST",
+      "path": "/coauthoring/CommandService.ashx",
+      "source": {
+        "file": "mg-files-one/server/office.ts",
+        "line": 80
+      },
+      "note": "外部依赖调用；地址来自 Office 配置，保持签名机器协议。"
+    },
+    {
+      "id": "api-d87048b93ece90b218bbd5b6",
+      "provider": "resource-manager",
+      "appIds": [
+        "resource-manager"
+      ],
+      "category": "system",
+      "domain": "资源管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "查询资源池、服务器与部署",
+      "method": "GET",
+      "path": "/api/overview",
+      "source": {
+        "file": "mg-resource-one/server/http.ts",
+        "line": 9
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-08e1e2566d0190f423f8fa62",
+      "provider": "resource-manager",
+      "appIds": [
+        "resource-manager"
+      ],
+      "category": "system",
+      "domain": "资源管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "更新资源资料",
+      "method": "POST",
+      "path": "/api/resources/{id}/metadata",
+      "source": {
+        "file": "mg-resource-one/server/http.ts",
+        "line": 12
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-5bcde483920d714c438b3bb0",
+      "provider": "resource-manager",
+      "appIds": [
+        "resource-manager"
+      ],
+      "category": "system",
+      "domain": "资源管理",
+      "boundary": "business",
+      "auth": "统一身份应用令牌；写入须 CSRF；本人资源权限",
+      "summary": "立即采集服务器",
+      "method": "POST",
+      "path": "/api/resources/{id}/refresh",
+      "source": {
+        "file": "mg-resource-one/server/http.ts",
+        "line": 10
+      },
+      "note": "已有提供方契约；实际登记版本及启用状态以所选环境服务库为准。"
+    },
+    {
+      "id": "api-b7dc510fecd219c37b246856",
+      "provider": "resource-manager",
+      "appIds": [
+        "resource-manager"
+      ],
+      "category": "system",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "公开",
+      "summary": "运行健康 · GET /health",
+      "method": "GET",
+      "path": "/health",
+      "source": {
+        "file": "mg-resource-one/server/http.ts",
+        "line": 7
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-0f8a8a26adaca347848aa5a9",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "可用性告警",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "可用性告警 · POST /admin/availability-alerts/evaluate",
+      "method": "POST",
+      "path": "/api/admin/availability-alerts/evaluate",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/availability-monitoring/availability-monitoring.module.ts",
+        "line": 78
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-728a31452476bc12f9e71b2e",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "可用性告警",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "可用性告警 · GET /admin/availability-alerts/events",
+      "method": "GET",
+      "path": "/api/admin/availability-alerts/events",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/availability-monitoring/availability-monitoring.module.ts",
+        "line": 66
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-110c6ae7c63c7f3405d67b4e",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "可用性告警",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "可用性告警 · GET /admin/availability-alerts/states",
+      "method": "GET",
+      "path": "/api/admin/availability-alerts/states",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/availability-monitoring/availability-monitoring.module.ts",
+        "line": 56
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-01ed0fbe44d87c26ed0c6ed2",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商同步",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商同步 · GET /admin/cctq-account",
+      "method": "GET",
+      "path": "/api/admin/cctq-account",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/cctq-account/cctq-account.controller.ts",
+        "line": 11
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-60e662925ef40c56a6835df5",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商同步",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商同步 · PUT /admin/cctq-account",
+      "method": "PUT",
+      "path": "/api/admin/cctq-account",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/cctq-account/cctq-account.controller.ts",
+        "line": 16
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-6d3496551c43c1858fb4785a",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商同步",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商同步 · POST /admin/cctq-account/sync",
+      "method": "POST",
+      "path": "/api/admin/cctq-account/sync",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/cctq-account/cctq-account.controller.ts",
+        "line": 21
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-fd9aa8422c5f8b379fca0d42",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "渠道管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "渠道管理 · GET /admin/channels",
+      "method": "GET",
+      "path": "/api/admin/channels",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/channel/channel.module.ts",
+        "line": 89
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c4fd8debd557183cd664bfd0",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "渠道管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "渠道管理 · POST /admin/channels",
+      "method": "POST",
+      "path": "/api/admin/channels",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/channel/channel.module.ts",
+        "line": 127
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7837b967a83a0171e31aa7ff",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "渠道管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "渠道管理 · DELETE /admin/channels/{id}",
+      "method": "DELETE",
+      "path": "/api/admin/channels/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/channel/channel.module.ts",
+        "line": 195
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-8adb6ec15abf65875d646271",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "渠道管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "渠道管理 · PUT /admin/channels/{id}",
+      "method": "PUT",
+      "path": "/api/admin/channels/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/channel/channel.module.ts",
+        "line": 158
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7ddce9fa917482099254a282",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "渠道管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "渠道管理 · POST /admin/channels/{id}/recover",
+      "method": "POST",
+      "path": "/api/admin/channels/{id}/recover",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/channel/channel.module.ts",
+        "line": 207
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-d7baa67cf0566972a80accef",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "渠道管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "渠道管理 · POST /admin/channels/{id}/test",
+      "method": "POST",
+      "path": "/api/admin/channels/{id}/test",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/channel/channel.module.ts",
+        "line": 216
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-a924247a830534a4a507520e",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "分组路由",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "分组路由 · GET /admin/groups",
+      "method": "GET",
+      "path": "/api/admin/groups",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/group/group.module.ts",
+        "line": 45
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-f3a6b53c22cd52029614181d",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "分组路由",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "分组路由 · POST /admin/groups",
+      "method": "POST",
+      "path": "/api/admin/groups",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/group/group.module.ts",
+        "line": 68
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-1e4cd359ac1d9e1acd2d7b14",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "分组路由",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "分组路由 · DELETE /admin/groups/{id}",
+      "method": "DELETE",
+      "path": "/api/admin/groups/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/group/group.module.ts",
+        "line": 101
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-99082b6a30406302ac469b79",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "分组路由",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "分组路由 · PUT /admin/groups/{id}",
+      "method": "PUT",
+      "path": "/api/admin/groups/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/group/group.module.ts",
+        "line": 88
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-1bc3e31a48f0ccd66a4acd2d",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "分组路由",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "分组路由 · GET /admin/groups/model-catalog",
+      "method": "GET",
+      "path": "/api/admin/groups/model-catalog",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/group/group.module.ts",
+        "line": 56
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-43e0b1c57232a83f54ce79fc",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "调用日志",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "调用日志 · GET /admin/logs",
+      "method": "GET",
+      "path": "/api/admin/logs",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 244
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-4ae01a50957e855fda054ced",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "模型目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "模型目录 · GET /admin/models",
+      "method": "GET",
+      "path": "/api/admin/models",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/model-config/model-config.module.ts",
+        "line": 176
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-5da5da380634a5cf8513c1fd",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "模型目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "模型目录 · POST /admin/models",
+      "method": "POST",
+      "path": "/api/admin/models",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/model-config/model-config.module.ts",
+        "line": 203
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c3beb2e2890620de39d7981f",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "模型目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "模型目录 · DELETE /admin/models/{id}",
+      "method": "DELETE",
+      "path": "/api/admin/models/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/model-config/model-config.module.ts",
+        "line": 323
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-aa874ceb60e631e9a06040f0",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "模型目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "模型目录 · PUT /admin/models/{id}",
+      "method": "PUT",
+      "path": "/api/admin/models/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/model-config/model-config.module.ts",
+        "line": 247
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-8cbce0a74f4d888270b84375",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "路由元数据",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "路由元数据 · GET /admin/routing-metadata",
+      "method": "GET",
+      "path": "/api/admin/routing-metadata",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/routing-metadata/routing-metadata.controller.ts",
+        "line": 11
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-f17a11003758debeb64e687c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用量统计 · GET /admin/stats/availability",
+      "method": "GET",
+      "path": "/api/admin/stats/availability",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 135
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-3f7812e4b25572aa4036f29d",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用量统计 · GET /admin/stats/by-department",
+      "method": "GET",
+      "path": "/api/admin/stats/by-department",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 90
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-2a5220bc2e691329a5ded7e5",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用量统计 · GET /admin/stats/by-model",
+      "method": "GET",
+      "path": "/api/admin/stats/by-model",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 85
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-35b6586eeb7802f08bef211e",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用量统计 · GET /admin/stats/by-user",
+      "method": "GET",
+      "path": "/api/admin/stats/by-user",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 95
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-c2930368d01c03addaf62eba",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用量统计 · GET /admin/stats/overview",
+      "method": "GET",
+      "path": "/api/admin/stats/overview",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 60
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-cb2ceedb8a6932848c3fb7d6",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用量统计 · GET /admin/stats/trend",
+      "method": "GET",
+      "path": "/api/admin/stats/trend",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 109
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-788425792f9ce09d1bac3f83",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商账号",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商账号 · GET /admin/supplier-accounts",
+      "method": "GET",
+      "path": "/api/admin/supplier-accounts",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/supplier-account/supplier-account.controller.ts",
+        "line": 22
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-179ac8daacdd2c5681219acc",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商账号",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商账号 · POST /admin/supplier-accounts",
+      "method": "POST",
+      "path": "/api/admin/supplier-accounts",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/supplier-account/supplier-account.controller.ts",
+        "line": 28
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-105a83cdd723dcad52cf8f00",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商账号",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商账号 · GET /admin/supplier-accounts/{id}",
+      "method": "GET",
+      "path": "/api/admin/supplier-accounts/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/supplier-account/supplier-account.controller.ts",
+        "line": 33
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-437b77f366624625e1dbc19b",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商账号",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商账号 · PUT /admin/supplier-accounts/{id}",
+      "method": "PUT",
+      "path": "/api/admin/supplier-accounts/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/supplier-account/supplier-account.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-d0a977c711976c58e7234db4",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商账号",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商账号 · PUT /admin/supplier-accounts/{id}/credential",
+      "method": "PUT",
+      "path": "/api/admin/supplier-accounts/{id}/credential",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/supplier-account/supplier-account.controller.ts",
+        "line": 38
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-bd33b96a45a117562de595d1",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "供应商账号",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "供应商账号 · POST /admin/supplier-accounts/{id}/sync",
+      "method": "POST",
+      "path": "/api/admin/supplier-accounts/{id}/sync",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/supplier-account/supplier-account.controller.ts",
+        "line": 46
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-a057a16ff2a0b3e9bf2fee72",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "令牌管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "令牌管理 · GET /admin/tokens",
+      "method": "GET",
+      "path": "/api/admin/tokens",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/token/token.module.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-296144fe6dcbc4d5d2bc1c37",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "令牌管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "令牌管理 · POST /admin/tokens",
+      "method": "POST",
+      "path": "/api/admin/tokens",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/token/token.module.ts",
+        "line": 67
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-102ad2e04bdd2ec2895d912c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "令牌管理",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "令牌管理 · DELETE /admin/tokens/{id}",
+      "method": "DELETE",
+      "path": "/api/admin/tokens/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/token/token.module.ts",
+        "line": 87
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-cb9d4c1835d3601a6d22c40d",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用户目录 · GET /admin/users",
+      "method": "GET",
+      "path": "/api/admin/users",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/user/user.module.ts",
+        "line": 57
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-fedcb9905192ca6b8b4b071f",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用户目录 · POST /admin/users",
+      "method": "POST",
+      "path": "/api/admin/users",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/user/user.module.ts",
+        "line": 135
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-79af403578e1b650cb2db26c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用户目录 · DELETE /admin/users/{id}",
+      "method": "DELETE",
+      "path": "/api/admin/users/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/user/user.module.ts",
+        "line": 253
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-f6e39d61de922603cd4172a8",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用户目录 · PUT /admin/users/{id}",
+      "method": "PUT",
+      "path": "/api/admin/users/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/user/user.module.ts",
+        "line": 187
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-b5096acd50024df26cc2f35d",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "用户目录",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "用户目录 · GET /admin/users/{id}/quota-adjustments",
+      "method": "GET",
+      "path": "/api/admin/users/{id}/quota-adjustments",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/user/user.module.ts",
+        "line": 116
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-40f9af3a8f0a4f104f08e2a0",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · POST /auth/login",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 21
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-aa606cd8312d621cb6f6ce9f",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/logout",
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 39
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-07a8a05026d364ada1a0ca2c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/logout/token-one",
+      "method": "POST",
+      "path": "/api/auth/logout/token-one",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 39
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-7744933de77821986285b443",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/logout/token-one-console",
+      "method": "POST",
+      "path": "/api/auth/logout/token-one-console",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 39
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-bc727c34ca5b6b4284d4f66d",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-docs"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · POST /auth/logout/token-one-docs",
+      "method": "POST",
+      "path": "/api/auth/logout/token-one-docs",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 39
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-8cdfe9c6039ccbd342275261",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /auth/me",
+      "method": "GET",
+      "path": "/api/auth/me",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-12d750aa4b1e125b7a242c88",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /auth/me/token-one",
+      "method": "GET",
+      "path": "/api/auth/me/token-one",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-60e58dcd61b29c3df6978574",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /auth/me/token-one-console",
+      "method": "GET",
+      "path": "/api/auth/me/token-one-console",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-1768cd1748fbb34338331113",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-docs"
+      ],
+      "category": "engine",
+      "domain": "本人会话",
+      "boundary": "self",
+      "auth": "本人会话；写入须 CSRF，敏感操作须二次验证",
+      "summary": "本人会话 · GET /auth/me/token-one-docs",
+      "method": "GET",
+      "path": "/api/auth/me/token-one-docs",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/auth.controller.ts",
+        "line": 51
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-3bd9b7c3d0e30960a220228c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/sso/callback",
+      "method": "GET",
+      "path": "/api/auth/sso/callback",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/identity.controller.ts",
+        "line": 23
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-fefa35a57ed4dabdeaaf8a0c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/sso/start",
+      "method": "GET",
+      "path": "/api/auth/sso/start",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/identity.controller.ts",
+        "line": 18
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-0a85c67ada3e6a21ddfe367c",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/sso/status",
+      "method": "GET",
+      "path": "/api/auth/sso/status",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/auth/identity.controller.ts",
+        "line": 16
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-99d0d0e424713528e100d77b",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/wecom/callback",
+      "method": "GET",
+      "path": "/api/auth/wecom/callback",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/wecom/wecom.controller.ts",
+        "line": 42
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-3ecaec4c593d35ddaa674dc1",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "登录与 MFA",
+      "boundary": "identity",
+      "auth": "提供方登录流程、挑战 Cookie、PKCE 或回调状态",
+      "summary": "登录与 MFA · GET /auth/wecom/login",
+      "method": "GET",
+      "path": "/api/auth/wecom/login",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/wecom/wecom.controller.ts",
+        "line": 29
+      },
+      "note": "登录前接口保留提供方认证流程；具体挑战与 CSRF 由对应处理器校验。"
+    },
+    {
+      "id": "api-f7fc8ac8dbb4325919f8fa01",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "健康探针",
+      "summary": "运行健康 · GET /health/live",
+      "method": "GET",
+      "path": "/api/health/live",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/health/health.module.ts",
+        "line": 18
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-188279b0e3abf434dd06a5c4",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "健康探针",
+      "summary": "运行健康 · GET /health/ready",
+      "method": "GET",
+      "path": "/api/health/ready",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/health/health.module.ts",
+        "line": 27
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-e7273353bab09476b57504fd",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "模型目录",
+      "boundary": "business",
+      "auth": "门户 audience 及本人资源权限",
+      "summary": "模型目录 · GET /portal/models",
+      "method": "GET",
+      "path": "/api/portal/models",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/model-config/model-config.module.ts",
+        "line": 124
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-3fe2bfd6accc29ff9e015282",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "用量统计",
+      "boundary": "business",
+      "auth": "门户 audience 及本人资源权限",
+      "summary": "用量统计 · GET /portal/stats/my",
+      "method": "GET",
+      "path": "/api/portal/stats/my",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/stats/stats.module.ts",
+        "line": 312
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-5babc53e251549ce2d99d187",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "令牌管理",
+      "boundary": "business",
+      "auth": "门户 audience 及本人资源权限",
+      "summary": "令牌管理 · GET /portal/tokens",
+      "method": "GET",
+      "path": "/api/portal/tokens",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/token/token.module.ts",
+        "line": 99
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-f459480372b9af3f0fc34dc2",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "令牌管理",
+      "boundary": "business",
+      "auth": "门户 audience 及本人资源权限",
+      "summary": "令牌管理 · POST /portal/tokens",
+      "method": "POST",
+      "path": "/api/portal/tokens",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/token/token.module.ts",
+        "line": 112
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-614a16718904c5732cc2f7c8",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "令牌管理",
+      "boundary": "business",
+      "auth": "门户 audience 及本人资源权限",
+      "summary": "令牌管理 · DELETE /portal/tokens/{id}",
+      "method": "DELETE",
+      "path": "/api/portal/tokens/{id}",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/token/token.module.ts",
+        "line": 129
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-a7fad97c9cf81ac433c5f056",
+      "provider": "token-one",
+      "appIds": [
+        "token-one",
+        "token-one-docs"
+      ],
+      "category": "engine",
+      "domain": "模型目录",
+      "boundary": "business",
+      "auth": "公开模型目录",
+      "summary": "模型目录 · GET /public/models",
+      "method": "GET",
+      "path": "/api/public/models",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/model-config/model-config.module.ts",
+        "line": 154
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-dc498cbbbdbbc29c1ba431bf",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "企业微信",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "企业微信 · GET /wecom/config",
+      "method": "GET",
+      "path": "/api/wecom/config",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/wecom/wecom.controller.ts",
+        "line": 71
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-5d2e12d116a01686fe8a9e72",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "企业微信",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "企业微信 · PUT /wecom/config",
+      "method": "PUT",
+      "path": "/api/wecom/config",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/wecom/wecom.controller.ts",
+        "line": 81
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-4c116b8605ba87b8a7fad13f",
+      "provider": "token-one",
+      "appIds": [
+        "token-one-console"
+      ],
+      "category": "engine",
+      "domain": "企业微信",
+      "boundary": "management",
+      "auth": "控制台 audience 与管理员权限",
+      "summary": "企业微信 · POST /wecom/sync",
+      "method": "POST",
+      "path": "/api/wecom/sync",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/wecom/wecom.controller.ts",
+        "line": 90
+      },
+      "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
+    },
+    {
+      "id": "api-5c874a8c80d3f023ed0b99c1",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "模型推理协议",
+      "boundary": "external",
+      "auth": "API Key、配额及协议鉴权",
+      "summary": "模型推理协议 · POST /v1/chat/completions",
+      "method": "POST",
+      "path": "/v1/chat/completions",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/relay/relay.controller.ts",
+        "line": 17
+      },
+      "note": "保持提供方协议、流式传输及用量计量；不得改为桌面 Cookie 代理。"
+    },
+    {
+      "id": "api-3e774afac876d5bc633dfd9e",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "模型推理协议",
+      "boundary": "external",
+      "auth": "API Key、配额及协议鉴权",
+      "summary": "模型推理协议 · POST /v1/messages",
+      "method": "POST",
+      "path": "/v1/messages",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/relay/relay.controller.ts",
+        "line": 31
+      },
+      "note": "保持提供方协议、流式传输及用量计量；不得改为桌面 Cookie 代理。"
+    },
+    {
+      "id": "api-1f17233707e983535b8df08a",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "模型推理协议",
+      "boundary": "external",
+      "auth": "API Key、配额及协议鉴权",
+      "summary": "模型推理协议 · GET /v1/models",
+      "method": "GET",
+      "path": "/v1/models",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/relay/relay.controller.ts",
+        "line": 38
+      },
+      "note": "保持提供方协议、流式传输及用量计量；不得改为桌面 Cookie 代理。"
+    },
+    {
+      "id": "api-5d8257ed6d1fe087592ee2de",
+      "provider": "token-one",
+      "appIds": [
+        "token-one"
+      ],
+      "category": "engine",
+      "domain": "模型推理协议",
+      "boundary": "external",
+      "auth": "API Key、配额及协议鉴权",
+      "summary": "模型推理协议 · POST /v1/responses",
+      "method": "POST",
+      "path": "/v1/responses",
+      "source": {
+        "file": "mg-token-one/mg-gateway/apps/gateway/src/modules/relay/relay.controller.ts",
+        "line": 24
+      },
+      "note": "保持提供方协议、流式传输及用量计量；不得改为桌面 Cookie 代理。"
+    }
+  ],
+  "gaps": [
+    {
+      "provider": "security-one",
+      "description": "规划项目，没有实现后端或 API，不伪造登记条目。"
+    },
+    {
+      "provider": "all",
+      "description": "台账覆盖当前源码显式路由及 OIDC 已启用路由栈；框架隐式 HEAD/CORS、静态资源文件枚举不逐条计数。台账不是完整 OpenAPI，缺契约的业务接口尚不能切换为仅允许已登记操作的代理策略。"
+    }
+  ]
+}

@@ -167,6 +167,15 @@
           79.904
         ]
       }
+    },
+    "low-alt-cockpit": {
+      "name": "低空驾驶舱",
+      "description": "区域低空运行总览、任务调度与空域监管",
+      "icon": {
+        "name": "plane",
+        "palette": "ocean",
+        "image": "low-alt-cockpit-fluent.svg"
+      }
     }
   },
   "shellIcons": {

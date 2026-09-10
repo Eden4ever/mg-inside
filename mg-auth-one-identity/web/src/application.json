@@ -41,11 +41,32 @@
       "icon": "shield-check"
     },
     {
+      "id": "divisions",
+      "path": "/divisions",
+      "title": "行政区划管理",
+      "component": "divisions",
+      "icon": "map"
+    },
+    {
+      "id": "organizations",
+      "path": "/organizations",
+      "title": "组织机构管理",
+      "component": "organizations",
+      "icon": "building-2"
+    },
+    {
       "id": "applications",
       "path": "/applications",
       "title": "应用授权",
       "component": "applications",
       "icon": "cable"
+    },
+    {
+      "id": "scopes",
+      "path": "/scopes",
+      "title": "范围应用权限",
+      "component": "scopes",
+      "icon": "shield-check"
     },
     {
       "id": "settings",
@@ -62,7 +83,10 @@
       "overview",
       "employees",
       "roles",
+      "divisions",
+      "organizations",
       "applications",
+      "scopes",
       "settings"
     ]
   },

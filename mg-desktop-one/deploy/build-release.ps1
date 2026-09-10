@@ -4,7 +4,8 @@ param(
     [string]$FilesAppSource = '',
     [string]$IdentityBackendSource = '',
     [string]$DesktopAppSource = '',
-    [string]$ApplicationCatalogSource = ''
+    [string]$ApplicationCatalogSource = '',
+    [string]$KernelSource = ''
 )
 $ErrorActionPreference = 'Stop'
 if ($ReleaseId -notmatch '^\d{8}T\d{6}Z$') { throw '发布编号必须是 UTC yyyyMMddTHHmmssZ。' }
@@ -15,6 +16,7 @@ $archive = "$releaseRoot.tar.gz"
 if ((Test-Path -LiteralPath $releaseRoot) -or (Test-Path -LiteralPath $archive)) { throw '发布目录已存在，禁止覆盖。' }
 $oldBase = $env:VITE_APP_BASE
 $oldDesktop = $env:VITE_DESKTOP_ORIGIN
+$oldKernelBuild = $env:KERNEL_BUILD_DIRECTORY
 function Run-Build([string]$directory, [string]$base) {
     $env:VITE_APP_BASE = $base
     Push-Location $directory
@@ -33,12 +35,15 @@ try {
     $env:VITE_DESKTOP_ORIGIN = 'https://desktop.meta-gravity.com'
     New-Item -ItemType Directory -Path $releaseRoot | Out-Null
     $desktopApp = if ($DesktopAppSource) { [IO.Path]::GetFullPath($DesktopAppSource) } else { $desktopRoot }
+    $kernel = if ($KernelSource) { [IO.Path]::GetFullPath($KernelSource) } else { Join-Path $workspaceRoot 'mg-platform-kernel' }
+    $env:KERNEL_BUILD_DIRECTORY = Join-Path $desktopRoot ".runtime/kernel-build-$ReleaseId"
+    if (Test-Path -LiteralPath $env:KERNEL_BUILD_DIRECTORY) { throw '内核构建目录已存在，禁止覆盖。' }
+    & (Join-Path $kernel 'scripts/java-maven.ps1') verify
+    if ($LASTEXITCODE -ne 0) { throw 'Java 平台内核构建或验证失败。' }
     Run-Build $desktopApp '/'
     New-Item -ItemType Directory -Path "$releaseRoot/desktop" | Out-Null
-    Copy-Item -LiteralPath "$desktopApp/dist/server/main.mjs" -Destination "$releaseRoot/desktop/main.mjs"
-    if (Test-Path -LiteralPath "$desktopApp/dist/server/service-storage-admin.mjs") {
-        Copy-Item -LiteralPath "$desktopApp/dist/server/service-storage-admin.mjs" -Destination "$releaseRoot/desktop/service-storage-admin.mjs"
-    }
+    New-Item -ItemType Directory -Path "$releaseRoot/kernel" | Out-Null
+    Copy-Item -LiteralPath "$env:KERNEL_BUILD_DIRECTORY/mg-platform-kernel-0.1.0-SNAPSHOT.jar" -Destination "$releaseRoot/kernel/app.jar"
     Copy-Tree "$desktopApp/dist/web" "$releaseRoot/desktop/web"
     $applicationCatalog = if ($ApplicationCatalogSource) { [IO.Path]::GetFullPath($ApplicationCatalogSource) } else { "$workspaceRoot/mg-platform/packages/frontend/config/application-catalog.json" }
     Copy-Item -LiteralPath $applicationCatalog -Destination "$releaseRoot/application-catalog.json"
@@ -105,4 +110,5 @@ try {
 } finally {
     $env:VITE_APP_BASE = $oldBase
     $env:VITE_DESKTOP_ORIGIN = $oldDesktop
+    $env:KERNEL_BUILD_DIRECTORY = $oldKernelBuild
 }

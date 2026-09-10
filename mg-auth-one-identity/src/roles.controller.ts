@@ -3,7 +3,8 @@ import type { Prisma } from '@prisma/client';
 import { PrismaService } from './prisma.service';
 import { actorFromRequest, requireRole, type Actor, type AuthenticatedRequest } from './auth';
 import { ensureIdentityAdministrator, isFoundationApplication, lockAuthorization } from './application-access';
-import { PLATFORM_ADMIN_KEY, replaceUserRoles, validateRoleIds } from './platform-role';
+import { PLATFORM_ADMIN_KEY, SCOPED_ADMIN_KEYS, replaceUserRoles, validateRoleIds } from './platform-role';
+import { applicationReference } from './kernel-applications';
 
 @Controller('roles')
 export class RolesController {
@@ -46,7 +47,7 @@ export class RolesController {
       await lockAuthorization(tx);
       const existing = await tx.role.findUnique({ where: { id: roleId } });
       if (!existing) throw new ConflictException('角色不存在。');
-      if (existing.key === PLATFORM_ADMIN_KEY && data.name !== existing.name) throw new ConflictException('内置平台管理员角色不可更名。');
+      if (existing.key && [PLATFORM_ADMIN_KEY, ...SCOPED_ADMIN_KEYS].includes(existing.key) && data.name !== existing.name) throw new ConflictException('内置管理员角色不可更名。');
       const role = await tx.role.update({ where: { id: roleId }, data }); await this.audit(tx, actor, 'role.updated', roleId, data); return role;
     }); } catch (e) { if ((e as { code?: string }).code === 'P2002') throw new ConflictException('角色名称已存在。'); throw e; }
   }
@@ -56,7 +57,7 @@ export class RolesController {
       await lockAuthorization(tx);
       const role = await tx.role.findUnique({ where: { id: roleId }, include: { _count: { select: { members: true, applications: { where: { enabled: true } } } } } });
       if (!role) throw new ConflictException('角色不存在。');
-      if (role.key === PLATFORM_ADMIN_KEY) throw new ConflictException('平台管理员是内置角色，不可删除。');
+      if (role.key && [PLATFORM_ADMIN_KEY, ...SCOPED_ADMIN_KEYS].includes(role.key)) throw new ConflictException('内置管理员角色不可删除。');
       if (role._count.members || role._count.applications) throw new ConflictException('请先移除全部成员并撤销角色的应用授权，再删除角色。');
       await tx.roleApplication.deleteMany({ where: { roleId } });
       await tx.role.delete({ where: { id: roleId } });
@@ -84,7 +85,10 @@ export class RolesController {
     const actor = this.actor(req); if (typeof body?.enabled !== 'boolean' || isFoundationApplication(clientId)) throw new ConflictException('应用授权参数无效，基础应用无需分配授权。');
     return this.prisma.$transaction(async tx => {
       await lockAuthorization(tx);
-      if (!await tx.role.findUnique({ where: { id: roleId } }) || !await tx.application.findUnique({ where: { clientId } })) throw new ConflictException('角色或应用不存在。');
+      const role = await tx.role.findUnique({ where: { id: roleId } });
+      if (!role) throw new ConflictException('角色不存在。');
+      if((await applicationReference(tx,clientId)).kind==='default')throw new ConflictException('基础应用无需分配授权');
+      if (role.key && SCOPED_ADMIN_KEYS.includes(role.key)) throw new ConflictException('区划和机构管理员的应用权限仅能在对应管理范围中配置。');
       const result = await tx.roleApplication.upsert({ where: { roleId_clientId: { roleId, clientId } }, create: { roleId, clientId, enabled: Boolean(body.enabled) }, update: { enabled: Boolean(body.enabled) } });
       if (body.enabled) {
         const members = await tx.userRole.findMany({ where: { roleId } });

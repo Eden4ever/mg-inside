@@ -9,6 +9,6 @@ with (root/'config/deployments.lock').open('a') as lock:
  assert hashlib.sha256(target.read_bytes()).hexdigest()==expected,'部署登记已更新，拒绝覆盖其他发布'
  backup=root/'backups'/('deployment-config-'+uuid.uuid4().hex);backup.mkdir(mode=0o700)
  shutil.copy2(target,backup/'previous.json');shutil.copy2(Path(filename),backup/'incoming.json')
- image=subprocess.check_output(['docker','inspect','mg-desktop-desktop-1','--format','{{.Config.Image}}'],text=True).strip()
- subprocess.run(['docker','run','--rm','--user','0:0','--network','host','--env-file','/opt/mg-service-registry/secrets/admin.env','-v',str(root)+':/deployment',image,'node','/deployment/releases/'+current.name+'/desktop/service-storage-admin.mjs','publish-deployments','/deployment/'+str((backup/'incoming.json').relative_to(root)),'/deployment/config/services-deployments.json',expected],check=True)
+ image='mg-service-registry-admin:'+current.name
+ subprocess.run(['docker','run','--rm','--user','0:0','--network','host','--env-file','/opt/mg-service-registry/secrets/admin.env','-v',str(root)+':/deployment',image,'publish-deployments','/deployment/'+str((backup/'incoming.json').relative_to(root)),'/deployment/config/services-deployments.json',expected],check=True)
  print(json.dumps({'registered':True,'sha256':hashlib.sha256(target.read_bytes()).hexdigest(),'backup':str(backup),'bindingsChanged':False}))

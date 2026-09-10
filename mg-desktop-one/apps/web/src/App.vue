@@ -346,7 +346,8 @@ function receive(event: MessageEvent) {
   else if (type === 'dirty-change' && typeof payload.dirty === 'boolean') { win.dirty = payload.dirty; win.busy = payload.busy === true; }
   else if (type === 'route-change' && typeof payload.path === 'string' && appAllowsPath(app, payload.path)) win.path = safeAppPath(payload.path);
   else if (type === 'close-result' && requestId) { const waiter = closeWaiters.get(requestId); if (waiter?.windowId === win.id) { clearTimeout(waiter.timer); closeWaiters.delete(requestId); waiter.resolve(payload.allow === true); } }
-  else if (type === 'auth-required') { win.error = '登录或应用访问授权已失效，请重新认证。'; void checkSession(); }
+  // 子窗口认证失败时只显示可操作错误，避免失败接口触发会话检查和子窗口重载循环。
+  else if (type === 'auth-required') { win.error = '登录或应用访问授权已失效，请点击“重试”重新认证。'; }
   else if (type === 'notification' && typeof payload.text === 'string') notice(payload.text.slice(0, 200), app.id);
 }
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
@@ -378,8 +379,6 @@ async function checkSession() {
       else {
         if (win.title === previous?.name || app.kind === 'external') win.title = app.name;
         if (previous && previous.entryUrl !== app.entryUrl) { delete frameUrls[win.id]; win.ready = false; }
-        // 本地服务恢复或重新授权后，恢复先前被认证阻断的空白窗口。
-        if (win.error === '登录或应用访问授权已失效，请重新认证。' && !win.dirty && !win.busy) void retryWindow(win);
       }
     }
     prefs.pinned = prefs.pinned.filter(id => fresh.apps.some(app => app.id === id));

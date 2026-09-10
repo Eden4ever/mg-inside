@@ -65,7 +65,7 @@ try {
     const { context, page, requests, errors } = await scenario(true);
     await page.goto(`${origin}/roles`); await page.getByRole('heading', { name: '角色管理', exact: true }).waitFor();
     assert.ok(requests.includes('/api/auth/me')); assert.ok(!requests.some(p => p.startsWith('/api/apps/')));
-    assert.equal(await page.getByRole('link', { name: '员工身份', exact: true }).getAttribute('href'), '/admin');
+    await page.getByRole('button', { name: '员工身份', exact: true }).click(); await page.waitForURL('**/admin');
     await page.locator('.el-loading-mask').waitFor({ state: 'detached' });
     await page.screenshot({ path: resolve(output, 'root-management.png'), animations: 'disabled' });
     assert.deepEqual(errors, []); await context.close();
@@ -75,8 +75,8 @@ try {
     const { context, page, requests, errors } = await scenario(true);
     await page.goto(`${origin}/apps/identity/roles`); await page.getByRole('heading', { name: '角色管理', exact: true }).waitFor();
     assert.ok(requests.includes('/api/apps/identity/auth/me')); assert.ok(!requests.includes('/api/auth/me'));
-    assert.equal(await page.getByRole('link', { name: '员工身份', exact: true }).getAttribute('href'), '/apps/identity/admin');
-    await page.getByRole('link', { name: '应用授权', exact: true }).click();
+    await page.getByRole('button', { name: '员工身份', exact: true }).click(); await page.waitForURL('**/apps/identity/admin');
+    await page.getByRole('button', { name: '应用授权', exact: true }).click();
     await page.waitForURL('**/apps/identity/applications');
     assert.equal(new URL(page.url()).pathname, '/apps/identity/applications');
     await page.locator('.el-loading-mask').waitFor({ state: 'detached' });
@@ -94,6 +94,21 @@ try {
     assert.equal(await frame.locator('.app-header').isVisible(), false);
     assert.ok(requests.includes('/api/apps/identity/auth/me'));
     assert.ok(await page.evaluate(() => window.bridgeMessages.some(m => m.type === 'route-change' && m.payload?.path === '/roles')));
+    const waitDirty = value => page.waitForFunction(value => window.bridgeMessages.filter(m => m.type === 'dirty-change').at(-1)?.payload?.dirty === value, value);
+    await frame.getByRole('button', { name: '员工身份', exact: true }).click();
+    await frame.getByRole('textbox', { name: '搜索员工', exact: true }).fill('搜索测试');
+    await frame.getByRole('combobox', { name: '账号状态', exact: true }).press('Enter');
+    await frame.getByRole('option', { name: '停用', exact: true }).click();
+    await waitDirty(false);
+    await frame.getByRole('button', { name: '创建身份', exact: true }).click();
+    await waitDirty(true);
+    await frame.getByRole('dialog').getByRole('button', { name: '取消', exact: true }).click();
+    await waitDirty(false);
+    await frame.getByRole('button', { name: '管理概览', exact: true }).click();
+    await frame.getByRole('heading', { name: '管理概览', exact: true }).waitFor();
+    await waitDirty(false);
+    await page.evaluate(() => document.querySelector('iframe').contentWindow.postMessage({protocol:'mg-desktop-v1',windowId:'base-test',type:'request-close',requestId:'clean-close'}, location.origin));
+    await page.waitForFunction(() => window.bridgeMessages.some(m => m.type === 'close-result' && m.requestId === 'clean-close' && m.payload.allow));
     assert.deepEqual(errors, []); await context.close();
   }
   checks.push('子路径iframe继续使用公共SDK，消息发送应用相对路径并隐藏嵌入页头');

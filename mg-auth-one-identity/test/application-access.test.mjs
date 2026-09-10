@@ -2,10 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { compatibilityRole, PLATFORM_ADMIN_KEY } from '../dist/platform-role.js';
 import { applicationAccess, ensureIdentityAdministrator, canInspectAudience, isFoundationApplication } from '../dist/application-access.js';
+import {kernelFixture} from './kernel-fixture.mjs';
 
-test('最后一个有效管理员可由角色授权保留，所有来源消失必须拒绝', async () => {
+test('最后一个有效管理员可由角色授权保留，所有来源消失必须拒绝', async t => {
+  const kernel=await kernelFixture([{id:'identity',name:'统一身份'}]);t.after(kernel.close);
   const state = { direct: false, role: true };
   const db = {
+    scopeGrant: { findMany: async () => [] },
     application: { findUnique: async () => ({ name: '统一身份', enabled: true }) },
     user: { findUnique: async () => ({ status: 'active' }), findMany: async ({where}) => { assert.equal(where.roles.some.role.key, PLATFORM_ADMIN_KEY); assert.equal(where.role, undefined); return [{ id: 'admin' }]; } },
     applicationUser: { findUnique: async () => ({ enabled: state.direct, localUserId: null }) },
@@ -18,9 +21,11 @@ test('最后一个有效管理员可由角色授权保留，所有来源消失�
   await ensureIdentityAdministrator(db);
 });
 
-test('停用用户或应用会覆盖全部授权来源，基础入口也不能绕过账号停用', async () => {
+test('停用用户或应用会覆盖全部授权来源，基础入口也不能绕过账号停用', async t => {
+  const kernel=await kernelFixture([{id:'personal-center',name:'个人中心'},{id:'token-one',name:'Token One'}]);t.after(kernel.close);
   let status = 'disabled', enabled = true;
   const db = {
+    scopeGrant: { findMany: async () => [] },
     application: { findUnique: async () => ({ name: '应用', enabled }) },
     user: { findUnique: async () => ({ status }) },
     applicationUser: { findUnique: async () => ({ enabled: true, localUserId: null }) },
@@ -28,8 +33,10 @@ test('停用用户或应用会覆盖全部授权来源，基础入口也不能�
   };
   assert.equal((await applicationAccess(db, 'u', 'personal-center')).effective, false);
   status = 'active'; enabled = false;
+  kernel.applications.get('token-one').enabled=false;
   assert.equal((await applicationAccess(db, 'u', 'token-one')).effective, false);
   enabled = true;
+  kernel.applications.get('token-one').enabled=true;
   assert.equal((await applicationAccess(db, 'u', 'token-one')).effective, true);
 });
 

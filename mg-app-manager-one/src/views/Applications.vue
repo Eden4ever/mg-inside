@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Plus, Refresh, Search } from '@element-plus/icons-vue';
+import { Plus, Refresh, Search, Edit, Delete, View, TopRight } from '@element-plus/icons-vue';
 import { PageFrame, PageHeading, ContentPanel, ApplicationIcon } from '@mg-inside/frontend';
 import { application } from '../application';
 import { request, type ManagedApplication } from '../api';
@@ -14,9 +14,16 @@ const items = ref<ManagedApplication[]>([]), desktopName = ref('统一桌面');
 const loading = ref(true), refreshing = ref(false), saving = ref(false), error = ref('');
 const search = ref(''), category = ref('all');
 const opening = ref(false);
+const canRegister=ref(false);
+async function registerApplication(){
+ if(opening.value)return;opening.value=true;
+ try{const result=await dialogs.open('application-registration',{});if(result.outcome==='completed'){cancelRead();await load();}}
+ catch(e){error.value=(e as Error).message;}finally{opening.value=false;}
+}
 const kindLabels = { system: '系统应用', default: '默认应用', internal: '内部应用', external: '外部应用' };
-const filtered = computed(() => items.value.filter(item => (category.value === 'all' || item.kind === category.value) && `${item.name} ${item.description}`.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));
-const editable = (item: ManagedApplication) => item.kind === 'external' && item.editable;
+const filtered = computed(() => items.value.filter(item => (category.value === 'all' || item.kind === category.value) && `${item.name} ${item.description} ${item.developer || ''}`.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));
+const editable = (item: ManagedApplication) => item.editable;
+const canToggle = (item: ManagedApplication) => item.editable && ['internal', 'external'].includes(item.kind);
 let revision = 0, disposed = false, controller: AbortController | undefined;
 watch(saving, () => desktop.setState({ dirty: false, busy: saving.value }));
 
@@ -26,9 +33,9 @@ async function load() {
   refreshing.value = true;
   controller = new AbortController();
   try {
-    const data = await request<{ items: ManagedApplication[]; desktop: { name: string } }>('/api/applications', { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]) });
+    const data = await request<{ items: ManagedApplication[]; desktop: { name: string }; canRegister?:boolean }>('/api/applications', { signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]) });
     if (disposed || current !== revision) return;
-    items.value = data.items; desktopName.value = data.desktop.name; error.value = '';
+    items.value = data.items; desktopName.value = data.desktop.name; canRegister.value=data.canRegister===true; error.value = '';
   } catch (e) { if (!disposed && current === revision) error.value = (e as Error).message; }
   finally { if (!disposed && current === revision) { loading.value = false; refreshing.value = false; controller = undefined; } }
 }
@@ -38,14 +45,33 @@ async function startEdit(item?: ManagedApplication) {
   if (saving.value || opening.value || (item && !editable(item))) return;
   opening.value = true;
   try {
-    const result = await dialogs.open('external-application', item ? { applicationId: item.id } : {});
-    if (result.outcome === 'completed') { cancelRead(); desktop.applicationsChanged(); ElMessage.success(item ? '外链应用已更新' : '外链应用已添加'); await load(); }
+    const result = await dialogs.open(item && item.kind !== 'external' ? 'application-details' : 'external-application', item ? { applicationId: item.id, edit: true } : {});
+    if (result.outcome === 'completed') { cancelRead(); desktop.applicationsChanged(); ElMessage.success(item ? '应用信息已更新' : '外链应用已添加'); await load(); }
   } catch (value) { error.value = (value as Error).message; }
   finally { opening.value = false; }
 }
 onBeforeRouteLeave(() => dialogs.cancel());
+async function details(item: ManagedApplication) {
+  if (opening.value || saving.value) return;
+  opening.value = true;
+  try { const result = await dialogs.open('application-details', { applicationId: item.id }); if (result.outcome === 'completed') { desktop.applicationsChanged(); await load(); } }
+  catch (e) { error.value = (e as Error).message; }
+  finally { opening.value = false; }
+}
+async function toggle(item: ManagedApplication) {
+  if (saving.value || !canToggle(item)) return;
+  const enabled = item.enabled === false;
+  try { await ElMessageBox.confirm(`确定${enabled ? '开启' : '关闭'}“${item.name}”？`, `${enabled ? '开启' : '关闭'}应用`, { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }); }
+  catch { return; }
+  cancelRead(); saving.value = true; error.value = '';
+  try {
+    const updated = await request<ManagedApplication>(`/api/applications/${encodeURIComponent(item.id)}`, { method: 'PATCH', body: JSON.stringify({ enabled, ...(item.kind !== 'external' ? { expectedRevision: item.revision } : {}) }) });
+    items.value = items.value.map(value => value.id === item.id ? updated : value); desktop.applicationsChanged(); ElMessage.success(enabled ? '应用已开启' : '应用已关闭');
+  } catch (e) { error.value = (e as Error).message; }
+  finally { saving.value = false; }
+}
 async function remove(item: ManagedApplication) {
-  if (!editable(item) || saving.value) return;
+  if (item.kind !== 'external' || !editable(item) || saving.value) return;
   try { await ElMessageBox.confirm(`确定从你的应用目录移除“${item.name}”？外部网站及其数据不会被删除。`, '移除外链应用', { confirmButtonText: '移除', cancelButtonText: '取消', type: 'warning' }); } catch { return; }
   cancelRead(); saving.value = true;
   try { await request(`/api/applications/${encodeURIComponent(item.id)}`, { method: 'DELETE' }); items.value = items.value.filter(value => value.id !== item.id); desktop.applicationsChanged(); ElMessage.success('外链应用已移除'); }
@@ -53,7 +79,7 @@ async function remove(item: ManagedApplication) {
   finally { saving.value = false; }
 }
 function open(item: ManagedApplication) {
-  if (!item.available) return;
+  if (!item.available || item.enabled === false) return;
   if (desktop.enabled) desktop.openApplication(item.id);
   else window.open(`${desktop.origin}/open?app=${encodeURIComponent(item.id)}`, '_blank', 'noopener,noreferrer');
 }
@@ -63,7 +89,7 @@ onUnmounted(() => { disposed = true; cancelRead(); window.removeEventListener('f
 
 <template>
   <PageFrame>
-    <template #header><PageHeading :title="pageConfig.title" :description="pageConfig.description"><template #actions><el-button :icon="Refresh" :loading="refreshing" :disabled="saving" @click="load">刷新</el-button><el-button type="primary" :icon="Plus" :disabled="loading || saving" @click="startEdit()">添加外链应用</el-button></template></PageHeading></template>
+    <template #header><PageHeading :title="pageConfig.title" :description="pageConfig.description"><template #actions><el-button :icon="Refresh" :loading="refreshing" :disabled="saving" @click="load">刷新</el-button><el-button v-if="canRegister" type="primary" :icon="Plus" :disabled="loading || saving" @click="registerApplication">注册应用</el-button><el-button :icon="Plus" :disabled="loading || saving" @click="startEdit()">添加外链应用</el-button></template></PageHeading></template>
     <el-alert v-if="error" :title="error" type="error" :closable="false" show-icon />
     <ContentPanel>
       <template #toolbar><el-input v-model="search" class="application-search" placeholder="搜索应用名称或说明" aria-label="搜索应用" :prefix-icon="Search" clearable data-desktop-search /><el-select v-model="category" class="application-category" aria-label="应用分类" data-desktop-search><el-option label="全部应用" value="all" /><el-option label="系统应用" value="system" /><el-option label="默认应用" value="default" /><el-option label="内部应用" value="internal" /><el-option label="外部应用" value="external" /></el-select><span class="application-count">{{ desktopName }} · 共 {{ filtered.length }} 个应用</span></template>
@@ -72,14 +98,23 @@ onUnmounted(() => { disposed = true; cancelRead(); window.removeEventListener('f
       <div v-else-if="!filtered.length" class="directory-state"><h2>{{ search || category !== 'all' ? '没有匹配的应用' : '暂无应用' }}</h2><p>{{ search || category !== 'all' ? '试试其他关键词或分类。' : '可以添加自己常用的外链应用。' }}</p></div>
       <div v-else class="application-grid">
         <article v-for="item in filtered" :key="item.id" class="application-card" :aria-label="item.name">
-          <div class="application-card-head"><ApplicationIcon :app="item" class="directory-app-icon" /><div class="application-name"><h2>{{ item.name }}</h2><span>{{ kindLabels[item.kind] }}</span></div><el-tag v-if="!item.available" type="info" size="small">无访问权限</el-tag></div>
+          <div class="application-card-head"><ApplicationIcon :app="item" class="directory-app-icon" /><div class="application-name"><h2><button class="application-title" :aria-label="`查看${item.name}详情`" @click="details(item)">{{ item.name }}</button></h2><span>{{ kindLabels[item.kind] }}</span></div><el-tag v-if="item.runtimeReady === false" type="info" size="small">未配置入口</el-tag><el-tag v-else-if="item.enabled === false" type="info" size="small">已关闭</el-tag><el-tag v-else-if="!item.available" type="info" size="small">无访问权限</el-tag></div>
           <p class="application-description">{{ item.description || '暂无说明' }}</p>
           <p class="application-version">当前版本 <span>{{item.kind==='external'?'外部网站':item.version||'未登记'}}</span></p>
+          <p class="application-version">开发者 <span>{{ item.developer || '未填写' }}</span></p>
           <p v-if="item.kind === 'external'" class="application-url" :title="item.entryUrl">{{ item.entryUrl }}</p>
-          <div class="application-card-footer"><span class="readonly-note">{{ item.kind === 'default' ? '默认可用，无需授权' : item.kind === 'external' ? '我的外链 · 仅自己可见' : '由平台管理 · 需授权' }}</span><div class="application-card-actions"><template v-if="editable(item)"><el-button text :disabled="saving" :aria-label="`编辑${item.name}`" @click="startEdit(item)">编辑</el-button><el-button text type="danger" :disabled="saving" :aria-label="`移除${item.name}`" @click="remove(item)">移除</el-button></template><el-button plain :disabled="!item.available" :aria-label="`打开${item.name}`" @click="open(item)">打开</el-button></div></div>
+          <div class="application-card-footer">
+            <el-switch v-if="canToggle(item)" :model-value="item.enabled !== false" :disabled="saving" :aria-label="`启停${item.name}`" @change="toggle(item)" />
+            <span v-else class="readonly-note">{{ item.kind === 'default' ? '默认可用，无需授权' : item.kind === 'external' ? '我的外链 · 仅自己可见' : '由平台管理 · 需授权' }}</span>
+            <div class="application-card-actions">
+              <el-tooltip content="查看详情"><el-button text :icon="View" :aria-label="`详情${item.name}`" @click="details(item)" /></el-tooltip>
+              <el-tooltip v-if="editable(item)" content="编辑元数据"><el-button text :icon="Edit" :disabled="saving || opening" :aria-label="`编辑${item.name}`" @click="startEdit(item)" /></el-tooltip>
+              <el-tooltip v-if="editable(item) && item.kind === 'external'" content="移除"><el-button text type="danger" :icon="Delete" :disabled="saving" :aria-label="`移除${item.name}`" @click="remove(item)" /></el-tooltip>
+              <el-tooltip content="打开应用"><el-button text :icon="TopRight" :disabled="!item.available || item.enabled === false" :aria-label="`打开${item.name}`" @click="open(item)" /></el-tooltip>
+            </div>
+          </div>
         </article>
       </div>
-      <p class="directory-note">系统应用与内部应用需经授权访问；个人中心等默认应用自动可用，不参与授权。外部应用是你添加的个人外链，仅自己可见。平台应用由平台维护，个人外链可以编辑和移除；外部网站的登录缓存和桌面嵌入能力取决于浏览器政策及网站设置。</p>
     </ContentPanel>
 
   </PageFrame>
@@ -94,6 +129,7 @@ onUnmounted(() => { disposed = true; cancelRead(); window.removeEventListener('f
 .application-card-head { display:flex; align-items:center; gap:12px; min-width:0; }
 .directory-app-icon { width:44px; height:44px; }
 .application-name { flex:1; min-width:0; }.application-name h2 { margin:0 0 5px; font-size:15px; font-weight:500; overflow-wrap:anywhere; }.application-name span { font-size:12px; color:var(--el-text-color-secondary); }
+.application-title { border:0; padding:0; background:transparent; color:inherit; font:inherit; text-align:left; cursor:pointer; overflow-wrap:anywhere; }.application-title:hover { color:var(--el-color-primary); }
 .application-description { flex:1; min-height:40px; margin:18px 0 10px; color:var(--el-text-color-regular); font-size:13px; line-height:1.7; overflow-wrap:anywhere; }
 .application-url { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin:0 0 16px; font-size:12px; color:var(--el-text-color-secondary); }
 .application-version { display:flex; align-items:baseline; gap:8px; margin:0 0 14px; color:var(--el-text-color-secondary); font-size:12px; }.application-version span { color:var(--el-text-color-regular); overflow-wrap:anywhere; }

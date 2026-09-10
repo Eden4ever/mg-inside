@@ -1,10 +1,12 @@
 import { ConflictException, ForbiddenException, Inject, Injectable, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { LoginAttemptService } from './login-attempt';
 import { AuthService, Actor, requireRole } from './auth';
 
 @Injectable()
 export class ZentaoAuthService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(AuthService) private readonly auth: AuthService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(AuthService) private readonly auth: AuthService,
+    @Inject(LoginAttemptService) private readonly attempts: LoginAttemptService) {}
   status() { return { enabled: process.env.ZENTAO_ENABLED === 'true' && Boolean(process.env.ZENTAO_BASE_URL) }; }
   private server() {
     if (!this.status().enabled) throw new ConflictException('禅道登录尚未配置');
@@ -29,11 +31,16 @@ export class ZentaoAuthService {
     if (!/^[A-Za-z0-9_.@-]{1,128}$/.test(account)) throw new UnauthorizedException('禅道账号或密码错误');
     const server = this.server();
     const binding = await this.prisma.zentaoIdentity.findUnique({ where: { server_account: { server, account } }, include: { user: true } });
-    if (!binding || binding.user.status !== 'active') throw new UnauthorizedException('禅道账号未关联或不可用，请联系管理员');
+    if (!binding || binding.user.status !== 'active') {
+      await this.attempts.record({ username: account, userId: binding?.userId ?? null, displayName: binding?.user.displayName ?? null,
+        result: 'failure', reason: binding ? 'disabled' : 'unbound', source: 'zentao', context });
+      throw new UnauthorizedException('禅道账号未关联或不可用，请联系管理员');
+    }
     const result = await this.prisma.$transaction(async tx => {
       await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${binding.userId} FOR UPDATE NOWAIT`;
       const user = await tx.user.findUniqueOrThrow({ where: { id: binding.userId } });
-      if (user.status !== 'active' || (user.lockedUntil && user.lockedUntil > new Date())) return null;
+      if (user.status !== 'active') return { failure: 'disabled' as const };
+      if (user.lockedUntil && user.lockedUntil > new Date()) return { failure: 'locked' as const };
       let valid = false;
       try {
         const tokens = await this.request(`${server}/api.php/v1/tokens`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ account, password }) });
@@ -45,7 +52,7 @@ export class ZentaoAuthService {
       if (!valid) {
         const failedLoginCount = (user.lockedUntil && user.lockedUntil <= new Date() ? 0 : user.failedLoginCount) + 1;
         await tx.user.update({ where: { id: user.id }, data: { failedLoginCount, lockedUntil: failedLoginCount >= 5 ? new Date(Date.now() + 900000) : null } });
-        return null;
+        return { failure: 'invalid_credentials' as const };
       }
       await tx.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: new Date() } });
       // 只认已审核的稳定绑定；不按姓名认领、不建号、不从禅道提升角色。
@@ -54,6 +61,12 @@ export class ZentaoAuthService {
       if (error?.code === 'P2010' && error.meta?.code === '55P03') throw new UnauthorizedException('账号正在验证，请稍后重试');
       throw error;
     });
+    if (result && 'failure' in result) {
+      // 失败计数已随事务提交，这里补写登录流水。
+      await this.attempts.record({ username: account, userId: binding.userId, displayName: binding.user.displayName,
+        result: 'failure', reason: result.failure, source: 'zentao', context });
+      throw new UnauthorizedException('禅道账号或密码错误，或暂时锁定');
+    }
     if (!result) throw new UnauthorizedException('禅道账号或密码错误，或暂时锁定');
     return result;
   }

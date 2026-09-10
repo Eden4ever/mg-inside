@@ -2,9 +2,11 @@
 import { computed, onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { api, type MailSettings } from '@/api/client';
+import { useCloseProtection } from '../use-close-protection';
 const form = ref<MailSettings>({ enabled: false, host: '', port: 465, security: 'tls', username: '', fromAddress: '', fromName: '元引统一认证', revision: 0, hasPassword: false });
 const password = ref(''); const recipient = ref(''); const loaded = ref(false); const busy = ref(false); const error = ref(''); const result = ref(''); const saved = ref('');
 const dirty = computed(() => Boolean(password.value) || JSON.stringify(form.value) !== saved.value);
+useCloseProtection(computed(() => loaded.value && dirty.value), busy);
 const canTest = computed(() => loaded.value && !busy.value && form.value.enabled && !dirty.value && Boolean(recipient.value.trim()));
 async function load() {
   try { form.value = await api.mailSettings(); saved.value = JSON.stringify(form.value); loaded.value = true; }

@@ -1,6 +1,7 @@
 import { ensurePlatformAdministratorRole } from '../dist/platform-role.js';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../dist/password.js';
+import { applicationReference } from '../dist/kernel-applications.js';
 const prisma = new PrismaClient();
 try {
   const username = process.env.IDENTITY_BOOTSTRAP_USERNAME || '';
@@ -13,7 +14,7 @@ try {
     const user = await tx.user.create({ data: { username, displayName, passwordHash: await hashPassword(password) } });
     const role = await ensurePlatformAdministratorRole(tx);
     await tx.userRole.create({ data: { userId: user.id, roleId: role.id } });
-    await tx.application.upsert({ where: { clientId: 'identity' }, create: { clientId: 'identity', name: '统一身份' }, update: {} });
+    await applicationReference(tx,'identity');
     await tx.applicationUser.create({ data: { clientId: 'identity', userId: user.id, enabled: true } });
     await tx.auditLog.create({ data: { actorUserId: user.id, actorName: displayName, actorRole: 'system_admin', action: 'identity.bootstrap', targetType: 'User', targetId: user.id, detail: {} } });
   });

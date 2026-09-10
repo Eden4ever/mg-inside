@@ -2,9 +2,10 @@
 from pathlib import Path
 import argparse, hashlib, json, os, shutil
 
-projects = ['mg-platform','mg-desktop-one','mg-service-one','mg-resource-one','mg-files-one','mg-office-one','mg-personal-one','mg-app-manager-one','mg-auth-one-identity','mg-expert-database','mg-token-one']
+projects = ['mg-platform','mg-platform-kernel','mg-desktop-one','mg-service-one','mg-resource-one','mg-files-one','mg-office-one','mg-personal-one','mg-app-manager-one','mg-auth-one-identity','mg-expert-database','mg-token-one']
 skip_dirs = {'.git','node_modules','dist','build','.runtime','private','secrets','artifacts','backups','coverage','.pnpm-store','.deploy-deps','.tools','.workbuddy','.claude','.codex','.agents','sshpass-1.10','test-results','playwright-report','__pycache__','.pytest_cache','.venv','venv'}
-skip_suffixes = ('.log','.tsbuildinfo','.pem','.key','.p12','.pfx','.sqlite','.sqlite3','.db','.db-journal','.zip','.tar','.tar.gz','.tgz','.sql.gz','.bak')
+skip_dirs.update({'target','.idea'})
+skip_suffixes = ('.log','.tsbuildinfo','.pem','.key','.p12','.pfx','.sqlite','.sqlite3','.db','.db-journal','.zip','.tar','.tar.gz','.tgz','.sql.gz','.bak','.class','.jar','.dump')
 
 def candidates(source):
     for project in projects:

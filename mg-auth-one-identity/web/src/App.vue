@@ -7,7 +7,7 @@ import enterpriseLogo from './assets/logo.svg';
 import { application } from './application';
 const route = useRoute(), router = useRouter();
 // 导航显示仍由当前管理权限决定；实际访问继续由路由和服务端保护。
-const config = computed(() => application.layout === 'standard' ? { ...application, navigation: { mode: 'flat' as const, defaultCollapsed: true, pageIds: user.value?.identityAuthorized && user.value.roles?.some(role => role.key === 'platform-admin') ? application.pages.map(page => page.id) : [] } } : application);
+const config = computed(() => application.layout === 'standard' ? { ...application, navigation: { mode: 'flat' as const, defaultCollapsed: true, pageIds: user.value?.identityAuthorized && user.value.roles?.some(role => role.key === 'platform-admin') ? application.pages.map(page => page.id) : user.value?.identityAuthorized && user.value.roles?.some(role=>['division-admin','organization-admin'].includes(role.key||'')) ? ['scopes'] : [] } } : application);
 function expired() { clearSession(); void router.replace({ path: '/login', query: { expired: '1' } }); }
 onMounted(() => window.addEventListener('identity-expired', expired));
 onUnmounted(() => window.removeEventListener('identity-expired', expired));

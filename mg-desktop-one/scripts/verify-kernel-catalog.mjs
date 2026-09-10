@@ -1,0 +1,54 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {parseEnv} from 'node:util';
+import {execFileSync} from 'node:child_process';
+import {resolve} from 'node:path';
+import {chromium} from '@playwright/test';
+import {PrismaClient} from '../../mg-auth-one-identity/.runtime/catalog-identity/node_modules/@prisma/client/default.js';
+import {NestFactory} from '../../mg-auth-one-identity/.runtime/catalog-identity/node_modules/@nestjs/core/index.js';
+import {FastifyAdapter} from '../../mg-auth-one-identity/.runtime/catalog-identity/node_modules/@nestjs/platform-fastify/index.js';
+const config=parseEnv(await readFile('.runtime/local/kernel-catalog.env','utf8'));
+const local=parseEnv(await readFile('.runtime/local/identity.env','utf8'));
+const database=new URL(local.DATABASE_URL);assert.equal(database.hostname,'127.0.0.1');
+const schema='kernel_catalog_test_'+Date.now();database.searchParams.set('schema',schema);
+const api='http://127.0.0.1:4302',origin='http://127.0.0.1:4301';
+process.env.DATABASE_URL=database.href;process.env.APPLICATION_REGISTRY_URL=api+'/internal/applications';process.env.APPLICATION_REGISTRY_KEY=config.APPLICATION_REGISTRY_KEY;
+const stage=resolve('../mg-auth-one-identity/.runtime/catalog-identity');
+execFileSync(process.execPath,[stage+'/node_modules/prisma/build/index.js','db','push','--schema',stage+'/prisma/schema.prisma','--skip-generate'],{env:process.env,stdio:'pipe'});
+const db=new PrismaClient(),browser=await chromium.launch({channel:'chrome',headless:true});let app,page,original,headers;
+const url=api+'/api/applications/identity';
+const metadata=(item,name)=>Object.assign(Object.fromEntries(['description','developer','icon','minWidth','minHeight','defaultMaximized','registeredVersion'].map(key=>[key,item[key]])),{name,expectedRevision:item.revision});
+try {
+ const {hashPassword}=await import('../../mg-auth-one-identity/.runtime/catalog-identity/dist/password.js');
+ const password='test-'+schema+'-password';
+ const user=await db.user.create({data:{username:schema,displayName:'目录验收',passwordHash:await hashPassword(password)}});
+ await db.application.create({data:{clientId:'identity'}});
+ const role=await db.role.create({data:{name:'平台管理员',key:'platform-admin'}});await db.userRole.create({data:{userId:user.id,roleId:role.id}});
+ await db.applicationUser.create({data:{clientId:'identity',userId:user.id,enabled:true}});
+ const {AppModule}=await import('../../mg-auth-one-identity/.runtime/catalog-identity/dist/app.module.js');
+ app=await NestFactory.create(AppModule,new FastifyAdapter(),{logger:false});app.setGlobalPrefix('api');await app.listen(0,'127.0.0.1');
+ const identity=await app.getUrl();const login=await fetch(identity+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:schema,password})});assert.equal(login.status,200);
+ const cookie=login.headers.getSetCookie().map(c=>c.split(';')[0]).join('; ');
+ const list=async()=>{const response=await fetch(identity+'/api/applications',{headers:{cookie}});assert.equal(response.status,200);return response.json();};
+ const raw=await fetch(api+'/internal/applications',{headers:{'X-Application-Registry-Key':config.APPLICATION_REGISTRY_KEY}});assert.equal(raw.status,200);
+ const kernel=(await raw.json()).applications;
+ assert.equal((await fetch(api+'/internal/applications')).status,401);
+ assert.deepEqual((await list()).map(a=>a.clientId).sort(),kernel.map(a=>a.id).sort());
+ assert(kernel.some(a=>a.id==='document-one'));assert.equal((await list()).find(a=>a.clientId==='document-one').runtimeReady,false);
+ const columns=await db.$queryRaw`SELECT column_name FROM information_schema.columns WHERE table_schema=${schema} AND table_name='ApplicationReference'`;
+ assert.deepEqual(columns.map(c=>c.column_name),['clientId']);
+ const account=JSON.parse(await readFile('.runtime/local/account.json','utf8'));page=await browser.newPage();
+ await page.route(origin+'/api/**',async route=>{const response=await route.fetch({url:route.request().url().replace(origin,api)});await route.fulfill({response});});
+ await page.goto(origin);await page.getByPlaceholder('请输入账号').fill(account.username);await page.getByPlaceholder('请输入密码').fill(account.password);await page.getByRole('button',{name:/^登\s*录$/}).click();await page.getByRole('button',{name:'打开应用管理',exact:true}).first().waitFor();
+ const session=await (await page.request.get(api+'/api/session')).json();headers={Origin:origin,'X-CSRF-Token':session.csrfToken};
+ original=await (await page.request.get(url)).json();
+ let result=await page.request.patch(url,{headers,data:metadata(original,'统一身份目录验收')});assert.equal(result.status(),200,await result.text());
+ assert.equal((await list()).find(a=>a.clientId==='identity').name,'统一身份目录验收');
+ const management=await (await page.request.get(api+'/api/applications')).json();assert.deepEqual(management.items.filter(a=>a.kind!=='external').map(a=>a.id).sort(),kernel.map(a=>a.id).sort());
+ const {kernelApplications}=await import('../../mg-auth-one-identity/.runtime/catalog-identity/dist/kernel-applications.js');
+ process.env.APPLICATION_REGISTRY_KEY='invalid';await assert.rejects(kernelApplications,/内核应用目录暂不可用/);process.env.APPLICATION_REGISTRY_KEY=config.APPLICATION_REGISTRY_KEY;
+ console.log('通过：内核与认证清单一致、Document One 待配置、元数据即时一致、引用表无重复定义、服务身份校验、目录故障拒绝。');
+}finally{
+ if(original&&headers){const current=await (await page.request.get(url)).json();assert.equal((await page.request.patch(url,{headers,data:metadata(current,original.name)})).status(),200);}
+ await browser.close();await app?.close();await db.$executeRawUnsafe('DROP SCHEMA "'+schema+'" CASCADE');await db.$disconnect();
+}

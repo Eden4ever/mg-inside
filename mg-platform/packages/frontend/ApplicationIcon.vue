@@ -4,7 +4,12 @@ import { applicationIcons, type ApplicationIconId } from './assets';
 const props = defineProps<{ app: { id: string; icon?: string } }>();
 const failed = ref<string[]>([]);
 const badgeFailed = ref(false);
-const asset = computed(() => Object.hasOwn(applicationIcons, props.app.id) ? applicationIcons[props.app.id as ApplicationIconId] : undefined);
+const asset = computed(() => {
+  // 兼容旧目录的四类图标标记；新的注册项直接指定公共图标资源键。
+  const key = props.app.icon && Object.hasOwn(applicationIcons, props.app.icon) ? props.app.icon
+    : !props.app.icon || ['knowledge', 'token', 'identity', 'personal'].includes(props.app.icon) ? props.app.id : props.app.icon;
+  return Object.hasOwn(applicationIcons, key) ? applicationIcons[key as ApplicationIconId] : undefined;
+});
 const source = computed(() => [asset.value?.image, asset.value?.src, applicationIcons.placeholder.src].find((src): src is string => !!src && !failed.value.includes(src)));
 const imageStyle = computed(() => {
   const box = source.value === asset.value?.image ? asset.value?.imageViewport : undefined;

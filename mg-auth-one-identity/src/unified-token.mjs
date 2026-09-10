@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { encryptSecret, decryptSecret } from './security-secrets.js';
-import { applicationAccess, effectiveApplications, knownAudience, canInspectAudience } from './application-access.js';
+import { applicationAccess, effectiveApplications, canInspectAudience } from './application-access.js';
+import { kernelApplication } from './kernel-applications.js';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
 const challenge = value => createHash('sha256').update(value).digest('base64url');
@@ -18,7 +19,7 @@ export function createUnifiedTokens({ prisma, auth, clients, issuer }) {
     const session = await prisma.authSession.findUnique({ where: { tokenHash: digest(token) }, include: { user: true } });
     if (!session || session.id !== authenticated.session.id || session.revokedAt || session.expiresAt <= new Date()
       || session.user.status !== 'active' || session.securityVersion !== session.user.securityVersion) return { active: false };
-    if (!knownAudience(appId, clients)) return { active: false };
+    if (!await kernelApplication(appId)) return { active: false };
     const access = await applicationAccess(prisma, session.userId, appId);
     if (!access.effective) return { active: false };
     // 拆分授权目标仍复用原 Token 业务身份映射，映射存在不表示获得门户授权。
@@ -26,7 +27,9 @@ export function createUnifiedTokens({ prisma, auth, clients, issuer }) {
       ? await prisma.applicationUser.findUnique({ where: { clientId_userId: { clientId: 'token-one', userId: session.userId } } }) : null;
     return { active: true, iss: issuer, aud: appId, sub: session.userId, sid: session.id,
       username: session.user.username, name: session.user.displayName, department: session.user.departmentName,
-      avatarUrl: authenticated.user.avatarUrl ?? null, role: authenticated.user.role, roles: authenticated.user.roles, authorizationSources: access.sources,
+      avatarUrl: authenticated.user.avatarUrl ?? null, role: authenticated.user.role, roles: authenticated.user.roles,
+      authorizationSources: access.sources.filter(source => source.type !== 'scope'),
+      scopeAuthorizationSources: access.sources.filter(source => source.type === 'scope'),
       localUserId: access.localUserId || tokenMapping?.localUserId || null, securityVersion: session.user.securityVersion,
       amr: session.authMethods, authTime: Math.floor(session.verifiedAt.getTime() / 1000),
       exp: Math.floor(session.expiresAt.getTime() / 1000), csrfToken: session.csrfToken };
@@ -123,7 +126,7 @@ export function installUnifiedTokenRoutes(server, { prisma, auth, clients, issue
     const profile = await tokens.inspect(req.body?.token, desktopId());
     if (!profile.active) return reply.code(401).send({ message: '登录已失效' });
     const memberships = await effectiveApplications(prisma, profile.sub);
-    return { applications: memberships.filter(m => m.effective && knownAudience(m.clientId, clients)).map(m => ({ id: m.clientId, name: m.name, sources: m.sources, foundation: m.foundation })) };
+    return { applications: memberships.filter(m => m.effective).map(m => ({ id: m.clientId, name: m.name, sources: m.sources, foundation: m.foundation })) };
   });
   server.get('/api/unified/authorize', async (req, reply) => {
     noStore(reply);

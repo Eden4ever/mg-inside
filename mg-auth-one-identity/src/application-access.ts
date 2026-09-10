@@ -1,9 +1,11 @@
 import { ConflictException } from '@nestjs/common';
 import type { Prisma, PrismaClient } from '@prisma/client';
-import { PLATFORM_ADMIN_KEY } from './platform-role';
+import { PLATFORM_ADMIN_KEY, SCOPED_ADMIN_KEYS } from './platform-role';
+import { scopeMemberWhere } from './scope-access';
+import { kernelApplication, kernelApplications, type KernelApplication } from './kernel-applications';
 
 type Database = PrismaClient | Prisma.TransactionClient;
-export type AuthorizationSource = { type: 'user' } | { type: 'role'; roleId: string; name: string };
+export type AuthorizationSource = { type: 'user' } | { type: 'role'; roleId: string; name: string } | { type: 'scope'; scopeId: string; name: string };
 export const isFoundationApplication = (clientId: string) => ['personal-center', 'files', process.env.IDENTITY_DESKTOP_CLIENT_ID || 'desktop-one'].includes(clientId);
 export const tokenAudiences = ['token-one', 'token-one-console', 'token-one-docs'];
 export function knownAudience(clientId: string, clients: Array<{ client_id: string }>) {
@@ -17,26 +19,34 @@ export function canInspectAudience(caller: string, target: string) {
 }
 
 /** 每次读取有效授权，不缓存；直授权撤销不抵消仍存在的角色来源。 */
-export async function applicationAccess(db: Database, userId: string, clientId: string) {
+export async function applicationAccess(db: Database, userId: string, clientId: string, resolved?: KernelApplication) {
   const [application, user, direct, memberships] = await Promise.all([
-    db.application.findUnique({ where: { clientId } }),
+    resolved || kernelApplication(clientId),
     db.user.findUnique({ where: { id: userId }, select: { status: true } }),
     db.applicationUser.findUnique({ where: { clientId_userId: { clientId, userId } } }),
     db.userRole.findMany({ where: { userId, role: { applications: { some: { clientId, enabled: true } } } }, include: { role: true }, orderBy: { roleId: 'asc' } }),
   ]);
   const sources: AuthorizationSource[] = [
     ...(direct?.enabled ? [{ type: 'user' as const }] : []),
-    ...memberships.map(m => ({ type: 'role' as const, roleId: m.roleId, name: m.role.name })),
+    ...memberships.filter(m => !SCOPED_ADMIN_KEYS.includes(m.role.key || '')).map(m => ({ type: 'role' as const, roleId: m.roleId, name: m.role.name })),
   ];
+  const scoped = await db.scopeGrant.findMany({ where: { userId, clientId }, include: { scopeApplication: { include: { scope: { include: { division: true, organization: true } } } } } });
+  for (const grant of scoped) {
+    const scope = grant.scopeApplication.scope;
+    if ((scope.division?.enabled ?? scope.organization?.enabled) && await db.user.count({ where: { id: userId, AND: await scopeMemberWhere(db, scope) } })) {
+      sources.push({ type: 'scope', scopeId: scope.id, name: scope.division?.name || scope.organization?.name || '' });
+    }
+  }
+  const foundation=application?.kind==='default' || isFoundationApplication(clientId);
   return { clientId, name: application?.name || clientId, enabled: Boolean(application?.enabled),
     direct: Boolean(direct?.enabled), localUserId: direct?.localUserId ?? null, sources,
-    foundation: isFoundationApplication(clientId),
-    effective: Boolean(application?.enabled && user?.status === 'active' && (sources.length || isFoundationApplication(clientId))) };
+    foundation,
+    effective: Boolean(application?.enabled && user?.status === 'active' && (sources.length || foundation)) };
 }
 
 export async function effectiveApplications(db: Database, userId: string) {
-  const applications = await db.application.findMany({ orderBy: { name: 'asc' } });
-  return Promise.all(applications.map(a => applicationAccess(db, userId, a.clientId)));
+  const applications = await kernelApplications();
+  return Promise.all(applications.map(a => applicationAccess(db, userId, a.id, a)));
 }
 
 // 所有授权写操作及管理员身份变更共用事务锁，避免并发撤销最后两份管理权限。

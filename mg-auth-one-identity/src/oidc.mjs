@@ -4,12 +4,14 @@ import { databaseAdapter } from './oidc-adapter.mjs';
 import { installUnifiedTokenRoutes } from './unified-token.mjs';
 import { applicationAccess } from './application-access.js';
 import { ensurePlatformAdministratorRole } from './platform-role.js';
+import { applicationReference, kernelApplication, kernelApplications } from './kernel-applications.js';
 
 export async function installIdentity(server, prisma, auth, issuer) {
   await ensurePlatformAdministratorRole(prisma);
   const secrets = JSON.parse(await fs.readFile(process.env.IDENTITY_SECRETS_FILE || './secrets/identity.json', 'utf8'));
   if (!Array.isArray(secrets.cookieKeys) || !secrets.cookieKeys.length || secrets.cookieKeys.some(k => typeof k !== 'string' || k.length < 32) || !secrets.jwks?.keys?.length) throw new Error('身份服务密钥配置不完整');
   const clients = secrets.clients;
+  const directory = await kernelApplications();
   if (!Array.isArray(clients) || !clients.length || new Set(clients.map(c => c.client_id)).size !== clients.length) throw new Error('应用列表无效');
   for (const client of clients) {
     if (!client.client_id || typeof client.client_secret !== 'string' || client.client_secret.length < 32 || !client.redirect_uris?.length) throw new Error('应用配置不完整');
@@ -17,17 +19,12 @@ export async function installIdentity(server, prisma, auth, issuer) {
       const url = new URL(uri);
       if (url.hash || url.username || url.password || uri.includes('*') || (url.protocol !== 'https:' && !(process.env.NODE_ENV !== 'production' && ['127.0.0.1', 'localhost'].includes(url.hostname)))) throw new Error('应用回调地址无效');
     }
-    await prisma.application.upsert({ where: { clientId: client.client_id }, create: { clientId: client.client_id, name: client.client_name || client.client_id }, update: {} });
-  }
-  // 同一 Token 服务的三个界面使用独立授权目标，不额外复制机器密钥。
-  for (const [clientId, name] of [['identity', '统一身份'], ['personal-center', '个人中心'], ['files', '文件'], ['app-manager', '应用管理'],
-    ...(clients.some(c => c.client_id === 'token-one') ? [['token-one-console', 'Token One 控制台'], ['token-one-docs', 'Token One 文档']] : [])]) {
-    await prisma.application.upsert({ where: { clientId }, create: { clientId, name }, update: {} });
+    await applicationReference(prisma,client.client_id);
   }
   const provider = new Provider(issuer, {
     adapter: databaseAdapter(prisma), jwks: secrets.jwks, cookies: { keys: secrets.cookieKeys,
       names: { session: 'mg_identity_oidc', interaction: 'mg_identity_interaction', resume: 'mg_identity_resume' } },
-    clients: clients.map(c => ({ ...c, grant_types: ['authorization_code', 'client_credentials'], response_types: ['code'],
+    clients: clients.map(c => ({ ...c, client_name: directory.find(app=>app.id===c.client_id)?.name, grant_types: ['authorization_code', 'client_credentials'], response_types: ['code'],
       token_endpoint_auth_method: 'client_secret_post', scope: 'openid profile directory:read session:revoke', require_pkce: true })),
     features: { devInteractions: { enabled: false }, clientCredentials: { enabled: true }, revocation: { enabled: true } },
     scopes: ['openid', 'profile', 'directory:read', 'session:revoke'],
@@ -97,11 +94,11 @@ export async function installIdentity(server, prisma, auth, issuer) {
   async function machine(req, reply, scope = 'directory:read') {
     const raw = /^Bearer (.+)$/.exec(req.headers.authorization || '')?.[1];
     const token = raw && await provider.ClientCredentials.find(raw);
-    const app = token && await prisma.application.findUnique({ where: { clientId: token.clientId } });
+    const app = token && await kernelApplication(token.clientId);
     if (!token || !token.scope?.split(' ').includes(scope) || !app?.enabled) {
       reply.code(401).send({ message: '应用凭据无效' }); return null;
     }
-    return app.clientId;
+    return app.id;
   }
   server.get('/api/directory/users', async (req, reply) => {
     const clientId = await machine(req, reply); if (!clientId) return;
@@ -149,7 +146,7 @@ export async function installIdentity(server, prisma, auth, issuer) {
   });
   installUnifiedTokenRoutes(server, { prisma, auth, clients, issuer, machine });
   server.get('/health', async () => { await prisma.$queryRaw`SELECT 1`; return { status: 'ready', issuer }; });
-  const pages = ['/', '/login', '/admin', '/applications', '/roles', '/access-denied', '/account', '/settings'];
+  const pages = ['/', '/login', '/admin', '/applications', '/roles', '/divisions', '/organizations', '/scopes', '/access-denied', '/account', '/settings'];
   for (const page of pages) server.get(page, async (_req, reply) => reply.type('text/html').send(await fs.readFile(new URL('./public/index.html', import.meta.url), 'utf8')));
   server.get('/assets/:file', async (req, reply) => {
     const file = req.params.file;

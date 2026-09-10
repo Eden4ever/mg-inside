@@ -9,8 +9,9 @@ import { availableUsername, usernameBase } from './username-suggestion';
 import { consumeTotp } from './totp';
 import { EmailOtpService } from './email-otp';
 import { SecurityKeyService } from './security-key';
+import { LoginAttemptService } from './login-attempt';
 import { applicationAccess, ensureIdentityAdministrator, lockAuthorization } from './application-access';
-import { compatibilityRole, roleSelection, userRoles, replaceUserRoles, validateRoleIds, type RoleSummary } from './platform-role';
+import { compatibilityRole, SCOPED_ADMIN_KEYS, roleSelection, userRoles, replaceUserRoles, validateRoleIds, type RoleSummary } from './platform-role';
 type VerifiedSecond = 'totp' | 'email' | 'key' | 'recovery';
 
 export { hashPassword } from './password';
@@ -18,7 +19,7 @@ export { hashPassword } from './password';
 export const ROLES = ['system_admin', 'member'] as const;
 export type Role = (typeof ROLES)[number];
 export interface Actor { userId: string; name: string; role: Role; }
-export interface SessionUser extends Actor { username: string | null; departmentName: string | null; avatarUrl?: string | null; authSource: string; roles?: RoleSummary[]; identityAuthorized?: boolean; }
+export interface SessionUser extends Actor { username: string | null; departmentName: string | null; avatarUrl?: string | null; authSource: string; roles?: RoleSummary[]; identityAuthorized?: boolean; managementRole?: string; }
 export interface AuthenticatedRequest { user?: SessionUser; authSession?: { id: string; csrfToken: string }; headers: Record<string, unknown>; method?: string; ip?: string; }
 
 export const SESSION_COOKIE = 'mg_identity_session';
@@ -51,12 +52,13 @@ function normalizeUsername(value: string): string {
 }
 
 function sessionUser(user: { id: string; username: string | null; displayName: string; departmentName: string | null; avatarUrl?: string | null; authSource: string }, roles: RoleSummary[]): SessionUser {
-  return { userId: user.id, username: user.username, name: user.displayName, departmentName: user.departmentName, avatarUrl: profileAvatarUrl(user.avatarUrl), role: compatibilityRole(roles), roles, authSource: user.authSource };
+  return { userId: user.id, username: user.username, name: user.displayName, departmentName: user.departmentName, avatarUrl: profileAvatarUrl(user.avatarUrl), role: compatibilityRole(roles), managementRole: compatibilityRole(roles)==='system_admin'||roles.some(r=>SCOPED_ADMIN_KEYS.includes(r.key||''))?'identity-manager':'member', roles, authSource: user.authSource };
 }
 
 @Injectable()
 export class AuthService {
-  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(EmailOtpService) private readonly emailOtp: EmailOtpService, @Inject(SecurityKeyService) private readonly keys: SecurityKeyService) {}
+  constructor(@Inject(PrismaService) private readonly prisma: PrismaService, @Inject(EmailOtpService) private readonly emailOtp: EmailOtpService,
+    @Inject(SecurityKeyService) private readonly keys: SecurityKeyService, @Inject(LoginAttemptService) private readonly attempts: LoginAttemptService) {}
 
   async login(usernameInput: string, password: string, context: { userAgent?: string; ipAddress?: string }) {
     if (typeof usernameInput !== 'string' || typeof password !== 'string' || usernameInput.length > 50 || password.length > 128) throw new UnauthorizedException('账号或密码错误。');
@@ -67,7 +69,7 @@ export class AuthService {
     await transaction.$queryRaw`SELECT id FROM "User" WHERE username = ${username} FOR UPDATE NOWAIT`;
     const user = await transaction.user.findUnique({ where: { username } });
     const now = new Date();
-    if (user?.lockedUntil && user.lockedUntil > now) return { error: 'locked' as const };
+    if (user?.lockedUntil && user.lockedUntil > now) return { error: 'locked' as const, userId: user.id, displayName: user.displayName };
     const valid = Boolean(user?.passwordHash) && await verifyPassword(password, user!.passwordHash!);
     if (!user || !valid) {
       if (user) {
@@ -75,16 +77,20 @@ export class AuthService {
         await transaction.user.update({ where: { id: user.id }, data: { failedLoginCount: failures, lockedUntil: failures >= 5 ? new Date(Date.now() + 15 * 60_000) : null } });
       }
       // 错误在事务提交之后抛出，保证失败计数不会被回滚。
-      return { error: 'invalid' as const };
+      return { error: 'invalid' as const, userId: user?.id, displayName: user?.displayName };
     }
-    if (user.status !== 'active') return { error: 'disabled' as const };
+    if (user.status !== 'active') return { error: 'disabled' as const, userId: user.id, displayName: user.displayName };
     await transaction.user.update({ where: { id: user.id }, data: { failedLoginCount: 0, lockedUntil: null, lastLoginAt: now } });
     return { session: await this.beginAuthentication(user, context, 'local', transaction) };
     }).catch((error: unknown) => {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2010' && error.meta?.code === '55P03') return { error: 'locked' as const };
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2010' && error.meta?.code === '55P03') return { error: 'locked' as const, userId: undefined, displayName: undefined };
       throw error;
     });
     if ('session' in result && result.session) return result.session;
+    // 失败计数已在事务中提交，这里补写流水；写在事务内会随回滚一起丢失。
+    const reason = result.error === 'locked' ? 'locked' as const : result.error === 'disabled' ? 'disabled' as const : 'invalid_credentials' as const;
+    await this.attempts.record({ username, userId: result.userId ?? null, displayName: result.displayName ?? null,
+      result: 'failure', reason, source: 'local', context });
     if (result.error === 'locked') throw new HttpException('登录请求过于频繁，请稍后再试。', HttpStatus.TOO_MANY_REQUESTS);
     if (result.error === 'disabled') throw new ForbiddenException('账号已停用，请联系平台管理员。');
     throw new UnauthorizedException('账号或密码错误。');
@@ -116,6 +122,9 @@ export class AuthService {
     const expiresAt = new Date(Date.now() + ttlHours * 60 * 60_000);
     const result = await transaction.authSession.create({ data: { tokenHash: sha256(rawToken), csrfToken, userId: user.id, expiresAt, securityVersion: user.securityVersion, authMethods: secondMethod ? [source, secondMethod] : [source], userAgent: context.userAgent?.slice(0, 300), ipAddress: context.ipAddress?.slice(0, 80) } });
     if (source === 'wecom') await transaction.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+    // 成功记录与会话同事务提交，保证登录历史不会出现没有会话的成功项。
+    await this.attempts.record({ username: user.username, userId: user.id, displayName: user.displayName, result: 'success',
+      source, secondMethod, sessionId: result.id, context }, transaction);
     return { state: 'authenticated' as const, user: sessionUser({ ...user, authSource: source }, await userRoles(transaction, user.id)), sessionId: result.id, rawToken, csrfToken, expiresAt };
   }
 
@@ -278,7 +287,7 @@ export class AuthService {
 
   async listUsers(actor: Actor) {
     requireRole(actor, ['system_admin']);
-    const users = await this.prisma.user.findMany({ include: { wecomIdentities: true, zentaoIdentities: true, roles: { include: { role: { select: roleSelection } } } }, orderBy: [{ status: 'asc' }, { createdAt: 'asc' }] });
+    const users = await this.prisma.user.findMany({ include: { wecomIdentities: true, zentaoIdentities: true, organizations: { include: { organization: { select: { id: true, name: true, enabled: true } } } }, roles: { include: { role: { select: roleSelection } } } }, orderBy: [{ status: 'asc' }, { createdAt: 'asc' }] });
     return users.map((user) => ({ ...this.userView(user), roles: user.roles.map(m => m.role) }));
   }
 
@@ -387,9 +396,9 @@ export class AuthService {
     await transaction.auditLog.create({ data: { actorUserId: actor.userId, actorName: actor.name, actorRole: actor.role, action, targetType: 'User', targetId, detail: detail as Prisma.InputJsonValue | undefined } });
   }
 
-  private userView(user: { id: string; username: string | null; displayName: string; departmentName: string | null; avatarUrl?: string | null; role: string; status: string; authSource: string; lastLoginAt: Date | null; createdAt: Date; updatedAt: Date; roles?: Array<{ role: RoleSummary }>; zentaoIdentities?: Array<{ id: string; account: string; server: string }>; wecomIdentities?: Array<{ id: string; corpId: string; externalUserId: string; boundAt: Date; lastLoginAt: Date | null }> }) {
+  private userView(user: { id: string; username: string | null; displayName: string; departmentName: string | null; avatarUrl?: string | null; role: string; status: string; authSource: string; lastLoginAt: Date | null; createdAt: Date; updatedAt: Date; roles?: Array<{ role: RoleSummary }>; organizations?: Array<{organization:{id:string;name:string;enabled:boolean};isPrimary:boolean;title:string|null}>; zentaoIdentities?: Array<{ id: string; account: string; server: string }>; wecomIdentities?: Array<{ id: string; corpId: string; externalUserId: string; boundAt: Date; lastLoginAt: Date | null }> }) {
     const identities = user.wecomIdentities?.map((identity) => ({ ...identity, boundAt: identity.boundAt.toISOString(), lastLoginAt: identity.lastLoginAt?.toISOString() ?? null })) ?? [];
-    return { id: user.id, username: user.username, displayName: user.displayName, departmentName: user.departmentName, avatarUrl: profileAvatarUrl(user.avatarUrl), role: compatibilityRole(user.roles?.map(m => m.role) || []), roles: user.roles?.map(m => m.role) || [], status: user.status, authSource: user.authSource, wecomBound: identities.length > 0, wecomIdentities: identities, zentaoIdentities: user.zentaoIdentities?.map(i=>({id:i.id,account:i.account,server:i.server})) || [], lastLoginAt: user.lastLoginAt?.toISOString() ?? null, createdAt: user.createdAt.toISOString(), updatedAt: user.updatedAt.toISOString() };
+    return { id: user.id, username: user.username, displayName: user.displayName, departmentName: user.departmentName, avatarUrl: profileAvatarUrl(user.avatarUrl), role: compatibilityRole(user.roles?.map(m => m.role) || []), roles: user.roles?.map(m => m.role) || [], organizations: user.organizations?.map(m => ({ id: m.organization.id, name: m.organization.name, enabled: m.organization.enabled, isPrimary: m.isPrimary, title: m.title })) || [], status: user.status, authSource: user.authSource, wecomBound: identities.length > 0, wecomIdentities: identities, zentaoIdentities: user.zentaoIdentities?.map(i=>({id:i.id,account:i.account,server:i.server})) || [], lastLoginAt: user.lastLoginAt?.toISOString() ?? null, createdAt: user.createdAt.toISOString(), updatedAt: user.updatedAt.toISOString() };
   }
 }
 

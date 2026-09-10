@@ -45,3 +45,17 @@ h2 { font-size:16px; font-weight:500; }
 @media(max-width:1100px) { .stats-grid { gap:12px; } .stat-card { padding:16px; gap:10px; } .app-selector .el-tag { display:none; } }
 @media(max-width:700px) { .stats-grid,.quick-grid,.app-grid { grid-template-columns:1fr; } .table-toolbar > .el-input { width:100%; } .table-toolbar { flex-wrap:wrap; } .app-selector { gap:10px; } .app-selector > button { padding:12px; gap:10px; } .app-symbol { width:32px; height:32px; font-size:20px; } .app-selector small { font-size:11px; } .count { margin-left:auto; } .section-title { flex-wrap:wrap; } .identity-art { display:none; } .stat-card > div { flex:1; } }
 @media(max-width:600px) { .user-name { display:none; } .profile-summary { flex-wrap:wrap; gap:14px; } .profile-summary > div { min-width:130px; } .profile-body > .panel,.profile-body > .protection-panel { padding:16px; } .profile-summary > .el-tag { margin-left:70px; } .panel { padding:16px; } .form-grid { grid-template-columns:1fr; gap:0; } .login-page { padding:28px 18px 20px; } .login-card { padding:28px 22px; } .login-brand h1 { font-size:21px; } .el-dialog { padding:18px!important; } .pagination { overflow:auto; } }
+.geography-page .organization-layout { display:grid; grid-template-columns:240px minmax(0,1fr); gap:16px; flex:1; min-height:0; }
+.geography-page .table-wrap { min-width:0; }
+.organization-tree { min-width:0; padding:16px; overflow:auto; border:1px solid var(--el-border-color-lighter); background:#fff; border-radius:6px; }
+.organization-tree h2 { margin:0 0 14px; }
+.organization-tree .el-input { margin-bottom:8px; }
+.organization-tree .el-tree { margin-top:8px; }
+.division-node { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.organization-toolbar { justify-content:flex-start!important; }
+.organization-toolbar > .el-input { flex:1; max-width:320px; }
+.organization-toolbar > .el-select { width:130px; }
+.plaque-editor { width:100%; display:grid; gap:8px; }
+.plaque-row { display:flex; gap:8px; }
+.plaque-row .el-input { flex:1; }
+@media(max-width:700px) { .geography-page .organization-layout { grid-template-columns:1fr; grid-template-rows:auto minmax(400px,1fr); align-content:start; overflow:auto; } .organization-tree { max-height:220px; } .organization-toolbar { flex-wrap:wrap; } .organization-toolbar > .el-input { max-width:none; flex-basis:100%; } .geography-page .pagination { justify-content:flex-start; } }

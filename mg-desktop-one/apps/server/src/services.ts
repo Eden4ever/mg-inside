@@ -16,7 +16,9 @@ const id = /^[a-z][a-z0-9-]{1,63}$/;
 function fields(value: any, names: string[]) { if (!value || typeof value !== 'object' || Array.isArray(value) || Object.keys(value).some(k => !names.includes(k))) throw new ServiceError('清单包含无效字段'); }
 export function validateManifest(input: unknown, appIds: Set<string>): ServiceManifest {
   const v = input as ServiceManifest;
-  fields(v, ['schemaVersion', 'serviceId', 'appId', 'name', 'version', 'description', 'operations']);
+  fields(v, ['schemaVersion', 'serviceId', 'appId', 'name', 'version', 'description', 'operations', 'exposure']);
+  if(v.exposure!==undefined&&!['gateway','catalog'].includes(v.exposure))throw new ServiceError('服务接入方式无效');
+  const catalog=v.exposure==='catalog';
   if (v.schemaVersion !== 1 || typeof v.appId !== 'string' || !id.test(v.appId) || !appIds.has(v.appId)
     || typeof v.serviceId !== 'string' || !v.serviceId.startsWith(v.appId + '.') || !/^[a-z0-9.-]{3,100}$/.test(v.serviceId)
     || typeof v.version !== 'string' || !/^\d{1,4}\.\d{1,4}\.\d{1,4}$/.test(v.version)
@@ -26,18 +28,18 @@ export function validateManifest(input: unknown, appIds: Set<string>): ServiceMa
   for (const op of v.operations) {
     fields(op, ['operationId', 'method', 'path', 'summary', 'effect']);
     if (typeof op.operationId !== 'string' || !/^[a-zA-Z][a-zA-Z0-9_-]{0,79}$/.test(op.operationId) || keys.has(op.operationId)
-      || !['GET','POST','PUT','PATCH','DELETE'].includes(op.method) || typeof op.path !== 'string' || op.path.length > 300
-      || !/^\/(?:[A-Za-z0-9_-]+|\{[a-zA-Z][a-zA-Z0-9]*\})(?:\/(?:[A-Za-z0-9_-]+|\{[a-zA-Z][a-zA-Z0-9]*\}))*$/.test(op.path)
+      || !(catalog?['GET','POST','PUT','PATCH','DELETE','HEAD','OPTIONS','ANY','WS']:['GET','POST','PUT','PATCH','DELETE']).includes(op.method) || typeof op.path !== 'string' || op.path.length > 300
+      || !(catalog?/^\/[A-Za-z0-9/_.{}*~-]*$/:/^\/(?:[A-Za-z0-9_-]+|\{[a-zA-Z][a-zA-Z0-9]*\})(?:\/(?:[A-Za-z0-9_-]+|\{[a-zA-Z][a-zA-Z0-9]*\}))*$/).test(op.path)||op.path.includes('..')||op.path.includes('//')
       || typeof op.summary !== 'string' || !op.summary.trim() || op.summary.length > 200
-      || op.effect !== (op.method === 'GET' ? 'read' : 'write')) throw new ServiceError('接口定义无效或操作 ID 重复');
+      || op.effect !== (['GET','HEAD','OPTIONS'].includes(op.method) ? 'read' : 'write')) throw new ServiceError('接口定义无效或操作 ID 重复');
     const route = op.method + ' ' + op.path.replace(/\{[^}]+\}/g, '{}');
     if (routes.has(route)) throw new ServiceError('接口路径重复');
     keys.add(op.operationId); routes.add(route);
   }
-  if(v.operations.some((op,index)=>v.operations.slice(index+1).some(other=>operationRoutesOverlap(op,other))))throw new ServiceError('接口路径存在重叠，会导致调用匹配冲突');
+  if(!catalog&&v.operations.some((op,index)=>v.operations.slice(index+1).some(other=>operationRoutesOverlap(op,other))))throw new ServiceError('接口路径存在重叠，会导致调用匹配冲突');
   // 规范化字段顺序，使重试与不同 JSON 键顺序获得相同摘要。
   return {schemaVersion:1,serviceId:v.serviceId,appId:v.appId,name:v.name.trim(),version:v.version,description:v.description,
-    operations:v.operations.map(o=>({operationId:o.operationId,method:o.method,path:o.path,summary:o.summary,effect:o.effect})).sort((a,b)=>a.operationId.localeCompare(b.operationId))};
+    operations:v.operations.map(o=>({operationId:o.operationId,method:o.method,path:o.path,summary:o.summary,effect:o.effect})).sort((a,b)=>a.operationId.localeCompare(b.operationId)),...(v.exposure?{exposure:v.exposure}:{})};
 }
 const hash = (m: ServiceManifest) => createHash('sha256').update(JSON.stringify(m)).digest('hex');
 const contractHash=(doc:ServiceContract)=>createHash('sha256').update(canonicalJson(doc)).digest('hex');
@@ -128,6 +130,7 @@ export function createServiceRegistry(dir: string, appIds: Set<string>, persiste
       const current=active().find(p=>p.manifest.serviceId===serviceId);
       const previousBinding=state.bindings?.[serviceId];let binding:ServiceBinding|undefined;
       if(candidate){
+        if(candidate.manifest.exposure==='catalog')throw new ServiceError('协议或平台接口已登记，仅目录管理，不使用业务代理启用',409);
         if(lifecycle(candidate).status==='retired')throw new ServiceError('此版本已退役，不能再次发布',409);
         if(bindingPolicy)binding=bindingFor(candidate,bindingPolicy.environment,options.endpointRef||'',options.expectedDeploymentDigest||'',await bindingPolicy.refresh?.()||bindingPolicy.deployments());
         if(compareServiceVersions(current?.manifest,candidate.manifest).some(change=>change.breaking)&&options.allowBreaking!==true)throw new ServiceError('此版本包含接口移除或调用方式变化，请审阅差异并明确确认',409);

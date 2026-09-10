@@ -15,13 +15,18 @@ export function createDesktopApplication(options: { appId: string; origin: strin
       return !(edits || (!closeHandler && (dirty || taskBusy))) || window.confirm('窗口内可能有未保存的编辑，关闭会丢失这些内容。确定关闭吗？');
     },
     onNavigate: path => navigateHandler?.(path),
+    onTheme: theme => {
+      document.documentElement.dataset.theme = theme;
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+      document.documentElement.classList.toggle('light', theme === 'light');
+    },
   });
   function state() { bridge.setState({ dirty: dirty || edits || dialogOpen, busy: busy > 0 || taskBusy }); }
   if (bridge.enabled) {
     document.documentElement.classList.add('desktop-embedded');
     let lastAppearance = '';
     function appearance() {
-      const chrome = document.querySelector<HTMLElement>('.app-shell, .workspace-shell, .docs-shell, .mg-dialog-window');
+      const chrome = document.querySelector<HTMLElement>('.app-shell, .workspace-shell, .docs-shell, .mg-dialog-window, .cockpit');
       if (!chrome) return;
       const style = getComputedStyle(chrome);
       const value = { backgroundColor: style.getPropertyValue('--inside-window-surface').trim() || style.backgroundColor, backgroundImage: style.backgroundImage, color: style.color };

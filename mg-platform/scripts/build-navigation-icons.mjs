@@ -2,7 +2,7 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
 const archive = process.argv[2];
 if (!archive) throw new Error('请提供 lucide-static@1.43.0 包路径');
-const names = ['square','user-round','lock-keyhole','settings','bell','folder','monitor','clock','star','trash-2','layout-grid','chart-no-axes-combined','cable','box','users-round','key-round','file-text','messages-square','wallet','gauge','send','book-open','book-open-text','shield-check','server','chevron-left','chevron-right','panel-left-close','panel-left-open'];
+const names = ['map','building-2','square','user-round','lock-keyhole','settings','bell','folder','monitor','clock','star','trash-2','layout-grid','chart-no-axes-combined','cable','box','users-round','key-round','file-text','messages-square','wallet','gauge','send','book-open','book-open-text','shield-check','server','chevron-left','chevron-right','panel-left-close','panel-left-open'];
 const output = new URL('../packages/frontend/icons/', import.meta.url);
 mkdirSync(output, { recursive: true });
 const symbols = {};

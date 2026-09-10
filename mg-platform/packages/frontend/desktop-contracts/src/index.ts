@@ -1,7 +1,7 @@
 export const DESKTOP_PROTOCOL = 'mg-desktop-v1';
 export interface DesktopApp {
   kind?: 'system' | 'default' | 'internal' | 'external';
-  id: string; name: string; description: string; icon: 'knowledge' | 'token' | 'identity' | 'personal';
+  id: string; name: string; description: string; icon: string;
   entryUrl: string; defaultPath: string; allowedPaths: string[];
   minWidth: number; minHeight: number; defaultMaximized?: boolean;
 }

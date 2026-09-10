@@ -1,13 +1,11 @@
-import { operationMatches, type ServiceManifest } from './contracts';
-import catalog from './catalog.json';
 export class ApplicationRequestError extends Error {
   constructor(message: string, public status: number, public requestId?: string) { super(message); this.name='ApplicationRequestError'; }
 }
 export function serviceRequestUrl(origin: string, appId: string, path: string, method='GET') {
+  if(!/^[a-z][a-z0-9-]{1,63}$/.test(appId)||!['GET','HEAD','POST','PUT','PATCH','DELETE','OPTIONS'].includes(method.toUpperCase()))throw new Error('应用请求配置无效');
   if(!/^\/[A-Za-z0-9/_-]*(?:\?[^#\r\n]*)?$/.test(path))throw new Error('应用请求路径无效');
-  const pathname=path.split('?')[0]!;
-  const service=(catalog as ServiceManifest[]).find(s=>s.appId===appId&&s.operations.some(o=>operationMatches(o,method,pathname)));
-  return `${new URL(origin).origin}/api/${service?'services/apps':'apps'}/${appId}${path}`;
+  // 服务端根据当前注册库解析；前端不携带决定路由的服务目录快照。
+  return `${new URL(origin).origin}/api/apps/${appId}${path}`;
 }
 export function serviceInvocationUrl(origin:string,serviceId:string,operationId:string,params:Record<string,string>={},query:Record<string,string>={}) {
   if(!/^[a-z0-9.-]+$/.test(serviceId)||!/^[A-Za-z0-9_-]+$/.test(operationId))throw new Error('服务标识无效');

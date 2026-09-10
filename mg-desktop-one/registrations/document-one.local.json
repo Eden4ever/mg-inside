@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "applications": [{
+    "id": "document-one",
+    "name": "在线文档",
+    "description": "文档编辑与实时协作",
+    "entryUrl": "http://127.0.0.1:5190/apps/document-one",
+    "upstream": "http://127.0.0.1:4190",
+    "defaultPath": "/workspace",
+    "allowedPaths": ["/workspace", "/docs", "/drive", "/knowledge", "/search", "/trash", "/templates", "/permission-requests", "/settings", "/admin"],
+    "allowedApiPaths": ["/api/v1"],
+    "icon": "token-one-docs",
+    "kind": "internal",
+    "authorizationAppId": "document-one",
+    "requiredRole": null,
+    "minWidth": 820,
+    "minHeight": 560,
+    "defaultMaximized": true,
+    "runtimePolicy": {
+      "apiMode": "registered",
+      "websocketPaths": ["/api/v1/collaboration"]
+    }
+  }]
+}

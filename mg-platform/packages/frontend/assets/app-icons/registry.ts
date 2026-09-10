@@ -26,6 +26,8 @@ import asset23 from './trash-empty-fluent.png?url';
 import asset24 from './placeholder.svg?url';
 import asset25 from './trash-full.svg?url';
 import asset26 from './trash-full-fluent.png?url';
+import asset27 from './low-alt-cockpit.svg?url';
+import lowAltCockpit from './low-alt-cockpit-fluent.svg?url';
 export default {
   'service-manager-fluent.png': serviceManager,
   'files.svg': asset0,
@@ -55,4 +57,6 @@ export default {
   'placeholder.svg': asset24,
   'trash-full.svg': asset25,
   'trash-full-fluent.png': asset26,
+  'low-alt-cockpit.svg': asset27,
+  'low-alt-cockpit-fluent.svg': lowAltCockpit,
 } as Readonly<Record<string, string>>;

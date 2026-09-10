@@ -108,7 +108,7 @@ async function removeNode(node: IndicatorTreeNode) {
   }
   try {
     const confirmedName = node.name;
-    await ElMessageBox.confirm(`确定删除“${confirmedName}”？该指标的摘要、研究内容、关联依据、AI 建议、内容修订记录及研究分工将一并删除，且无法恢复。删除操作会保留审计记录。`, '确认删除指标', { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消', closeOnClickModal: false });
+    await ElMessageBox.confirm(`确定删除“${confirmedName}”？该指标的摘要、研究内容、关联依据、内容修订记录及研究分工将一并删除，且无法恢复。删除操作会保留审计记录。`, '确认删除指标', { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消', closeOnClickModal: false });
     if (props.readonly || props.loading || props.sorting) return;
     emit('remove', node.id, confirmedName);
   } catch {

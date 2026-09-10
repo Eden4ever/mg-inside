@@ -20,15 +20,11 @@ import { CatalogService } from './catalog.service';
 import { PrismaService } from './prisma.service';
 import { UsersController } from './users.controller';
 import { WeComAuthService } from './wecom-auth';
-import { AiController } from './ai.controller';
-import { AI_MODEL_GATEWAY } from './ai-model.gateway';
-import { AiService } from './ai.service';
-import { DeepSeekAiModelGateway } from './deepseek-ai-model.gateway';
 import { SystemAccessController } from './system-access.controller';
 import { SystemAccessService, SystemPermissionGuard } from './system-access';
 
 @Module({
-  controllers: [ApiController, AuthController, UsersController, AiController, SystemAccessController, SemanticController, ModelConfigController, MailConfigController, AccountSecurityController, IdentityController],
+  controllers: [ApiController, AuthController, UsersController, SystemAccessController, SemanticController, ModelConfigController, MailConfigController, AccountSecurityController, IdentityController],
   providers: [
     IdentitySyncService,
     PrismaService,
@@ -44,8 +40,6 @@ import { SystemAccessService, SystemPermissionGuard } from './system-access';
     AuthService,
     WeComAuthService,
     SystemAccessService,
-    AiService,
-    { provide: AI_MODEL_GATEWAY, useClass: DeepSeekAiModelGateway },
     { provide: APP_GUARD, useClass: SessionAuthGuard },
     { provide: APP_GUARD, useClass: SystemPermissionGuard },
   ],

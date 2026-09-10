@@ -2,9 +2,6 @@ import type { PublicKeyCredentialCreationOptionsJSON, PublicKeyCredentialRequest
 import { desktop, unifiedDesktop } from '../desktop';
 import {serviceRequestUrl} from '@mg-inside/frontend/services/client';
 import type {
-  AiSuggestion,
-  AiSuggestionStreamRequest,
-  AiStreamEvent,
   CreateNodeInput,
   CreateSystemInput,
   EvidenceItem,
@@ -159,7 +156,6 @@ export const api = {
   },
   changePassword: (currentPassword: string, newPassword: string) => request<{ changed: boolean; revokedSessions: number }>('/auth/change-password', { method: 'POST', body: JSON.stringify({ currentPassword, newPassword }) }),
   wecomStatus: () => request<{ enabled: boolean; message: string }>('/auth/wecom/status'),
-  aiStatus: () => request<{ configured: boolean; provider: string | null; model: string | null; streaming: boolean; promptVersion: string }>('/ai/status'),
   startWeCom: () => request<{ loginUrl: string }>('/auth/wecom/start', { method: 'POST', body: JSON.stringify({ returnTo: '/' }) }),
   listUsers: () => request<ManagedUser[]>('/users'),
   listResearchers: (systemId: string) => request<ManagedUser[]>(`/systems/${encodeURIComponent(systemId)}/access/researchers`),
@@ -187,7 +183,7 @@ export const api = {
   deleteNode: (versionId: string, nodeId: string, confirmName: string) => request<void>(`/indicator-versions/${encodeURIComponent(versionId)}/nodes/${encodeURIComponent(nodeId)}`, { method: 'DELETE', body: JSON.stringify({ confirmName }) }),
   getWorkspace: (versionId: string, indicatorId: string) => request<ResearchWorkspace>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(indicatorId)}/workspace`),
   updateModule: (versionId: string, nodeId: string, moduleKey: ResearchModuleKey, input: UpdateModuleInput) => request<ModuleRecord>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/modules/${moduleKey}`, { method: 'PATCH', body: JSON.stringify(input) }),
-  saveSummary: (versionId: string, nodeId: string, input: { expectedTemplateRevision?: number; expectedRevisionNo: number; summary: string; sourceRevisionIds: string[] }) => request<{ summary: string; revisionNo: number; sourceRevisionIds: string[] }>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/summary`, { method: 'PATCH', body: JSON.stringify(input) }),
+  saveSummary: (versionId: string, nodeId: string, input: { expectedRevisionNo: number; summary: string }) => request<{ summary: string; revisionNo: number }>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/summary`, { method: 'PATCH', body: JSON.stringify(input) }),
   listEvidence: async (versionId: string, nodeId: string, moduleKey?: ResearchModuleKey) => {
     const items = await request<Array<{ id: string; moduleKey: ResearchModuleKey; type: string; title: string; sourceUrl?: string; excerpt?: string; verificationStatus: EvidenceItem['status']; fieldKeys: string[] }>>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/evidence${moduleKey ? `?moduleKey=${moduleKey}` : ''}`);
     return items.map((item) => ({ id: item.id, moduleKey: item.moduleKey, sourceType: item.type, title: item.title, sourceUrl: item.sourceUrl, excerpt: item.excerpt, status: item.verificationStatus, fieldIds: item.fieldKeys } as EvidenceItem));
@@ -206,41 +202,6 @@ export const api = {
     form.append('file', file);
     return request<{ imported: number }>(`/indicator-versions/${encodeURIComponent(versionId)}/import`, { method: 'POST', body: form });
   },
-  listAiSuggestions: (versionId: string, nodeId: string) => request<AiSuggestion[]>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/ai-suggestions`),
-  streamAiSuggestion: async (versionId: string, nodeId: string, input: AiSuggestionStreamRequest, onEvent: (event: AiStreamEvent) => void, signal?: AbortSignal) => {
-    let response: Response;
-    try {
-      response = await fetch(`${baseUrl}/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/ai-suggestions/stream`, {
-        method: 'POST', credentials: 'include', signal,
-        headers: { Accept: 'text/event-stream', 'Content-Type': 'application/json', ...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}) },
-        body: JSON.stringify(input),
-      });
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') throw error;
-      throw new ApiError('无法连接知识库服务，请确认前后端服务均已启动。', 0, 'NETWORK_ERROR', error);
-    }
-    if (!response.ok || !response.body) {
-      const text = await response.text();
-      let message = `请求失败（${response.status}）`;
-      try { const body = JSON.parse(text) as { message?: string }; message = body.message || message; } catch { /* keep status message */ }
-      throw new ApiError(message, response.status);
-    }
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let buffer = '';
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const blocks = buffer.split(/\r?\n\r?\n/); buffer = blocks.pop() || '';
-      for (const block of blocks) {
-        const data = block.split(/\r?\n/).find((line) => line.startsWith('data:'))?.slice(5).trim();
-        if (!data) continue;
-        try { onEvent(JSON.parse(data) as AiStreamEvent); } catch { /* ignore malformed event */ }
-      }
-    }
-  },
-  decideAiSuggestion: (versionId: string, nodeId: string, suggestionId: string, input: { expectedTemplateRevision?: number; decision: 'accepted' | 'rejected'; expectedRevisionNo?: number; fieldKey?: string; value?: unknown; reason?: string }) => request<AiSuggestion>(`/indicator-versions/${encodeURIComponent(versionId)}/indicators/${encodeURIComponent(nodeId)}/ai-suggestions/${encodeURIComponent(suggestionId)}/decision`, { method: 'POST', body: JSON.stringify(input) }),
 };
 
 export const apiBaseUrl = baseUrl;

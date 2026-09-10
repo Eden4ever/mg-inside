@@ -16,11 +16,9 @@ const apiMock = vi.hoisted(() => ({
   deleteNode: vi.fn(),
   getWorkspace: vi.fn(),
   updateModule: vi.fn(),
-  listAiSuggestions: vi.fn(),
   listEvidence: vi.fn(),
   listAssignments: vi.fn(),
   listResearchers: vi.fn(),
-  aiStatus: vi.fn(),
   changePassword: vi.fn(),
 }));
 
@@ -81,7 +79,6 @@ function render(router: ReturnType<typeof createAppRouter>) {
         ProfileView: true,
         IndicatorTreePanel: TreePanelStub,
         ResearchWorkspace: WorkspaceStub,
-        AiExpertPanel: true,
       },
     },
   });
@@ -97,11 +94,9 @@ beforeEach(() => {
   apiMock.getWorkspace.mockResolvedValue(workspace);
   isSaving.mockReturnValue(false);
   saveCurrent.mockReturnValue(true);
-  apiMock.listAiSuggestions.mockResolvedValue([]);
   apiMock.listEvidence.mockResolvedValue([]);
   apiMock.listAssignments.mockResolvedValue([]);
   apiMock.listResearchers.mockResolvedValue([]);
-  apiMock.aiStatus.mockResolvedValue({ configured: false });
 });
 
 describe('App 路由会话协调', () => {
@@ -274,15 +269,6 @@ describe('App 路由会话协调', () => {
     await wrapper.get('.workspace-back').trigger('click');
     await settle();
     expect(router.currentRoute.value.name).toBe('systems');
-    wrapper.unmount();
-  });
-
-  it('AI 指标专家默认收起', async () => {
-    const router = createAppRouter(createMemoryHistory());
-    await router.push('/systems/version-1/indicators/indicator-1');
-    const wrapper = render(router);
-    await settle();
-    expect(wrapper.findComponent({ name: 'AiExpertPanel' }).props('collapsed')).toBe(true);
     wrapper.unmount();
   });
 

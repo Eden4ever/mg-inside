@@ -1092,7 +1092,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/applications.controller.ts",
-      "line": 22
+      "line": 23
     },
     {
       "provider": "identity",
@@ -1103,7 +1103,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/applications.controller.ts",
-      "line": 28
+      "line": 30
     },
     {
       "provider": "identity",
@@ -1114,7 +1114,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/applications.controller.ts",
-      "line": 9
+      "line": 10
     },
     {
       "provider": "identity",
@@ -1125,7 +1125,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/applications.controller.ts",
-      "line": 16
+      "line": 17
     },
     {
       "provider": "identity",
@@ -1296,7 +1296,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/oidc.mjs",
-      "line": 140
+      "line": 137
     },
     {
       "provider": "identity",
@@ -1307,7 +1307,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/oidc.mjs",
-      "line": 132
+      "line": 129
     },
     {
       "provider": "identity",
@@ -1318,7 +1318,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/oidc.mjs",
-      "line": 106
+      "line": 103
     },
     {
       "provider": "identity",
@@ -1472,7 +1472,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 21
+      "line": 22
     },
     {
       "provider": "identity",
@@ -1483,7 +1483,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 27
+      "line": 28
     },
     {
       "provider": "identity",
@@ -1494,7 +1494,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 53
+      "line": 54
     },
     {
       "provider": "identity",
@@ -1505,7 +1505,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 43
+      "line": 44
     },
     {
       "provider": "identity",
@@ -1516,7 +1516,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 82
+      "line": 83
     },
     {
       "provider": "identity",
@@ -1527,7 +1527,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 66
+      "line": 67
     },
     {
       "provider": "identity",
@@ -1538,7 +1538,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/roles.controller.ts",
-      "line": 33
+      "line": 34
     },
     {
       "provider": "identity",
@@ -1549,7 +1549,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/scope.controller.ts",
-      "line": 11
+      "line": 12
     },
     {
       "provider": "identity",
@@ -1560,7 +1560,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/scope.controller.ts",
-      "line": 50
+      "line": 53
     },
     {
       "provider": "identity",
@@ -1571,7 +1571,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/scope.controller.ts",
-      "line": 44
+      "line": 47
     },
     {
       "provider": "identity",
@@ -1582,7 +1582,7 @@
       "registrations": [],
       "disposition": "register-operation",
       "source": "mg-auth-one-identity/src/scope.controller.ts",
-      "line": 21
+      "line": 23
     },
     {
       "provider": "identity",
@@ -1593,7 +1593,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/unified-token.mjs",
-      "line": 121
+      "line": 124
     },
     {
       "provider": "identity",
@@ -1604,7 +1604,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/unified-token.mjs",
-      "line": 128
+      "line": 131
     },
     {
       "provider": "identity",
@@ -1615,7 +1615,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/unified-token.mjs",
-      "line": 116
+      "line": 119
     },
     {
       "provider": "identity",
@@ -1626,7 +1626,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/unified-token.mjs",
-      "line": 101
+      "line": 104
     },
     {
       "provider": "identity",
@@ -1637,7 +1637,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/unified-token.mjs",
-      "line": 111
+      "line": 114
     },
     {
       "provider": "identity",
@@ -1648,7 +1648,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/unified-token.mjs",
-      "line": 105
+      "line": 108
     },
     {
       "provider": "identity",
@@ -1780,7 +1780,7 @@
       "registrations": [],
       "disposition": "exclude-asset",
       "source": "mg-auth-one-identity/src/oidc.mjs",
-      "line": 154
+      "line": 151
     },
     {
       "provider": "identity",
@@ -1791,7 +1791,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/oidc.mjs",
-      "line": 151
+      "line": 148
     },
     {
       "provider": "identity",
@@ -1802,7 +1802,7 @@
       "registrations": [],
       "disposition": "register-protocol-metadata",
       "source": "mg-auth-one-identity/src/oidc.mjs",
-      "line": 57
+      "line": 54
     },
     {
       "provider": "token-one",

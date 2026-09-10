@@ -21,7 +21,7 @@ snapshot_permissions() {
   docker exec -i mg-identity-db-1 sh -c 'psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -At' <<'SQL'
 SELECT jsonb_build_object(
  'users', (SELECT COALESCE(jsonb_agg(to_jsonb(u) - 'avatarUrl' ORDER BY id), '[]') FROM "User" u),
- 'applications', (SELECT COALESCE(jsonb_agg(to_jsonb(a) ORDER BY "clientId"), '[]') FROM "Application" a),
+ 'applications', (SELECT COALESCE(jsonb_agg(to_jsonb(a) ORDER BY "clientId"), '[]') FROM "ApplicationReference" a),
  'memberships', (SELECT COALESCE(jsonb_agg(to_jsonb(a) ORDER BY "clientId", "userId"), '[]') FROM "ApplicationUser" a),
  'roles', (SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY id), '[]') FROM "Role" r),
  'userRoles', (SELECT COALESCE(jsonb_agg(to_jsonb(r) ORDER BY "userId", "roleId"), '[]') FROM "UserRole" r),
@@ -41,6 +41,9 @@ else
   # 已上线平台的补丁无需重写客户端、签名密钥或服务环境。
   test -f /opt/mg-desktop/secrets/desktop.env
   test -f /opt/mg-desktop/secrets/files.env
+  test -f /opt/mg-identity/secrets/service.env
+  grep -q '^APPLICATION_REGISTRY_URL=' /opt/mg-identity/secrets/service.env
+  grep -q '^APPLICATION_REGISTRY_KEY=' /opt/mg-identity/secrets/service.env
 fi
 override="/opt/mg-identity/platform-$release_id.yaml"
 test ! -e "$override"

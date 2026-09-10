@@ -86,6 +86,7 @@
 - 客户端保存时必须携带 `revision_no`（或 `ETag`）。服务端版本不一致时返回冲突，不做“最后写入者覆盖”。
 - 模块确认前，服务端根据 Schema 校验 `confirm` 字段、依据引用及不适用说明；失败时返回字段级错误。
 - 模块确认后仍可被退回。退回不删除既有修订，而是创建新的可编辑工作版本。
+- 研究结论摘要是一个自由文本框：直接编辑保存，不校验内容、来源模块修订和模板修订，允许留空以清空摘要；每次保存仍追加一条摘要修订并记入审计。
 
 ## 7. 状态机
 
@@ -128,18 +129,9 @@ AI建议：pending → accepted | rejected | superseded
 - 拒绝建议必须保留拒绝人、时间和可选原因；建议不可删除。
 - `pending_verification` 依据可用于研究，但不能单独满足模块确认时的“有效依据”要求。
 
-## 8. AI 横向能力契约
+## 8. AI 横向能力（已移除）
 
-AI 的输入上下文至少包括：当前指标体系版本、三级指标完整路径、当前模块、已保存研究内容、已关联依据、用户问题和访问权限范围。AI 的输出必须包含：
-
-1. 正文建议；
-2. 目标类型（模块或研究摘要）、模块和建议字段；
-3. 依据引用或“无可靠依据”的明确声明；
-4. 置信状态（`supported`、`inference`、`needs_verification`）；
-5. 需要人工核实的事项；
-6. 生成时间、模型标识与提示词版本。
-
-AI 不能将输出直接写入正式字段，不能确认模块，不能改变状态，不能发布版本。模块建议被人工采纳后产生模块修订；摘要建议被人工采纳后产生摘要修订。M0-M3 先落地建议、证据、修订和采纳接口契约；真实模型调用与流式对话属于 M4 实现范围。
+指标知识库不再提供 AI 助手：工作台的 AI 指标专家面板、AI 建议生成与采纳接口、`ai_service` 角色和 DeepSeek 模型网关全部删除。`AISuggestion` 表和已有建议数据保留不动，但没有任何读写入口；已采纳过的建议早已落成模块或摘要修订，内容不受影响。语义库的向量检索及其智谱 embedding 配置属于检索能力，不在本次移除范围内。
 
 ## 9. 核心数据契约
 
@@ -152,7 +144,6 @@ AI 不能将输出直接写入正式字段，不能确认模块，不能改变�
 | `ResearchModule` | `record_id`、`module_key`、`status`、`content`、`revision_no` | `module_key` 必须是八个固定编码之一 |
 | `Evidence` | `id`、`record_id`、`module_key`、`type`、`title`、`verification_status` | 可同时关联多个字段；不得跨版本引用 |
 | `ResearchRevision` | `id`、`module_id`、`revision_no`、`snapshot`、`actor_id`、`created_at` | 追加式、不可变 |
-| `AISuggestion` | `id`、`record_id`、`target_type`、`module_key`、`status`、`content`、`confidence`、`evidence_ids`、`source_revision_ids`、`model_id`、`prompt_version` | 可指向模块或研究摘要；采纳只产生对应修订，不直接覆盖正式内容 |
 | `ReviewTask` | `id`、`version_id`、`scope`、`status`、`assignee_id` | 退回必须携带原因 |
 | `AuditLog` | `id`、`actor_id`、`action`、`target_type`、`target_id`、`at` | 保存、确认、采纳、退回、发布必须审计 |
 

@@ -31,7 +31,7 @@ npm run test:storage
 ./scripts/build-service-manager-release.ps1
 ```
 
-`test:storage` 使用本地身份测试 PostgreSQL 连接创建唯一 `services_verify_*` 数据库与受限账号，并运行构建后的桌面 HTTP 进程。它要求现有本地身份和文件服务可用；读取私密配置而不输出凭据。测试覆盖 JSON 全量导入、重复/冲突导入、两个实例并发登记与切换、环境隔离、禁止修改旧版本、实际断开数据库连接、管理 503、文件出口快照调用、匿名/方法拒绝、恢复及导出回原 JSON 引擎。临时进程、数据库和账号在结束时清理。
+`test:storage` 使用项目 `.runtime` 下由 Windows 原生 PostgreSQL 16 运行的隔离实例（`127.0.0.1:15439`）创建唯一 `services_verify_*` 数据库与受限账号，并运行构建后的桌面 HTTP 进程。它不依赖 Docker，也不连接生产库；读取私密配置而不输出凭据。测试覆盖 JSON 全量导入、重复/冲突导入、两个实例并发登记与切换、环境隔离、禁止修改旧版本、实际断开数据库连接、管理 503、文件出口快照调用、匿名/方法拒绝、恢复及导出回原 JSON 引擎。临时进程、数据库和账号在结束时清理。
 
 服务端由 `scripts/build-server.mjs` 打包，包括 PostgreSQL JavaScript 驱动；同时输出 `service-storage-admin.mjs`。生产不临时安装依赖。管理工具从私密环境文件读取连接，提供 `install`、`import 文件`、`verify 文件`、`export 新文件`。导入只允许空环境或同来源摘要的幂等重试；导出拒绝覆盖已有文件。
 

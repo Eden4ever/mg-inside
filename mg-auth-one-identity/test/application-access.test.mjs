@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { compatibilityRole, PLATFORM_ADMIN_KEY } from '../dist/platform-role.js';
-import { applicationAccess, ensureIdentityAdministrator, canInspectAudience, isFoundationApplication } from '../dist/application-access.js';
+import { applicationAccess, effectiveApplications, ensureIdentityAdministrator, canInspectAudience, isFoundationApplication } from '../dist/application-access.js';
 import {kernelFixture} from './kernel-fixture.mjs';
 
 test('最后一个有效管理员可由角色授权保留，所有来源消失必须拒绝', async t => {
@@ -49,6 +49,19 @@ test('固定基础入口与服务家族不把 identity 或控制台误认为免�
   assert.equal(canInspectAudience('token-one', 'token-one-console'), true);
   assert.equal(canInspectAudience('token-one', 'expert-database'), false);
   assert.equal(canInspectAudience('expert-database', 'token-one'), false);
+});
+
+test('统一桌面是平台登录客户端，不要求应用登记且不进入应用列表', async t => {
+  const kernel=await kernelFixture([{id:'document-one',name:'在线文档'}]);t.after(kernel.close);
+  const db = {
+    scopeGrant: { findMany: async () => [] },
+    user: { findUnique: async () => ({ status: 'active' }) },
+    applicationUser: { findUnique: async () => null },
+    userRole: { findMany: async () => [] },
+  };
+  const desktop=await applicationAccess(db,'u',process.env.IDENTITY_DESKTOP_CLIENT_ID || 'desktop-one');
+  assert.deepEqual({name:desktop.name,enabled:desktop.enabled,effective:desktop.effective},{name:'统一桌面',enabled:true,effective:true});
+  assert.deepEqual((await effectiveApplications(db,'u')).map(item=>item.clientId),['document-one']);
 });
 
 test('平台管理员权限只由角色稳定 key 派生，显示名和废弃系统身份不参与判定', () => {

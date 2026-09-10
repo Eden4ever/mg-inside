@@ -133,9 +133,8 @@ describe('M1-M3 API integration', { timeout: 20_000 }, () => {
       { username: 'reviewer', displayName: '审核员', passwordHash, role: 'reviewer' },
       { username: 'publisher', displayName: '发布员', passwordHash, role: 'publisher' },
       { username: 'reader', displayName: '只读用户', passwordHash, role: 'reader' },
-      { username: 'ai_service', displayName: 'AI 服务', passwordHash, role: 'ai_service' },
     ] });
-    await Promise.all(['system_admin', 'catalog_manager', 'researcher', 'unassigned_researcher', 'reviewer', 'publisher', 'reader', 'ai_service'].map((role) => login(role)));
+    await Promise.all(['system_admin', 'catalog_manager', 'researcher', 'unassigned_researcher', 'reviewer', 'publisher', 'reader'].map((role) => login(role)));
     const system = await request('POST', '/api/systems', { name: '集成测试体系', code: 'API-TEST-2026', region: '测试区域', year: 2026, versionCode: 'V1' });
     expect(system.statusCode).toBe(201); systemId = system.json().id; versionId = system.json().version.id;
     const accessUsers = await prisma.user.findMany({ where: { role: { not: 'system_admin' } } });
@@ -143,7 +142,7 @@ describe('M1-M3 API integration', { timeout: 20_000 }, () => {
       systemId,
       userId: user.id,
       canView: true,
-      canResearch: ['researcher', 'ai_service'].includes(user.role),
+      canResearch: user.role === 'researcher',
       canManageCatalog: user.role === 'catalog_manager',
       canReview: user.role === 'reviewer',
       canPublish: user.role === 'publisher',
@@ -341,7 +340,6 @@ describe('M1-M3 API integration', { timeout: 20_000 }, () => {
     const candidates = await request('GET', `/api/systems/${systemId}/access/researchers`, undefined, 'catalog_manager');
     expect(candidates.statusCode).toBe(200);
     expect(candidates.json()).toEqual(expect.arrayContaining([expect.objectContaining({ username: 'researcher' })]));
-    expect(candidates.json()).not.toEqual(expect.arrayContaining([expect.objectContaining({ username: 'ai_service' })]));
     const granted = await request('PUT', `/api/systems/${systemId}/access/${isolated.id}`, { canView: true });
     expect(granted.statusCode).toBe(200);
     expect((await prisma.user.findUniqueOrThrow({ where: { id: isolated.id } })).role).toBe('reader');
@@ -829,56 +827,6 @@ describe('M1-M3 API integration', { timeout: 20_000 }, () => {
     expect((await request('DELETE', `${base}/evidence/${created.json().id}`, {}, 'researcher')).statusCode).toBe(204);
   });
 
-  it('AI只能提交候选建议，研究员采纳后才写入正式模块并生成修订', async () => {
-    const suggestionsUrl = `/api/indicator-versions/${versionId}/indicators/${level3Id}/ai-suggestions`;
-    const input = { targetType: 'module', moduleKey: 'portrait', fieldKey: 'assessment_scope', content: '建议补充省、市、县三级考核范围。', rationale: '用于核对指标覆盖边界。', confidence: 'needs_verification', verificationItems: ['核对正式考核文件'], modelId: 'integration-model', promptVersion: 'integration-v1' };
-    expect((await request('POST', suggestionsUrl, input, 'researcher')).statusCode).toBe(403);
-    const created = await request('POST', suggestionsUrl, input, 'ai_service');
-    expect(created.statusCode).toBe(201);
-    expect(created.json()).toMatchObject({ status: 'pending', targetType: 'module', modelId: 'integration-model', verificationItems: ['核对正式考核文件'] });
-    const decided = await request('POST', `${suggestionsUrl}/${created.json().id}/decision`, { decision: 'accepted', expectedRevisionNo: 1 }, 'researcher');
-    expect(decided.statusCode).toBe(201);
-    expect(decided.json().module.revisionNo).toBe(2);
-    const revisions = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/revisions`);
-    expect(revisions.json().filter((item: { moduleKey: string }) => item.moduleKey === 'portrait')).toHaveLength(2);
-
-    const sourceRevisionId = revisions.json().find((item: { moduleKey: string }) => item.moduleKey === 'portrait').id as string;
-    const summarySuggestion = await request('POST', suggestionsUrl, { targetType: 'summary', content: '建议形成“政策依据—数据链路—整改闭环”的研究摘要。', rationale: '八模块已有修订可作为摘要来源，仍需人工核验。', confidence: 'needs_verification', sourceRevisionIds: [sourceRevisionId], verificationItems: ['核对摘要是否覆盖全部八模块'] }, 'ai_service');
-    expect(summarySuggestion.statusCode).toBe(201);
-    const acceptedSummary = await request('POST', `${suggestionsUrl}/${summarySuggestion.json().id}/decision`, { decision: 'accepted', expectedRevisionNo: 0 }, 'researcher');
-    expect(acceptedSummary.statusCode).toBe(201);
-    expect(acceptedSummary.json().summary).toMatchObject({ revisionNo: 1, sourceRevisionIds: [sourceRevisionId] });
-    const rejectedSummary = await request('POST', suggestionsUrl, { targetType: 'summary', content: '这条摘要不会进入正式内容。', rationale: '用于验证拒绝边界。', sourceRevisionIds: [sourceRevisionId] }, 'ai_service');
-    expect((await request('POST', `${suggestionsUrl}/${rejectedSummary.json().id}/decision`, { decision: 'rejected', reason: '来源不足' }, 'researcher')).statusCode).toBe(201);
-    const summaryWorkspace = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/workspace`);
-    expect(summaryWorkspace.json().summary).toContain('政策依据');
-  });
-
-  it('并发采纳同一模块修订时只提交一个事务，失败建议保持待处理', async () => {
-    const suggestionsUrl = `/api/indicator-versions/${versionId}/indicators/${level3Id}/ai-suggestions`;
-    const workspaceBefore = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/workspace`);
-    const revisionNo = workspaceBefore.json().modules.find((item: { moduleKey: string }) => item.moduleKey === 'portrait').revisionNo as number;
-    const revisionsBefore = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/revisions`);
-    const portraitRevisionCount = revisionsBefore.json().filter((item: { moduleKey: string }) => item.moduleKey === 'portrait').length;
-    const suggestionInput = { targetType: 'module', moduleKey: 'portrait', fieldKey: 'assessment_scope', rationale: '用于验证并发采纳事务边界。', confidence: 'needs_verification' };
-    const first = await request('POST', suggestionsUrl, { ...suggestionInput, content: '并发候选建议 A' }, 'ai_service');
-    const second = await request('POST', suggestionsUrl, { ...suggestionInput, content: '并发候选建议 B' }, 'ai_service');
-
-    const results = await Promise.all([
-      request('POST', `${suggestionsUrl}/${first.json().id}/decision`, { decision: 'accepted', expectedRevisionNo: revisionNo }, 'researcher'),
-      request('POST', `${suggestionsUrl}/${second.json().id}/decision`, { decision: 'accepted', expectedRevisionNo: revisionNo }, 'researcher'),
-    ]);
-    expect(results.map((item) => item.statusCode).sort()).toEqual([201, 409]);
-
-    const workspaceAfter = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/workspace`);
-    expect(workspaceAfter.json().modules.find((item: { moduleKey: string }) => item.moduleKey === 'portrait').revisionNo).toBe(revisionNo + 1);
-    const revisionsAfter = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/revisions`);
-    expect(revisionsAfter.json().filter((item: { moduleKey: string }) => item.moduleKey === 'portrait')).toHaveLength(portraitRevisionCount + 1);
-    const suggestions = await request('GET', suggestionsUrl, undefined, 'researcher');
-    const concurrentStatuses = suggestions.json().filter((item: { id: string }) => [first.json().id, second.json().id].includes(item.id)).map((item: { status: string }) => item.status).sort();
-    expect(concurrentStatuses).toEqual(['accepted', 'pending']);
-  });
-
   it('知识记录保存、摘要引用和复制版本保持可追溯', async () => {
     const workspaceUrl = `/api/indicator-versions/${versionId}/indicators/${level3Id}/workspace`;
     const initial = await request('GET', workspaceUrl);
@@ -895,10 +843,14 @@ describe('M1-M3 API integration', { timeout: 20_000 }, () => {
       expect(saved.json().status).toBe('in_progress');
     }
     const revisionList = await request('GET', `/api/indicator-versions/${versionId}/indicators/${level3Id}/revisions`);
-    const summarySourceId = revisionList.json()[0].id;
-    const summary = await request('PATCH', `/api/indicator-versions/${versionId}/indicators/${level3Id}/summary`, { expectedRevisionNo: initial.json().summaryRevisionNo, summary: '集成测试研究结论摘要', sourceRevisionIds: [summarySourceId] }, 'researcher');
+    expect(revisionList.json().length).toBeGreaterThan(0);
+    // 摘要是自由文本框：不带修订号、不引用来源也能保存，内容可清空后再改回。
+    const cleared = await request('PATCH', `/api/indicator-versions/${versionId}/indicators/${level3Id}/summary`, { summary: '   ' }, 'researcher');
+    expect(cleared.statusCode).toBe(200);
+    expect(cleared.json()).toMatchObject({ summary: '', revisionNo: 1 });
+    const summary = await request('PATCH', `/api/indicator-versions/${versionId}/indicators/${level3Id}/summary`, { expectedRevisionNo: 0, summary: '集成测试研究结论摘要' }, 'researcher');
     expect(summary.statusCode).toBe(200);
-    expect(summary.json().sourceRevisionIds).toEqual([summarySourceId]);
+    expect(summary.json()).toMatchObject({ summary: '集成测试研究结论摘要', revisionNo: 2 });
     expect((await request('POST', `/api/indicator-versions/${versionId}/submit-review`, {})).statusCode).toBe(404);
     expect((await request('POST', `/api/indicator-versions/${versionId}/publish`, {})).statusCode).toBe(404);
     expect((await request('POST', `/api/indicator-versions/${versionId}/indicators/${level3Id}/modules/portrait/review`, { outcome: 'confirmed' })).statusCode).toBe(404);
@@ -909,8 +861,6 @@ describe('M1-M3 API integration', { timeout: 20_000 }, () => {
     const clonedLeafId = clonedTree.json()[0].children[0].children[0].id;
     const clonedWorkspace = await request('GET', `/api/indicator-versions/${cloned.json().id}/indicators/${clonedLeafId}/workspace`);
     expect(clonedWorkspace.json().summary).toBe('集成测试研究结论摘要');
-    expect(clonedWorkspace.json().summarySourceRevisionIds).toHaveLength(1);
-    expect(clonedWorkspace.json().summarySourceRevisionIds[0]).not.toBe(summarySourceId);
     const clonedPortrait = clonedWorkspace.json().modules.find((item: { moduleKey: string }) => item.moduleKey === 'portrait');
     const sourceAfterClone = await request('GET', workspaceUrl);
     const clonedSave = await request('PATCH', `/api/indicator-versions/${cloned.json().id}/indicators/${clonedLeafId}/modules/portrait`, { expectedRevisionNo: clonedPortrait.revisionNo, values: [{ fieldKey: 'indicator_nature', value: '逆向指标' }] });

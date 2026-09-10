@@ -30,7 +30,7 @@ const emit = defineEmits<{
   loadEvidence: [];
   updateEvidence: [item: EvidenceItem, input: Partial<EvidenceItem>];
   deleteEvidence: [item: EvidenceItem];
-  saveSummary: [input: { expectedTemplateRevision?: number; expectedRevisionNo: number; summary: string; sourceRevisionIds: string[] }];
+  saveSummary: [input: { expectedRevisionNo: number; summary: string }];
   dirtyChange: [dirty: boolean];
   closeStateChange: [state: { dirty: boolean; busy: boolean }];
   refreshTemplate: [];
@@ -63,9 +63,7 @@ type EditTarget = { moduleKey: ResearchModuleKey; fieldKey: string | null };
 const pendingEditTarget = ref<EditTarget | null>(null);
 const summaryOpen = ref(false);
 const summaryDraft = ref('');
-const summaryTemplateRevision = ref<number>();
 watch(() => props.workspace.summaryRevisionNo, () => { summaryOpen.value = false; });
-const summarySources = ref<string[]>([]);
 const evidenceStatusOptions = [
   { label: '待核验', value: 'pending_verification' },
   { label: '已核验', value: 'verified' },
@@ -260,21 +258,11 @@ function canEditEvidence() {
 
 function openSummary() {
   summaryDraft.value = props.workspace.summary || '';
-  summaryTemplateRevision.value = props.workspace.templateRevision;
-  summarySources.value = [...(props.workspace.summarySourceRevisionIds || [])];
   summaryOpen.value = true;
 }
 
 function submitSummary() {
-  if (!summaryDraft.value.trim()) {
-    ElMessage.error('研究结论摘要不能为空');
-    return;
-  }
-  if (!summarySources.value.length) {
-    ElMessage.error('摘要至少需要引用一条模块修订');
-    return;
-  }
-  emit('saveSummary', { expectedTemplateRevision: summaryTemplateRevision.value, expectedRevisionNo: props.workspace.summaryRevisionNo || 0, summary: summaryDraft.value, sourceRevisionIds: summarySources.value });
+  emit('saveSummary', { expectedRevisionNo: props.workspace.summaryRevisionNo || 0, summary: summaryDraft.value });
 }
 
 function evidenceStatusLabel(status: EvidenceItem['status']) {
@@ -375,8 +363,7 @@ async function editField(moduleKey: ResearchModuleKey, fieldKey: string) { await
 
     <el-dialog v-model="summaryOpen" title="编辑研究结论摘要" width="620px" destroy-on-close>
       <el-form label-position="top">
-        <el-form-item label="摘要内容" required><el-input v-model="summaryDraft" type="textarea" :rows="7" placeholder="填写知识摘要" /></el-form-item>
-        <el-form-item label="引用模块修订"><el-select v-model="summarySources" multiple collapse-tags class="full-width" placeholder="选择来源修订"><el-option v-for="item in revisions" :key="item.id" :label="`${item.moduleKey} · 修订 ${item.revision} · ${item.actorName}`" :value="item.id" /></el-select></el-form-item>
+        <el-form-item label="摘要内容"><el-input v-model="summaryDraft" type="textarea" :rows="9" placeholder="填写知识摘要" /></el-form-item>
       </el-form>
       <template #footer><el-button @click="summaryOpen = false">取消</el-button><el-button type="primary" @click="submitSummary">保存摘要</el-button></template>
     </el-dialog>

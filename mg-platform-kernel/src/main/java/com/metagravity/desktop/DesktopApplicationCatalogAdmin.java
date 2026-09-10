@@ -78,7 +78,7 @@ public final class DesktopApplicationCatalogAdmin {
 
     static String schema() throws IOException {
         var sql = new StringBuilder();
-        for (String file : List.of("V2__desktop_applications.sql", "V3__desktop_application_icon_keys.sql", "V5__desktop_application_policy.sql", "V7__desktop_application_metadata.sql", "V8__desktop_application_version.sql", "V9__kernel_application_registry.sql")) {
+        for (String file : List.of("V2__desktop_applications.sql", "V3__desktop_application_icon_keys.sql", "V5__desktop_application_policy.sql", "V7__desktop_application_metadata.sql", "V8__desktop_application_version.sql", "V9__kernel_application_registry.sql", "V10__application_onboarding.sql")) {
             try (InputStream input = DesktopApplicationCatalogAdmin.class.getResourceAsStream("/db/migration/" + file)) {
                 if (input == null) throw new IOException("缺少桌面应用目录结构");
                 sql.append(new String(input.readAllBytes(), StandardCharsets.UTF_8)).append('\n');

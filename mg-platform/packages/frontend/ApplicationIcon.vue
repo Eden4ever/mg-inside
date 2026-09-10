@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { applicationIcons, type ApplicationIconId } from './assets';
+import { getPlatformOrigin } from './auth/platform-origin';
 const props = defineProps<{ app: { id: string; icon?: string } }>();
 const failed = ref<string[]>([]);
 const badgeFailed = ref(false);
 const asset = computed(() => {
+  if (/^upload-[a-f0-9]{56}$/.test(props.app.icon || '')) return { src: `${getPlatformOrigin()}/api/application-icons/${props.app.icon}.png`, image: undefined, imageViewport: undefined, badge: undefined };
   // 兼容旧目录的四类图标标记；新的注册项直接指定公共图标资源键。
   const key = props.app.icon && Object.hasOwn(applicationIcons, props.app.icon) ? props.app.icon
     : !props.app.icon || ['knowledge', 'token', 'identity', 'personal'].includes(props.app.icon) ? props.app.id : props.app.icon;

@@ -229,6 +229,17 @@ model ApplicationUser {
   @@unique([clientId, localUserId])
 }
 
+model OidcClient {
+  clientId String @id
+  redirectUris String[]
+  encryptedSecret String
+  enabled Boolean @default(true)
+  revision Int @default(1)
+  registrationId String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model OidcRecord {
   model String
   id String
@@ -238,11 +249,14 @@ model OidcRecord {
   grantId String?
   expiresAt DateTime
   consumedAt Int?
+  clientId String?
+  clientRevision Int?
   @@id([model, id])
   @@index([model, uid])
   @@index([model, userCode])
   @@index([grantId])
   @@index([expiresAt])
+  @@index([clientId])
 }
 
 model DirectorySnapshot {

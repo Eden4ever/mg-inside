@@ -6,22 +6,25 @@ import { kernelApplication, kernelApplications, type KernelApplication } from '.
 
 type Database = PrismaClient | Prisma.TransactionClient;
 export type AuthorizationSource = { type: 'user' } | { type: 'role'; roleId: string; name: string } | { type: 'scope'; scopeId: string; name: string };
-export const isFoundationApplication = (clientId: string) => ['personal-center', 'files', process.env.IDENTITY_DESKTOP_CLIENT_ID || 'desktop-one'].includes(clientId);
+export const desktopClientId = () => process.env.IDENTITY_DESKTOP_CLIENT_ID || 'desktop-one';
+export const isDesktopClient = (clientId: string) => clientId === desktopClientId();
+export const isFoundationApplication = (clientId: string) => ['personal-center', 'files'].includes(clientId) || isDesktopClient(clientId);
 export const tokenAudiences = ['token-one', 'token-one-console', 'token-one-docs'];
 export function knownAudience(clientId: string, clients: Array<{ client_id: string }>) {
   return ['identity', 'personal-center', 'files', 'app-manager', 'office-one'].includes(clientId) || clients.some(c => c.client_id === clientId)
     || tokenAudiences.includes(clientId) && clients.some(c => c.client_id === 'token-one');
 }
 export function canInspectAudience(caller: string, target: string) {
-  return caller === (process.env.IDENTITY_DESKTOP_CLIENT_ID || 'desktop-one') || caller === target
+  return caller === desktopClientId() || caller === target
     || caller === 'token-one' && tokenAudiences.includes(target)
     || caller === 'files' && target === 'office-one';
 }
 
 /** 每次读取有效授权，不缓存；直授权撤销不抵消仍存在的角色来源。 */
 export async function applicationAccess(db: Database, userId: string, clientId: string, resolved?: KernelApplication) {
+  const desktopClient = isDesktopClient(clientId);
   const [application, user, direct, memberships] = await Promise.all([
-    resolved || kernelApplication(clientId),
+    desktopClient ? undefined : resolved || kernelApplication(clientId),
     db.user.findUnique({ where: { id: userId }, select: { status: true } }),
     db.applicationUser.findUnique({ where: { clientId_userId: { clientId, userId } } }),
     db.userRole.findMany({ where: { userId, role: { applications: { some: { clientId, enabled: true } } } }, include: { role: true }, orderBy: { roleId: 'asc' } }),
@@ -38,10 +41,11 @@ export async function applicationAccess(db: Database, userId: string, clientId: 
     }
   }
   const foundation=application?.kind==='default' || isFoundationApplication(clientId);
-  return { clientId, name: application?.name || clientId, enabled: Boolean(application?.enabled),
+  const enabled=desktopClient || Boolean(application?.enabled);
+  return { clientId, name: desktopClient ? '统一桌面' : application?.name || clientId, enabled,
     direct: Boolean(direct?.enabled), localUserId: direct?.localUserId ?? null, sources,
     foundation,
-    effective: Boolean(application?.enabled && user?.status === 'active' && (sources.length || foundation)) };
+    effective: Boolean(enabled && user?.status === 'active' && (sources.length || foundation)) };
 }
 
 export async function effectiveApplications(db: Database, userId: string) {

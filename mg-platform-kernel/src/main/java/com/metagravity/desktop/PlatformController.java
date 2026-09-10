@@ -23,7 +23,7 @@ public class PlatformController {
     public PlatformController(Settings settings,AppCatalog catalog,IdentityClient identity,AuthService auth,LoginFlow flow,UserState state,ApplicationVersions versions) {
         this.settings=settings;this.catalog=catalog;this.identity=identity;this.auth=auth;this.flow=flow;this.state=state;this.versions=versions;
     }
-    @RequestMapping(path={"/api/health","/api/session","/api/applications","/api/applications/{id}","/api/preferences","/api/notifications","/auth/start","/auth/callback","/auth/renew","/auth/logout"})
+    @RequestMapping(path={"/api/health","/api/session","/api/applications","/api/applications/{id}","/api/preferences","/api/preferences/wallpaper","/api/notifications","/auth/start","/auth/callback","/auth/renew","/auth/logout"})
     public Mono<ResponseEntity<byte[]>> handle(ServerWebExchange exchange,@RequestBody(required=false) byte[] body) {
         return Mono.fromCallable(()->dispatch(exchange,body)).subscribeOn(Schedulers.boundedElastic());
     }
@@ -124,6 +124,19 @@ public class PlatformController {
             if(method.equals("GET")) return json(200,Map.of("items",state.notifications(user)));
             if(!Set.of("POST","PATCH","DELETE").contains(method)) throw new ApiException(405,"不支持此请求方法");
             auth.csrf(headers,csrf);return json(method.equals("POST")?201:200,Map.of("items",state.changeNotification(user,method,body(bytes))));
+        }
+        if(path.equals("/api/preferences/wallpaper")) {
+            if(method.equals("GET")) {
+                var wallpaper=state.wallpaper(user).orElseThrow(()->new ApiException(404,"尚未上传自定义壁纸"));
+                String tag="\""+wallpaper.version()+"\"";
+                // 地址带 ?v=版本，命中后浏览器一年内不再回源；换图会换版本号。
+                var response=ResponseEntity.status(tag.equals(headers.getFirst(HttpHeaders.IF_NONE_MATCH))?304:200).eTag(tag).header("Cache-Control","private, max-age=31536000, immutable").header("Vary","Cookie");
+                return tag.equals(headers.getFirst(HttpHeaders.IF_NONE_MATCH))?response.build():response.header("Content-Type",wallpaper.type()).body(wallpaper.bytes());
+            }
+            auth.csrf(headers,csrf);
+            if(method.equals("PUT")) return json(200,state.saveWallpaper(user,bytes));
+            if(method.equals("DELETE")) { state.removeWallpaper(user); return json(200,Map.of("ok",true)); }
+            throw new ApiException(405,"不支持此请求方法");
         }
         if(path.equals("/api/preferences")) {
             String account=headers.getFirst("X-Desktop-Account");

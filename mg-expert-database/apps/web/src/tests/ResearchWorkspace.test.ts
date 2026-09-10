@@ -351,7 +351,7 @@ describe('ResearchWorkspace', () => {
     expect(wrapper.emitted('deleteEvidence')?.[0]?.[0]).toEqual(evidence);
   });
 
-  it('摘要保存必须携带来源修订并发出可追溯事件', async () => {
+  it('摘要是普通输入框，直接保存不做校验', async () => {
     const revision = { id: 'revision-1', revision: 1, moduleKey: 'portrait' as const, action: 'saved' as const, actorName: '研究员甲', createdAt: '2026-08-21T00:00:00.000Z' };
     const wrapper = mount(ResearchWorkspace, {
       props: { workspace: { ...workspace, summary: '旧摘要', summaryRevisionNo: 1 }, selectedModuleKey: 'portrait', saveVersion: 0, revisions: [revision], revisionsLoading: false, readonly: false },
@@ -359,10 +359,13 @@ describe('ResearchWorkspace', () => {
       global: { plugins: [ElementPlus] },
     });
     await wrapper.find('.summary-actions .el-button').trigger('click');
-    const vm = wrapper.vm as unknown as { summaryDraft: string; summarySources: string[]; submitSummary: () => void };
+    expect(document.body.textContent).not.toContain('引用模块修订');
+    const vm = wrapper.vm as unknown as { summaryDraft: string; submitSummary: () => void };
     vm.summaryDraft = '新的研究结论';
-    vm.summarySources = [revision.id];
     vm.submitSummary();
-    expect(wrapper.emitted('saveSummary')?.[0]?.[0]).toEqual({ expectedRevisionNo: 1, summary: '新的研究结论', sourceRevisionIds: [revision.id] });
+    expect(wrapper.emitted('saveSummary')?.[0]?.[0]).toEqual({ expectedRevisionNo: 1, summary: '新的研究结论' });
+    vm.summaryDraft = '';
+    vm.submitSummary();
+    expect(wrapper.emitted('saveSummary')?.[1]?.[0]).toEqual({ expectedRevisionNo: 1, summary: '' });
   });
 });

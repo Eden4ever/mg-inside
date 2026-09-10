@@ -18,6 +18,7 @@ public class UserState {
     private final AppCatalog catalog;
     private final Set<String> protectedHosts=new HashSet<>();
     private final Object[] locks=new Object[128];
+    static final int WALLPAPER_LIMIT=8*1024*1024;
     private static final DateTimeFormatter TIME=new DateTimeFormatterBuilder().appendInstant(3).toFormatter();
     public UserState(Settings settings,AppCatalog catalog) {
         root=settings.runtime(); this.catalog=catalog;
@@ -94,18 +95,66 @@ public class UserState {
         String href=Settings.origin(uri)+(uri.getRawPath().isEmpty()?"/":uri.normalize().getRawPath())+(uri.getRawQuery()==null?"":"?"+uri.getRawQuery())+(uri.getRawFragment()==null?"":"#"+uri.getRawFragment());
         return Json.object().put("name",name.strip()).put("description",Json.string(input,"description").strip()).put("developer",Json.string(input,"developer").strip()).put("entryUrl",href).put("icon",input.has("icon")?input.path("icon").textValue():"knowledge");
     }
+    /** 每位用户仅保留一张自定义壁纸：二进制与 JSON 元数据同放在 wallpaper 目录。 */
+    public record Wallpaper(byte[] bytes,String type,String version) {}
+    private Path wallpaperFile(String user) { return root.resolve("wallpaper").resolve(LoginFlow.sha256(user)+".img"); }
+    private static String imageType(byte[] bytes) {
+        if(bytes.length>3 && (bytes[0]&0xff)==0xff && (bytes[1]&0xff)==0xd8 && (bytes[2]&0xff)==0xff) return "image/jpeg";
+        if(bytes.length>8 && (bytes[0]&0xff)==0x89 && bytes[1]=='P' && bytes[2]=='N' && bytes[3]=='G') return "image/png";
+        if(bytes.length>12 && bytes[0]=='R' && bytes[1]=='I' && bytes[2]=='F' && bytes[3]=='F' && bytes[8]=='W' && bytes[9]=='E' && bytes[10]=='B' && bytes[11]=='P') return "image/webp";
+        return null;
+    }
+    public JsonNode wallpaperInfo(String user) { synchronized(lock(user)) { return read("wallpaper",user,false); } }
+    public Optional<Wallpaper> wallpaper(String user) {
+        synchronized(lock(user)) {
+            var info=read("wallpaper",user,false); String version=Json.string(info,"version");
+            if(version.isEmpty()) return Optional.empty();
+            try { return Optional.of(new Wallpaper(Files.readAllBytes(wallpaperFile(user)),Json.string(info,"type"),version)); }
+            catch(NoSuchFileException e) { return Optional.empty(); }
+            catch(IOException e) { throw new IllegalStateException("壁纸读取失败",e); }
+        }
+    }
+    public JsonNode saveWallpaper(String user,byte[] bytes) {
+        if(bytes==null || bytes.length==0) throw new ApiException(400,"请选择要上传的壁纸图片");
+        if(bytes.length>WALLPAPER_LIMIT) throw new ApiException(413,"壁纸不能超过 8 MB");
+        String type=imageType(bytes);
+        if(type==null) throw new ApiException(415,"壁纸仅支持 JPEG、PNG 或 WebP 图片");
+        synchronized(lock(user)) {
+            try { PrivateFiles.replace(wallpaperFile(user),bytes); }
+            catch(IOException e) { throw new IllegalStateException("壁纸保存失败",e); }
+            var info=Json.object().put("type",type).put("version",LoginFlow.sha256(bytes).substring(0,32)).put("size",bytes.length).put("updatedAt",TIME.format(Instant.now()));
+            write("wallpaper",user,info);
+            // 上传后立即生效，省去用户再手动切换一次。
+            savePreferences(user,((ObjectNode)preferences(user)).put("wallpaper","custom"));
+            return info;
+        }
+    }
+    public void removeWallpaper(String user) {
+        synchronized(lock(user)) {
+            try { Files.deleteIfExists(wallpaperFile(user)); Files.deleteIfExists(file("wallpaper",user)); }
+            catch(IOException e) { throw new IllegalStateException("壁纸删除失败",e); }
+            var value=(ObjectNode)preferences(user);
+            if("custom".equals(Json.string(value,"wallpaper"))) savePreferences(user,value.put("wallpaper","dawn"));
+        }
+    }
     public JsonNode preferences(String user) { synchronized(lock(user)) { return read("preferences",user,false); } }
     public JsonNode savePreferences(String user,JsonNode input) {
         if(input==null || !input.isObject()) throw new ApiException(400,"偏好参数无效");
         synchronized(lock(user)) {
             var ids=new HashSet<String>(); catalog.all().forEach(app->ids.add(app.id())); applications(user).forEach(app->ids.add(Json.string(app,"id")));
             var value=Json.object().put("theme",Set.of("system","light","dark").contains(Json.string(input,"theme"))?input.path("theme").textValue():"system")
-                .put("wallpaper",Set.of("dawn","dusk").contains(Json.string(input,"wallpaper"))?input.path("wallpaper").textValue():"dawn")
+                .put("wallpaper",wallpaperChoice(user,Json.string(input,"wallpaper")))
                 .put("restore",!input.path("restore").equals(BooleanNode.FALSE));
             value.set("pinned",input.path("pinned").isArray()?filteredIds(input.path("pinned"),ids):Json.MAPPER.valueToTree(catalog.all().stream().map(AppCatalog.App::id).toList()));
             value.set("applicationOrder",filteredIds(input.path("applicationOrder"),ids));
+            // 版本号来自服务端的壁纸文件，前端据此加 ?v= 命中长缓存。
+            value.put("wallpaperVersion",Json.string(read("wallpaper",user,false),"version"));
             write("preferences",user,value); return value;
         }
+    }
+    private String wallpaperChoice(String user,String value) {
+        if(Set.of("dawn","dusk").contains(value)) return value;
+        return "custom".equals(value) && !Json.string(read("wallpaper",user,false),"version").isEmpty()?"custom":"dawn";
     }
     private ArrayNode filteredIds(JsonNode array,Set<String> allowed) {
         var ids=new LinkedHashSet<String>();

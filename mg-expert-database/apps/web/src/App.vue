@@ -16,14 +16,13 @@ import SystemsView from '@/components/SystemsView.vue';
 import ProfileView from '@/components/ProfileView.vue';
 import IndicatorTreePanel from '@/components/IndicatorTreePanel.vue';
 import ResearchWorkspace from '@/components/ResearchWorkspace.vue';
-import AiExpertPanel from '@/components/AiExpertPanel.vue';
 import appLogoUrl from '../../../logo.svg?url';
 import { api, ApiError, setCsrfToken } from '@/api/client';
 import { installNavigationGuard, type LeaveDecision } from '@/router';
 import { desktop, unifiedDesktop } from './desktop';
 import { hasVisibleEditingDialog, observeEditingDialogs } from './desktop-close-state';
 import { MODULE_DEFINITIONS } from '@/data/moduleSchema';
-import type { AiSuggestion, CreateNodeInput, CreateSystemInput, EvidenceItem, ImportPreview, IndicatorSystemSummary, IndicatorTreeNode, IndicatorVersionDetail, ModuleRecord, ResearchModuleKey, ResearchWorkspace as WorkspacePayload, SessionUser, SystemPermissions, UpdateModuleInput } from '@/types/domain';
+import type { CreateNodeInput, CreateSystemInput, EvidenceItem, ImportPreview, IndicatorSystemSummary, IndicatorTreeNode, IndicatorVersionDetail, ModuleRecord, ResearchModuleKey, ResearchWorkspace as WorkspacePayload, SessionUser, SystemPermissions, UpdateModuleInput } from '@/types/domain';
 
 const authLoading = ref(true);
 const currentUser = ref<SessionUser | null>(null);
@@ -66,10 +65,6 @@ async function systemRemoved() {
 }
 async function templatesSaved() { await loadSystems(); if (currentSystem.value) { await loadVersionContext(currentSystem.value.versionId, routeSyncVersion); await refreshWorkspace(); } }
 const selectedModuleKey = ref<ResearchModuleKey>('portrait');
-const compactAiQuery = typeof window === 'undefined' || typeof window.matchMedia !== 'function'
-  ? null
-  : window.matchMedia('(max-width: 1100px)');
-const aiCollapsed = ref(true);
 const saveVersion = ref(0);
 const revisions = ref<WorkspacePayload['recentRevisions']>([]);
 const revisionsLoading = ref(false);
@@ -77,13 +72,6 @@ const importPreview = ref<ImportPreview | null>(null);
 const importBusy = ref(false);
 const importFile = ref<File | null>(null);
 const importVersionId = ref('');
-const aiSuggestions = ref<AiSuggestion[]>([]);
-const aiSuggestionsLoading = ref(false);
-const aiConfigured = ref(false);
-const aiStreaming = ref(false);
-const aiStreamText = ref('');
-const aiStreamError = ref('');
-let aiAbortController: AbortController | null = null;
 const evidenceItems = ref<EvidenceItem[]>([]);
 const workspaceDirty = ref(false);
 const workspaceCloseState = ref({ dirty: false, busy: false });
@@ -223,7 +211,7 @@ async function selectNode(node: IndicatorTreeNode, requestId = ++workspaceReques
     if (requestId !== workspaceRequestVersion) return;
     workspace.value = result;
     selectedModuleKey.value = result.moduleDefinitions[0]?.moduleKey || '';
-    await Promise.all([loadAiSuggestions(requestId), loadEvidence(requestId)]);
+    await loadEvidence(requestId);
   } catch (error) {
     if (requestId !== workspaceRequestVersion) return;
     workspaceError.value = error instanceof Error ? error.message : '加载研究工作台失败';
@@ -416,10 +404,10 @@ async function deleteEvidence(item: EvidenceItem) {
   }
 }
 
-async function saveSummary(input: { expectedTemplateRevision?: number; expectedRevisionNo: number; summary: string; sourceRevisionIds: string[] }) {
+async function saveSummary(input: { expectedRevisionNo: number; summary: string }) {
   if (!workspace.value) return;
   try {
-    await api.saveSummary(workspace.value.system.versionId, workspace.value.indicator.id, { ...input, expectedTemplateRevision: input.expectedTemplateRevision ?? workspace.value.templateRevision });
+    await api.saveSummary(workspace.value.system.versionId, workspace.value.indicator.id, input);
     await refreshWorkspace();
     ElMessage.success('研究结论摘要已保存');
   } catch (error) {
@@ -441,68 +429,6 @@ async function refreshWorkspace() {
   if (!currentSystem.value || !selectedNode.value) return;
   workspace.value = normalizeWorkspace(await api.getWorkspace(currentSystem.value.versionId, selectedNode.value.id));
   if (!workspace.value.moduleDefinitions.some(m => m.moduleKey === selectedModuleKey.value)) selectedModuleKey.value = workspace.value.moduleDefinitions[0]?.moduleKey || '';
-}
-
-async function loadAiSuggestions(requestId = workspaceRequestVersion) {
-  const context = workspace.value;
-  if (!context) return;
-  aiSuggestionsLoading.value = true;
-  try {
-    const result = await api.listAiSuggestions(context.system.versionId, context.indicator.id);
-    if (requestId === workspaceRequestVersion && workspace.value?.indicator.id === context.indicator.id) aiSuggestions.value = result;
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '加载 AI 建议失败');
-  } finally {
-    if (requestId === workspaceRequestVersion) aiSuggestionsLoading.value = false;
-  }
-}
-
-async function loadAiStatus() {
-  try { aiConfigured.value = (await api.aiStatus()).configured; }
-  catch { aiConfigured.value = false; }
-}
-
-async function generateAiSuggestion(prompt: string, modelProcessingConfirmed: boolean) {
-  if (!workspace.value || aiStreaming.value || !canEditResearch.value || !versionWritable.value) return;
-  aiAbortController?.abort();
-  aiAbortController = new AbortController();
-  aiStreaming.value = true;
-  aiStreamText.value = '';
-  aiStreamError.value = '';
-  try {
-    await api.streamAiSuggestion(workspace.value.system.versionId, workspace.value.indicator.id, { prompt, moduleKey: selectedModuleKey.value, modelProcessingConfirmed }, (event) => {
-      if (event.type === 'delta' && event.text) aiStreamText.value += event.text;
-      if (event.type === 'error') aiStreamError.value = event.message || 'AI 服务暂不可用。';
-    }, aiAbortController.signal);
-    if (!aiStreamError.value) {
-      await loadAiSuggestions();
-      aiStreamText.value = '';
-      ElMessage.success('AI 候选建议已生成，请核验后决定是否采纳');
-    }
-  } catch (error) {
-    if (!(error instanceof DOMException && error.name === 'AbortError')) aiStreamError.value = error instanceof Error ? error.message : 'AI 生成失败';
-  } finally {
-    aiStreaming.value = false;
-    aiAbortController = null;
-  }
-}
-
-async function decideAiSuggestion(suggestion: AiSuggestion, decision: 'accepted' | 'rejected') {
-  if (!workspace.value) return;
-  const module = workspace.value.modules.find((item) => item.moduleKey === suggestion.moduleKey);
-  try {
-    await api.decideAiSuggestion(workspace.value.system.versionId, workspace.value.indicator.id, suggestion.id, {
-      decision,
-      expectedTemplateRevision: workspace.value.templateRevision,
-      expectedRevisionNo: decision === 'accepted' ? (suggestion.targetType === 'summary' ? workspace.value.summaryRevisionNo : module?.revisionNo) : undefined,
-      fieldKey: suggestion.fieldKey,
-    });
-    await refreshWorkspace();
-    await loadAiSuggestions();
-    ElMessage.success(decision === 'accepted' ? 'AI 建议已采纳并生成修订' : 'AI 建议已拒绝');
-  } catch (error) {
-    ElMessage.error(error instanceof Error ? error.message : '处理 AI 建议失败');
-  }
 }
 
 async function loadRevisions() {
@@ -551,7 +477,6 @@ async function commitImport() {
 
 function resetWorkspaceState() {
   workspaceRequestVersion += 1;
-  aiAbortController?.abort();
   currentSystem.value = null;
   systemDetail.value = null;
   systemDetailLoading.value = false;
@@ -632,18 +557,13 @@ desktop.configure({
         if (!saved) return false;
       } else { workspaceRef.value?.discardCurrent(); workspaceDirty.value = false; }
     }
-    if (aiStreaming.value) {
-      try { await ElMessageBox.confirm('AI 正在生成，关闭窗口将停止本次接收。', '关闭窗口', { confirmButtonText: '停止并关闭', cancelButtonText: '继续等待' }); }
-      catch { return false; }
-      aiAbortController?.abort();
-    }
     return true;
   },
 });
 const desktopCloseState = computed(() => ({
   dirty: workspaceDirty.value || editingDialogOpen.value || Boolean(templateSystem.value) || systemEditOpen.value || accessDialogOpen.value ||
     (isWorkspace.value && workspaceCloseState.value.dirty) || (activeView.value === 'mail' && mailCloseState.value.dirty) || (activeView.value === 'models' && modelCloseState.value.dirty),
-  busy: aiStreaming.value || importBusy.value || treeSorting.value || (activeView.value === 'semantic' && semanticCloseState.value.busy) ||
+  busy: importBusy.value || treeSorting.value || (activeView.value === 'semantic' && semanticCloseState.value.busy) ||
     (isWorkspace.value && workspaceCloseState.value.busy) || (activeView.value === 'mail' && mailCloseState.value.busy) || (activeView.value === 'models' && modelCloseState.value.busy),
 }));
 watch(desktopCloseState, state => desktop.setState(state), { immediate: true, flush: 'sync' });
@@ -736,10 +656,6 @@ function openUsers() {
   navigateGlobal('users');
 }
 
-function syncResponsiveAi(event: MediaQueryListEvent) {
-  if (event.matches) aiCollapsed.value = true;
-}
-
 function confirmUnload(event: BeforeUnloadEvent) {
   if (desktopCloseState.value.dirty || desktopCloseState.value.busy) { event.preventDefault(); event.returnValue = ''; }
 }
@@ -748,17 +664,13 @@ onMounted(() => {
   stopEditingDialogObserver = observeEditingDialogs(open => { editingDialogOpen.value = open; });
   window.addEventListener('mg-auth-expired', expireSession);
   window.addEventListener('beforeunload', confirmUnload);
-  compactAiQuery?.addEventListener('change', syncResponsiveAi);
   void restoreSession();
-  void loadAiStatus();
 });
 onBeforeUnmount(() => {
   stopEditingDialogObserver?.();
-  aiAbortController?.abort();
   removeNavigationGuard();
   window.removeEventListener('mg-auth-expired', expireSession);
   window.removeEventListener('beforeunload', confirmUnload);
-  compactAiQuery?.removeEventListener('change', syncResponsiveAi);
 });
 </script>
 
@@ -781,12 +693,11 @@ onBeforeUnmount(() => {
           <div class="workspace-template-action"><el-button v-if="currentSystem && canManageCatalog" class="workspace-edit-system" :icon="Edit" :disabled="treeLoading || treeSorting" @click="openSystemEdit">编辑指标体系</el-button><el-button v-if="currentAccess.canManageAccess" :icon="User" @click="accessDialogOpen = true">权限管理</el-button><el-button v-if="canManageCatalog && currentSystem" :icon="Setting" @click="openTemplateSettings">模板设置</el-button><div id="workspace-toolbar-actions"></div></div>
         </header>
         <el-alert v-if="workspaceError" type="error" :closable="false" show-icon class="workspace-error"><template #title>{{ workspaceError }}</template><el-button link type="primary" @click="selectedNode ? selectNode(selectedNode) : syncFromRoute()">重新加载</el-button></el-alert>
-        <div class="detail-layout" :class="{ 'is-ai-collapsed': aiCollapsed || !workspace }">
+        <div class="detail-layout">
           <IndicatorTreePanel ref="treePanelRef" :max-level="currentSystem?.maxLevel ?? 3" :sorting="treeSorting" @reorder="reorderNode" :nodes="tree" :selected-id="selectedNode?.id || ''" :readonly="treeReadonly" :loading="treeLoading" @select="onTreeSelect" @add="addNode" @edit="editNode" @remove="removeNode" />
           <div v-if="workspaceLoading" class="workspace-loading"><el-skeleton :rows="14" animated /></div>
           <ResearchWorkspace v-else-if="workspace" toolbar-target="#workspace-toolbar-actions" ref="workspaceRef" :workspace="workspace" :selected-module-key="selectedModuleKey" :save-version="saveVersion" :revisions="revisions" :revisions-loading="revisionsLoading" :readonly="workspaceReadonly" :user-role="currentUser.role" :can-review-access="canReviewSystem" :can-edit-evidence="canEditEvidence" :evidence="evidenceItems" @select-module="selectedModuleKey = $event" @save="saveModule" @add-evidence="addEvidence" @load-revisions="loadRevisions" @load-evidence="loadEvidence" @update-evidence="updateEvidence" @delete-evidence="deleteEvidence" @save-summary="saveSummary" @refresh-template="refreshWorkspace" @dirty-change="workspaceDirty = $event" @close-state-change="workspaceCloseState = $event" />
           <el-empty v-else class="workspace-empty" :description="treeLoading ? '加载中' : tree.length ? '请选择指标' : treeReadonly ? '暂无指标' : '暂无指标，请从左侧新增目录'" />
-          <AiExpertPanel v-if="workspace" :workspace="workspace" :selected-module-key="selectedModuleKey" :collapsed="aiCollapsed" :readonly="workspaceReadonly" :suggestions="aiSuggestions" :loading="aiSuggestionsLoading" :unavailable="!aiConfigured" :streaming="aiStreaming" :stream-text="aiStreamText" :stream-error="aiStreamError" @toggle="aiCollapsed = !aiCollapsed" @generate="generateAiSuggestion" @accept="decideAiSuggestion($event, 'accepted')" @reject="decideAiSuggestion($event, 'rejected')" />
         </div>
     </main>
       <el-empty v-else description="页面不存在" />
@@ -828,8 +739,7 @@ body { color: var(--el-text-color-primary); background: var(--el-fill-color-ligh
 button, input, textarea, select { font: inherit; letter-spacing: 0; }
 .auth-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; gap: 10px; color: #606266; background: #f5f7fa; }.auth-loading img { width: 34px; height: 34px; }.auth-loading .el-icon { color: var(--el-color-primary); font-size: 20px; }
 .detail-page { height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-.detail-layout { --tree-panel-width: 270px; --ai-panel-width: 330px; flex: 1; min-height: 0; display: grid; grid-template-columns: var(--tree-panel-width) minmax(620px, 1fr) var(--ai-panel-width); overflow: hidden; transition: grid-template-columns 180ms ease; }
-.detail-layout.is-ai-collapsed { --ai-panel-width: 40px; }
+.detail-layout { --tree-panel-width: 270px; flex: 1; min-height: 0; display: grid; grid-template-columns: var(--tree-panel-width) minmax(620px, 1fr); overflow: hidden; transition: grid-template-columns 180ms ease; }
 .workspace-error { margin: 10px 12px 0; }
 .aggregate-banner { margin: 10px 12px 0; min-height: 36px; border: 1px solid var(--el-color-primary-light-7); background: var(--el-color-primary-light-9); color: var(--el-color-primary-dark-2); display: flex; align-items: center; gap: 8px; padding: 8px 12px; font-size: 13px; }
 .workspace-loading, .workspace-empty { min-width: 0; background: var(--el-fill-color-lighter); padding: 28px; overflow: auto; }
@@ -837,8 +747,7 @@ button, input, textarea, select { font: inherit; letter-spacing: 0; }
 .workspace-empty { display: flex; align-items: center; justify-content: center; }
 
 @media (max-width: 1200px) {
-  .detail-layout { --tree-panel-width: 250px; --ai-panel-width: 300px; grid-template-columns: var(--tree-panel-width) minmax(0, 1fr) var(--ai-panel-width); }
-  .detail-layout.is-ai-collapsed { --ai-panel-width: 40px; }
+  .detail-layout { --tree-panel-width: 250px; grid-template-columns: var(--tree-panel-width) minmax(0, 1fr); }
 }
 
 @media (max-width: 1100px) {

@@ -4,12 +4,13 @@ import {servicePool,serviceSchemaSql,importServiceState,createPostgresServiceSto
 import {validateRegistrySnapshot,createServiceRegistry} from '../apps/server/src/services';
 import {validateDeploymentCatalog,deploymentDigest,resolveServiceBinding} from '../apps/server/src/service-deployments';
 import {canonicalJson} from '../../mg-platform/packages/frontend/services/openapi';
-import catalog from '../../mg-platform/packages/frontend/services/catalog.json';
 
 // 连接信息只从私密环境变量读取；命令参数和输出不含密码。
 const [action,filename,target,expected]=process.argv.slice(2),environment=process.env.SERVICE_ENVIRONMENT;
 if(!process.env.SERVICE_DATABASE_URL||!environment)throw Error('需要服务数据库连接与环境配置');
-const pool=servicePool(process.env.SERVICE_DATABASE_URL),apps=new Set(catalog.map(m=>m.appId));
+const pool=servicePool(process.env.SERVICE_DATABASE_URL);
+const applications=await pool.query('SELECT id FROM desktop_applications WHERE runtime_ready=true');
+const apps=new Set<string>(applications.rows.map(row=>row.id));
 const hash=(data:unknown)=>createHash('sha256').update(canonicalJson(data)).digest('hex');
 try{
  if(action==='install'){
@@ -53,6 +54,16 @@ try{
    const deployment=store.deployment(publication.manifest.serviceId)!;
    console.log(JSON.stringify({serviceId:publication.manifest.serviceId,version:publication.manifest.version,environment,endpointRef:deployment.endpointRef,deploymentId:deployment.deploymentId,verified:true}));
   }
+ }else if(action==='activate-deployment'&&filename&&target&&expected){
+  const catalog=validateDeploymentCatalog(JSON.parse(await readFile(filename,'utf8')),apps);
+  const store=createServiceRegistry('',apps,createPostgresServiceStorage(pool,environment),{environment,deployments:()=>catalog});await store.initialize();
+  const publication=store.list(apps).find(item=>item.manifest.serviceId===target&&item.manifest.version===expected);
+  if(!publication)throw Error('待发布服务版本不存在');
+  const deployments=catalog.environments.find(item=>item.id===environment)?.deployments.filter(item=>item.services.some(service=>service.serviceId===target&&service.version===expected&&service.manifestDigest===publication.digest&&service.contractDigest===publication.contractDigest))||[];
+  if(deployments.length!==1)throw Error('目标服务必须有且只有一个已核验部署');
+  await store.activate(target,expected,'release-activation',{expectedRevision:publication.activeRevision,endpointRef:deployments[0].endpointRef,expectedDeploymentDigest:deploymentDigest(deployments[0])});
+  const deployment=store.deployment(target)!;
+  console.log(JSON.stringify({serviceId:target,version:expected,environment,endpointRef:deployment.endpointRef,deploymentId:deployment.deploymentId,activated:true}));
  }else if(action==='import'&&filename){
   const data=validateRegistrySnapshot(JSON.parse(await readFile(filename,'utf8')),apps);
   const result=await importServiceState(pool,environment,data,hash(data));
@@ -66,6 +77,6 @@ try{
   // 可选 revisions 缺失和空映射等价；JSONB 字段顺序不影响语义。
   if(hash({...before,revisions:before.revisions||{}})!==hash({...after,revisions:after.revisions||{}}))throw Error('迁移前后数据不一致');
   console.log(JSON.stringify({environment,publications:after.publications.length,verified:true,digest:hash(after)}));
- }else throw Error('使用 install、environment、bind/verify-bindings 部署文件、import 文件、export 新文件或 verify 文件');
+ }else throw Error('使用 install、environment、bind/verify-bindings 部署文件、activate-deployment 部署文件 服务 版本、import 文件、export 新文件或 verify 文件');
 }catch{console.error('服务数据库操作失败；请核对数据库状态、私密配置及迁移输入，未输出连接信息。');process.exitCode=1;}
 finally{await pool.end();}

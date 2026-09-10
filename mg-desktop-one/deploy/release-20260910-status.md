@@ -30,3 +30,11 @@
 仍需完成：完整账号授权对比、生产真实登录和范围权限验收、资源后端发布、独立 Token 和知识库源码比对及发布、低空及 Document One 接入范围核查。正式回滚必须考虑已迁移身份表与旧镜像不兼容，不得只恢复旧镜像。
 
 所有应用定义仅在内核维护。身份库迁移后仅保留应用标识外键及授权关系；不得建立第二套应用名称、启用状态或入口维护数据。
+
+## 统一桌面移出应用目录
+
+2026-09-10 发布身份镜像 `mg-identity-service:20260910T054827Z`。`desktop-one` 仅保留为统一桌面登录和机器调用的 OAuth 客户端标识，不再作为内核应用或身份授权应用。
+
+生产已删除内核 `desktop_applications` 的 1 条 `desktop-one` 记录及其 2 条审计记录，并删除身份库 `ApplicationReference` 的 1 条引用；其用户授权、角色授权、范围授权、目录快照和 OIDC 会话引用均为 0。内核库备份位于 `/opt/mg-desktop/backups/desktop-client-removal-20260910T054827Z/kernel-catalog.dump`，身份库备份位于 `/opt/mg-desktop/backups/identity-20260910T054827Z/database.dump`。
+
+清理后身份容器重启健康，公网身份健康页和桌面首页均返回 200。真实生产账号完成桌面 SSO、授权码交换、会话读取和退出；认证中心完整应用目录为 13 个，包含 `document-one` 且不包含 `desktop-one`。平台控制面 API 的台账提供方已改为 `platform-kernel`，已移除完成历史任务后不再需要的待登记工具。

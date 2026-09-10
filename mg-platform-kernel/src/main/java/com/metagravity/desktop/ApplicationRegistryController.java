@@ -46,7 +46,11 @@ public class ApplicationRegistryController {
             if(!"system_admin".equals(Json.string(session.profile(),"role")))throw new ApiException(403,"仅平台管理员可配置应用入口");
             auth.csrf(headers,Json.string(session.profile(),"csrfToken"));
             if(body==null || body.length>16384)throw new ApiException(400,"应用入口配置无效");
-            catalog.configureRuntime(id,Json.read(body),Json.string(session.profile(),"sub"));
+            var current=catalog.directoryItem(id);
+            if(!"internal".equals(current.path("kind").asText()))throw new ApiException(403,"系统和默认应用由平台维护");
+            var input=Json.read(body);
+            if(!"internal".equals(input.path("kind").asText()) || !java.util.Objects.equals(current.path("authorizationAppId").asText(id),input.path("authorizationAppId").asText(id)))throw new ApiException(403,"不能更改应用分类或借用其他应用授权");
+            catalog.configureRuntime(id,input,Json.string(session.profile(),"sub"));
             return PlatformController.json(200,catalog.directoryItem(id));
         }).subscribeOn(Schedulers.boundedElastic());
     }

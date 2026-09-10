@@ -12,6 +12,7 @@ import com.zaxxer.hikari.HikariDataSource;
 /** 从平台数据库读取桌面应用运行目录。运行时不允许回退到内置目录。 */
 public final class DesktopApplicationCatalogStorage implements AutoCloseable {
     private final HikariDataSource dataSource;
+    Connection connection() throws SQLException { return dataSource.getConnection(); }
 
     public DesktopApplicationCatalogStorage(String connectionString) {
         if (connectionString == null || connectionString.isBlank()) throw new IllegalStateException("SERVICE_DATABASE_URL 配置无效");

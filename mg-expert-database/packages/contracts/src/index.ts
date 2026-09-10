@@ -26,7 +26,6 @@ export type FieldType =
   | 'organization_contact_list';
 export type FieldRequirement = 'confirm' | 'publish' | 'optional';
 export type EvidenceStatus = 'confirmed' | 'pending';
-export type SuggestionStatus = 'pending' | 'accepted' | 'rejected';
 
 export type SystemRole = 'creator' | 'manager' | 'editor' | 'viewer';
 export interface SystemPermissions {
@@ -199,69 +198,6 @@ export interface SaveSummaryRequest {
   sourceRevisionIds: string[];
 }
 
-export interface CreateAiSuggestionRequest {
-  expectedTemplateRevision?: number;
-  targetType: 'module' | 'summary';
-  moduleKey?: ResearchModuleKey;
-  fieldKey?: string;
-  content: string;
-  rationale: string;
-  confidence?: 'supported' | 'inference' | 'needs_verification';
-  evidenceIds?: string[];
-  verificationItems?: string[];
-  sourceRevisionIds?: string[];
-  modelId?: string;
-  promptVersion?: string;
-}
-
-export interface DecideAiSuggestionRequest {
-  expectedTemplateRevision?: number;
-  decision: 'accepted' | 'rejected';
-  expectedRevisionNo?: number;
-  fieldKey?: string;
-  value?: unknown;
-  reason?: string;
-}
-
-export interface AiSuggestionStreamRequest {
-  prompt: string;
-  moduleKey: ResearchModuleKey;
-  modelProcessingConfirmed: boolean;
-}
-
-export interface AiStreamEvent {
-  type: 'meta' | 'delta' | 'usage' | 'completed' | 'error';
-  suggestionId?: string;
-  text?: string;
-  model?: string;
-  status?: string;
-  inputTokens?: number;
-  outputTokens?: number;
-  code?: string;
-  message?: string;
-}
-
-export interface AiSuggestionView {
-  id: string;
-  targetType: 'module' | 'summary';
-  moduleKey?: ResearchModuleKey;
-  fieldKey?: string;
-  content: string;
-  rationale: string;
-  confidence: 'supported' | 'inference' | 'needs_verification';
-  evidenceIds: string[];
-  verificationItems: string[];
-  sourceRevisionIds: string[];
-  modelId: string;
-  promptVersion: string;
-  status: 'pending' | 'accepted' | 'rejected' | 'superseded';
-  decisionReason?: string;
-  decidedAt?: string;
-  decidedByUserId?: string;
-  resultRevisionId?: string;
-  createdAt: string;
-}
-
 export interface EvidenceRequest {
   expectedTemplateRevision?: number;
   type: string;
@@ -277,17 +213,6 @@ export interface UpdateResearchModuleInput {
   expectedRevisionNo: number;
   values: Array<{ fieldKey: string; value: string | number | null }>;
   confirm?: boolean;
-}
-
-export interface AiSuggestion {
-  id: string;
-  indicatorId: string;
-  moduleKey: ResearchModuleKey;
-  fieldKey?: string;
-  content: string;
-  rationale: string;
-  status: SuggestionStatus;
-  createdAt: string;
 }
 
 export * from './workbook-mapping.js';

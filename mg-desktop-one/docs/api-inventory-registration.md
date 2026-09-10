@@ -2,11 +2,11 @@
 
 登记包由 `node scripts/build-api-inventory.mjs` 生成，使用 `--check` 校验源码漂移。运行时只读取服务库，不从此文件或源码扫描回退。
 
-共 318 条入口，7 个提供方。类别与认证边界分别保存；页面/资源单独统计，避免将页面数算作业务 API 数。
+共 321 条入口，7 个提供方。类别与认证边界分别保存；页面/资源单独统计，避免将页面数算作业务 API 数。
 
 | 类别 | 数量 |
 | --- | ---: |
-| 系统服务 | 142 |
+| 系统服务 | 145 |
 | 应用服务 | 15 |
 | 数据服务 | 80 |
 | 组件服务 | 8 |
@@ -20,40 +20,12 @@
 | 身份协议 | 61 |
 | 机器集成 | 3 |
 | 外部开放协议 | 4 |
-| 平台控制面 | 25 |
+| 平台控制面 | 28 |
 | 健康探针 | 7 |
 | 页面与静态资源 | 12 |
 
 | 提供方 | 类别 | 领域 | 认证边界 | 方法与路径 |
 | --- | --- | --- | --- | --- |
-| desktop-one | 系统服务 | 应用管理 | 平台控制面 | GET /api/applications |
-| desktop-one | 系统服务 | 应用管理 | 平台控制面 | POST /api/applications |
-| desktop-one | 系统服务 | 应用管理 | 平台控制面 | DELETE /api/applications/{id} |
-| desktop-one | 系统服务 | 应用管理 | 平台控制面 | PUT /api/applications/{id} |
-| desktop-one | 系统服务 | 应用网关 | 平台控制面 | ANY /api/apps/{appId}/{path*} |
-| desktop-one | 系统服务 | 运行健康 | 健康探针 | ANY /api/health |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | DELETE /api/notifications |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/notifications |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | PATCH /api/notifications |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | POST /api/notifications |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/preferences |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | PUT /api/preferences |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | GET /api/service-registry |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/activation |
-| desktop-one | 系统服务 | API 台账 | 平台控制面 | GET /api/service-registry/api-inventory |
-| desktop-one | 系统服务 | API 台账 | 平台控制面 | POST /api/service-registry/api-inventory |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | GET /api/service-registry/insights |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/lifecycle |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/publications |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | GET /api/service-registry/workspace |
-| desktop-one | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/workspace |
-| desktop-one | 系统服务 | 应用网关 | 平台控制面 | ANY /api/services/apps/{appId}/{path*} |
-| desktop-one | 系统服务 | 应用网关 | 平台控制面 | ANY /api/services/invoke/{serviceId}/{operationId} |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/session |
-| desktop-one | 系统服务 | 桌面登录 | 身份协议 | GET /auth/callback |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | POST /auth/logout |
-| desktop-one | 系统服务 | 本人桌面状态 | 平台控制面 | POST /auth/renew |
-| desktop-one | 系统服务 | 桌面登录 | 身份协议 | GET /auth/start |
 | expert-database | 数据服务 | 账号安全 | 本人账号 | GET /api/account-security |
 | expert-database | 数据服务 | 账号安全 | 本人账号 | POST /api/account-security/authorize |
 | expert-database | 数据服务 | 账号安全 | 本人账号 | POST /api/account-security/authorize/email |
@@ -268,6 +240,37 @@
 | identity | 系统服务 | OIDC 标准协议 | 身份协议 | OPTIONS /token/revocation |
 | identity | 系统服务 | OIDC 标准协议 | 身份协议 | POST /token/revocation |
 | onlyoffice | 引擎服务 | Office 命令 | 机器集成 | POST /coauthoring/CommandService.ashx |
+| platform-kernel | 系统服务 | 应用管理 | 平台控制面 | GET /api/applications |
+| platform-kernel | 系统服务 | 应用管理 | 平台控制面 | POST /api/applications |
+| platform-kernel | 系统服务 | 应用管理 | 平台控制面 | DELETE /api/applications/{id} |
+| platform-kernel | 系统服务 | 应用管理 | 平台控制面 | PUT /api/applications/{id} |
+| platform-kernel | 系统服务 | 应用网关 | 平台控制面 | ANY /api/apps/{appId}/{path*} |
+| platform-kernel | 系统服务 | 运行健康 | 健康探针 | ANY /api/health |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | DELETE /api/notifications |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/notifications |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | PATCH /api/notifications |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | POST /api/notifications |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/preferences |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | PUT /api/preferences |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | DELETE /api/preferences/wallpaper |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/preferences/wallpaper |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | PUT /api/preferences/wallpaper |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | GET /api/service-registry |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/activation |
+| platform-kernel | 系统服务 | API 台账 | 平台控制面 | GET /api/service-registry/api-inventory |
+| platform-kernel | 系统服务 | API 台账 | 平台控制面 | POST /api/service-registry/api-inventory |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | GET /api/service-registry/insights |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/lifecycle |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/publications |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | GET /api/service-registry/workspace |
+| platform-kernel | 系统服务 | 服务中心 | 平台控制面 | POST /api/service-registry/workspace |
+| platform-kernel | 系统服务 | 应用网关 | 平台控制面 | ANY /api/services/apps/{appId}/{path*} |
+| platform-kernel | 系统服务 | 应用网关 | 平台控制面 | ANY /api/services/invoke/{serviceId}/{operationId} |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | GET /api/session |
+| platform-kernel | 系统服务 | 桌面登录 | 身份协议 | GET /auth/callback |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | POST /auth/logout |
+| platform-kernel | 系统服务 | 本人桌面状态 | 平台控制面 | POST /auth/renew |
+| platform-kernel | 系统服务 | 桌面登录 | 身份协议 | GET /auth/start |
 | resource-manager | 系统服务 | 资源管理 | 业务接口 | GET /api/overview |
 | resource-manager | 系统服务 | 资源管理 | 业务接口 | POST /api/resources/{id}/metadata |
 | resource-manager | 系统服务 | 资源管理 | 业务接口 | POST /api/resources/{id}/refresh |

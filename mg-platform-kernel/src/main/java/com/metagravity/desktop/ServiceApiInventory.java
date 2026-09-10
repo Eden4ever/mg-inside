@@ -25,10 +25,12 @@ public final class ServiceApiInventory {
             for(String key:List.of("id","provider","category","boundary"))if(!string(entry,key,100).matches("[a-z0-9][a-z0-9.-]*"))throw bad();
             for(String key:List.of("domain","auth","summary"))string(entry,key,300);
             string(entry,"note",1500);
-            if(!categories.contains(entry.path("category").asText())||!boundaries.contains(entry.path("boundary").asText()))throw bad();
+            String boundary=entry.path("boundary").asText();
+            if(!categories.contains(entry.path("category").asText())||!boundaries.contains(boundary))throw bad();
             String method=string(entry,"method",10),path=string(entry,"path",500);
             if(!Set.of("GET","POST","PUT","PATCH","DELETE","HEAD","OPTIONS","ANY","WS").contains(method)||!path.matches("/[A-Za-z0-9/_.{}*~-]*")||path.contains("//")||path.contains(".."))throw bad();
-            if(!entry.path("appIds").isArray()||entry.path("appIds").isEmpty()||entry.path("appIds").size()>20)throw bad();
+            if(!entry.path("appIds").isArray()||entry.path("appIds").size()>20
+                || entry.path("appIds").isEmpty()&&!Set.of("identity","probe").contains(boundary))throw bad();
             Set<String> apps=new HashSet<>();for(JsonNode app:entry.path("appIds"))if(!app.isTextual()||!app.textValue().matches("[a-z][a-z0-9-]{0,99}")||!apps.add(app.textValue()))throw bad();
             String key=entry.path("provider").asText()+" "+method+" "+path.replaceAll("\\{[^}]+}","{}");
             if(!keys.add(key)||!ids.add(entry.path("id").asText()))throw new ApiException(400,"API 台账存在重复接口");

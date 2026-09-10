@@ -40,6 +40,9 @@ test('独立 PostgreSQL：迁移、受限账号、多实例并发、环境隔离
   GRANT UPDATE ON service_bindings,service_environments TO "${role}";
   GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO "${role}";`);
  const apps=new Set(catalog.map(m=>m.appId));
+ await admin.query('CREATE TABLE desktop_applications(id text PRIMARY KEY,runtime_ready boolean NOT NULL)');
+ await admin.query('INSERT INTO desktop_applications(id,runtime_ready) SELECT unnest($1::text[]),true',[[...apps]]);
+ await admin.query(`GRANT SELECT ON desktop_applications TO "${role}"`);
  const legacy=createServiceRegistry(join(dir,'legacy'),apps);await legacy.initialize();
  const publication=legacy.list(apps).find(p=>p.manifest.appId==='resource-manager')!;
  const contract=structuredClone(publication.contract!);contract.info.version='1.2.0';(contract.info as any)['x-null']=null;
@@ -79,9 +82,10 @@ test('独立 PostgreSQL：迁移、受限账号、多实例并发、环境隔离
  // 使用已构建的真实桌面 HTTP 入口与本地身份/文件服务，验证降级不绕过授权。
  const portProbe=createServer();portProbe.listen(0,'127.0.0.1');await once(portProbe,'listening');const port=(portProbe.address() as any).port;await new Promise<void>(r=>portProbe.close(()=>r()));
  const local=parseEnv(await readFile('.runtime/local/desktop.env','utf8')),origin=`http://127.0.0.1:${port}`;
- const processServer=spawn(process.execPath,['dist/server/main.mjs'],{windowsHide:true,stdio:'ignore',env:{...process.env,...local,PORT:String(port),HOST:'127.0.0.1',DESKTOP_ORIGIN:origin,DESKTOP_RUNTIME_DIR:join(dir,'http'),SERVICE_DATABASE_URL:runtimeUrl.href,SERVICE_ENVIRONMENT:'production'}});
+ const processServer=spawn(process.execPath,['dist/server/main.mjs'],{windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,...local,NODE_ENV:'test',PORT:String(port),HOST:'127.0.0.1',DESKTOP_ORIGIN:origin,DESKTOP_RUNTIME_DIR:join(dir,'http'),SERVICE_DATABASE_URL:runtimeUrl.href,SERVICE_ENVIRONMENT:'production'}});
+ let processOutput='';for(const stream of [processServer.stdout,processServer.stderr])stream.on('data',chunk=>{processOutput=(processOutput+chunk).slice(-4000);});
  const serverExited=once(processServer,'exit');closers.unshift(async()=>{if(processServer.exitCode===null&&processServer.signalCode===null)processServer.kill();await serverExited;});
- let healthy=false;for(let i=0;i<80;i++){try{healthy=(await fetch(origin+'/api/health')).ok;if(healthy)break;}catch{}await new Promise(r=>setTimeout(r,250));}assert(healthy,'隔离桌面进程须启动成功');
+ let healthy=false;for(let i=0;i<80;i++){try{healthy=(await fetch(origin+'/api/health')).ok;if(healthy)break;}catch{}await new Promise(r=>setTimeout(r,250));}assert(healthy,`隔离桌面进程须启动成功：${processOutput}`);
  const account=JSON.parse(await readFile('.runtime/local/account.json','utf8')),issuer='http://127.0.0.1:14200';
  const login=await fetch(issuer+'/api/auth/login',{method:'POST',headers:{origin:issuer,'content-type':'application/json'},body:JSON.stringify(account)});assert.equal(login.status,200);
  const cookie=login.headers.getSetCookie().find(c=>c.startsWith('mg_identity_session='))?.split(';')[0];assert(cookie);
@@ -124,9 +128,9 @@ test('独立 PostgreSQL：迁移、受限账号、多实例并发、环境隔离
  const deploymentFile=join(dir,'deployments.json');await writeFile(deploymentFile,JSON.stringify(deploymentCatalog));
  async function boundServer(environment:string){
   const probe=createServer();probe.listen(0,'127.0.0.1');await once(probe,'listening');const port=(probe.address() as any).port;await new Promise<void>(r=>probe.close(()=>r()));const address=`http://127.0.0.1:${port}`;
-  const child=spawn(process.execPath,['dist/server/main.mjs'],{windowsHide:true,stdio:'ignore',env:{...process.env,...local,PORT:String(port),HOST:'127.0.0.1',DESKTOP_ORIGIN:address,DESKTOP_RUNTIME_DIR:join(dir,'http-'+environment),SERVICE_DATABASE_URL:runtimeUrl.href,SERVICE_ENVIRONMENT:environment,SERVICE_DEPLOYMENTS_FILE:deploymentFile}}),exited=once(child,'exit');
+  const child=spawn(process.execPath,['dist/server/main.mjs'],{windowsHide:true,stdio:['ignore','pipe','pipe'],env:{...process.env,...local,NODE_ENV:'test',PORT:String(port),HOST:'127.0.0.1',DESKTOP_ORIGIN:address,DESKTOP_RUNTIME_DIR:join(dir,'http-'+environment),SERVICE_DATABASE_URL:runtimeUrl.href,SERVICE_ENVIRONMENT:environment,SERVICE_DEPLOYMENTS_FILE:deploymentFile}}),exited=once(child,'exit');let output='';for(const stream of [child.stdout,child.stderr])stream.on('data',chunk=>{output=(output+chunk).slice(-4000);});
   closers.unshift(async()=>{if(child.exitCode===null&&child.signalCode===null)child.kill();await exited;});
-  let started=false;for(let i=0;i<80;i++){try{started=(await fetch(address+'/api/health')).ok;if(started)break;}catch{}await new Promise(r=>setTimeout(r,250));}assert(started,'环境出口须启动成功');return address;
+  let started=false;for(let i=0;i<80;i++){try{started=(await fetch(address+'/api/health')).ok;if(started)break;}catch{}await new Promise(r=>setTimeout(r,250));}assert(started,`环境出口须启动成功：${output}`);return address;
  }
  const productionOrigin=await boundServer('production'),testingOrigin=await boundServer('testing');
  const controlHeaders={...headers,origin:productionOrigin,'content-type':'application/json','x-csrf-token':profile.csrfToken};

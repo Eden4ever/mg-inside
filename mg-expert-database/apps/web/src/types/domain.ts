@@ -3,9 +3,6 @@ import type {
   CreateSystemRequest,
   IndicatorNodeRequest,
   UpdateModuleRequest,
-  AiSuggestionView,
-  AiSuggestionStreamRequest,
-  AiStreamEvent,
   IndicatorSystemSummary as SharedIndicatorSystemSummary,
   IndicatorVersionDetail,
   IndicatorTreeNode,
@@ -18,7 +15,6 @@ import type {
 } from '@mg-expert/contracts';
 
 export type { EvidenceStatus, IndicatorTreeNode, IndicatorVersionDetail, ModuleStatus, ResearchFieldDefinition, ResearchModuleDefinition, ResearchModuleKey, ResearchRevisionSummary };
-export type { AiSuggestionStreamRequest, AiStreamEvent };
 export type { SystemPermissions };
 
 export interface IndicatorSystemSummary extends SharedIndicatorSystemSummary {
@@ -110,8 +106,6 @@ export interface VersionActionResult {
 }
 
 export type UpdateModuleInput = UpdateModuleRequest;
-
-export type AiSuggestion = AiSuggestionView & { indicatorId?: string };
 
 export type CreateSystemInput = CreateSystemRequest;
 

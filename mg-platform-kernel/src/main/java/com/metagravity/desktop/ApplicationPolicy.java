@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
 
 /** 应用专属行为由注册数据声明，运行内核不按应用 ID 分支。 */
-public record ApplicationPolicy(String apiMode, String versionOwnerAppId, String rolePath, String rolePointer, List<String> allowedApiMethods, List<String> websocketPaths) {
+public record ApplicationPolicy(String apiMode, String versionOwnerAppId, String rolePath, String rolePointer, List<String> allowedApiMethods, List<String> websocketPaths, String launchMode) {
     private static final Set<String> METHODS = Set.of("GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS");
     static ApplicationPolicy parse(String appId, JsonNode input) {
         JsonNode value = input == null || input.isNull() ? Json.object() : input;
         if (!value.isObject()) throw new IllegalStateException("应用运行策略必须是对象");
         value.fieldNames().forEachRemaining(key -> {
-            if (!Set.of("apiMode", "versionOwnerAppId", "rolePath", "rolePointer", "allowedApiMethods", "websocketPaths").contains(key)) throw new IllegalStateException("应用运行策略包含未知字段");
+            if (!Set.of("apiMode", "versionOwnerAppId", "rolePath", "rolePointer", "allowedApiMethods", "websocketPaths", "launchMode").contains(key)) throw new IllegalStateException("应用运行策略包含未知字段");
         });
         String mode = string(value, "apiMode", "registered"), owner = string(value, "versionOwnerAppId", appId);
         String path = string(value, "rolePath", "/auth/me"), pointer = string(value, "rolePointer", "/role");
@@ -35,7 +35,9 @@ public record ApplicationPolicy(String apiMode, String versionOwnerAppId, String
             }
             if (!sockets.isEmpty() && !"registered".equals(mode)) throw new IllegalStateException("WebSocket 必须登记服务契约");
         }
-        return new ApplicationPolicy(mode, owner, path, pointer, List.copyOf(methods), List.copyOf(sockets));
+        String launch=string(value,"launchMode","embedded");
+        if(!Set.of("embedded","tab").contains(launch))throw new IllegalStateException("应用打开方式无效");
+        return new ApplicationPolicy(mode, owner, path, pointer, List.copyOf(methods), List.copyOf(sockets),launch);
     }
     private static String string(JsonNode value, String key, String fallback) {
         if (!value.has(key)) return fallback;

@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { encryptSecret, decryptSecret } from './security-secrets.js';
-import { applicationAccess, effectiveApplications, canInspectAudience } from './application-access.js';
+import { applicationAccess, effectiveApplications, canInspectAudience, isDesktopClient } from './application-access.js';
 import { kernelApplication } from './kernel-applications.js';
 
 const digest = value => createHash('sha256').update(value).digest('hex');
@@ -19,7 +19,7 @@ export function createUnifiedTokens({ prisma, auth, clients, issuer }) {
     const session = await prisma.authSession.findUnique({ where: { tokenHash: digest(token) }, include: { user: true } });
     if (!session || session.id !== authenticated.session.id || session.revokedAt || session.expiresAt <= new Date()
       || session.user.status !== 'active' || session.securityVersion !== session.user.securityVersion) return { active: false };
-    if (!await kernelApplication(appId)) return { active: false };
+    if (!isDesktopClient(appId) && !await kernelApplication(appId)) return { active: false };
     const access = await applicationAccess(prisma, session.userId, appId);
     if (!access.effective) return { active: false };
     // 拆分授权目标仍复用原 Token 业务身份映射，映射存在不表示获得门户授权。
@@ -37,7 +37,7 @@ export function createUnifiedTokens({ prisma, auth, clients, issuer }) {
 
   async function issueCode(token, query) {
     const { client_id: clientId, redirect_uri: redirectUri, state, code_challenge: codeChallenge } = query;
-    const client = clients.find(c => c.client_id === clientId);
+    const client = Array.isArray(clients) ? clients.find(c => c.client_id === clientId) : await clients.find(clientId);
     if (clientId !== desktopId() || !client?.redirect_uris.includes(redirectUri)
       || typeof state !== 'string' || !/^[A-Za-z0-9_-]{32,128}$/.test(state)
       || !validToken(codeChallenge) || query.code_challenge_method !== 'S256') return null;
@@ -131,7 +131,7 @@ export function installUnifiedTokenRoutes(server, { prisma, auth, clients, issue
   server.get('/api/unified/authorize', async (req, reply) => {
     noStore(reply);
     const q = req.query || {};
-    const client = clients.find(c => c.client_id === desktopId());
+    const client = Array.isArray(clients) ? clients.find(c => c.client_id === desktopId()) : await clients.find(desktopId());
     if (q.client_id !== desktopId() || !client?.redirect_uris.includes(q.redirect_uri)
       || typeof q.state !== 'string' || !/^[A-Za-z0-9_-]{32,128}$/.test(q.state)
       || !validToken(q.code_challenge) || q.code_challenge_method !== 'S256') return reply.code(400).send({ message: '桌面登录请求无效' });

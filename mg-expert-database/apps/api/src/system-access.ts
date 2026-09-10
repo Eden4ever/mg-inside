@@ -21,7 +21,6 @@ const PLATFORM_ROLE_LABELS: Record<string, string> = {
   reviewer: '审核员',
   publisher: '发布员',
   reader: '普通用户',
-  ai_service: 'AI 服务',
 };
 
 export function platformRoleLabel(role: string): string {
@@ -71,7 +70,7 @@ export class SystemAccessService {
     await this.requireManageAccess(systemId, actor);
     const system = await this.prisma.indicatorSystem.findUnique({ where: { id: systemId }, select: { id: true, creatorUserId: true } });
     if (!system) throw new NotFoundException('指标体系不存在。');
-    const users = await this.prisma.user.findMany({ where: { status: 'active', role: { not: 'ai_service' } }, include: { systemAccesses: { where: { systemId } } }, orderBy: [{ role: 'asc' }, { displayName: 'asc' }] });
+    const users = await this.prisma.user.findMany({ where: { status: 'active' }, include: { systemAccesses: { where: { systemId } } }, orderBy: [{ role: 'asc' }, { displayName: 'asc' }] });
     return users.map((user) => {
       const globalAdmin = user.role === 'system_admin';
       const permissions = globalAdmin
@@ -143,7 +142,7 @@ export class SystemAccessService {
         systemId,
         canView: true,
         canResearch: true,
-        user: { status: 'active', role: { notIn: ['system_admin', 'ai_service'] } },
+        user: { status: 'active', role: { not: 'system_admin' } },
       },
       include: { user: true },
       orderBy: { user: { displayName: 'asc' } },

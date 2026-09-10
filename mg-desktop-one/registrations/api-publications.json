@@ -5281,369 +5281,6 @@
     {
       "manifest": {
         "schemaVersion": 1,
-        "serviceId": "app-manager.platform-f4c7183a",
-        "appId": "app-manager",
-        "name": "应用管理 · 应用管理",
-        "version": "1.0.0",
-        "description": "应用管理授权；系统应用只读，外部应用归本人。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-324c8cbd093f7b371aed5216",
-            "method": "GET",
-            "path": "/api/applications",
-            "summary": "应用管理 · GET /api/applications",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-b62efaf707d033f96a442f63",
-            "method": "POST",
-            "path": "/api/applications",
-            "summary": "应用管理 · POST /api/applications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-2ccdf02a99a8e4358b951359",
-            "method": "DELETE",
-            "path": "/api/applications/{id}",
-            "summary": "应用管理 · DELETE /api/applications/{id}",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-0875e967e593f0b13eaefbba",
-            "method": "PUT",
-            "path": "/api/applications/{id}",
-            "summary": "应用管理 · PUT /api/applications/{id}",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "service-manager.platform-74efded2",
-        "appId": "service-manager",
-        "name": "服务中心 · 应用网关",
-        "version": "1.0.0",
-        "description": "目标应用 audience、路径白名单与服务状态。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-2842e827aa46b04342d86f41",
-            "method": "ANY",
-            "path": "/api/apps/{appId}/{path*}",
-            "summary": "应用网关 · ANY /api/apps/{appId}/{path*}",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-32c2a962eda5de35d7ce3895",
-            "method": "ANY",
-            "path": "/api/services/apps/{appId}/{path*}",
-            "summary": "应用网关 · ANY /api/services/apps/{appId}/{path*}",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-a26f5e145e793a5833e8e061",
-            "method": "ANY",
-            "path": "/api/services/invoke/{serviceId}/{operationId}",
-            "summary": "应用网关 · ANY /api/services/invoke/{serviceId}/{operationId}",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "service-manager.probe-f96bcef7",
-        "appId": "service-manager",
-        "name": "服务中心 · 运行健康",
-        "version": "1.0.0",
-        "description": "公开。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-3fd39cadf0d1eb0c073e7f4d",
-            "method": "ANY",
-            "path": "/api/health",
-            "summary": "运行健康 · ANY /api/health",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "personal-center.platform-24e97fb2",
-        "appId": "personal-center",
-        "name": "个人中心 · 本人桌面状态",
-        "version": "1.0.0",
-        "description": "桌面用户会话；写入须 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-29aff39fd4db43d853353860",
-            "method": "DELETE",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · DELETE /api/notifications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-5c750d5219da5008a581771d",
-            "method": "GET",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · GET /api/notifications",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-2b1ae28c241951308dbc26a9",
-            "method": "PATCH",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · PATCH /api/notifications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-307bcf4e8f45603b44bae739",
-            "method": "POST",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · POST /api/notifications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-1d02d0af62fd8b18dfd762f0",
-            "method": "GET",
-            "path": "/api/preferences",
-            "summary": "本人桌面状态 · GET /api/preferences",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-eba77b4d7da987f28fb255d3",
-            "method": "PUT",
-            "path": "/api/preferences",
-            "summary": "本人桌面状态 · PUT /api/preferences",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-b3b3bfe7bee61e5278618a79",
-            "method": "GET",
-            "path": "/api/session",
-            "summary": "本人桌面状态 · GET /api/session",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-6de4046155d9d250464ae5cf",
-            "method": "POST",
-            "path": "/auth/logout",
-            "summary": "本人桌面状态 · POST /auth/logout",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-7bca766ca020facc77f955ca",
-            "method": "POST",
-            "path": "/auth/renew",
-            "summary": "本人桌面状态 · POST /auth/renew",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "service-manager.platform-0017008a",
-        "appId": "service-manager",
-        "name": "服务中心 · 本人桌面状态",
-        "version": "1.0.0",
-        "description": "桌面用户会话；写入须 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-29aff39fd4db43d853353860",
-            "method": "DELETE",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · DELETE /api/notifications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-5c750d5219da5008a581771d",
-            "method": "GET",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · GET /api/notifications",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-2b1ae28c241951308dbc26a9",
-            "method": "PATCH",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · PATCH /api/notifications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-307bcf4e8f45603b44bae739",
-            "method": "POST",
-            "path": "/api/notifications",
-            "summary": "本人桌面状态 · POST /api/notifications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-1d02d0af62fd8b18dfd762f0",
-            "method": "GET",
-            "path": "/api/preferences",
-            "summary": "本人桌面状态 · GET /api/preferences",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-eba77b4d7da987f28fb255d3",
-            "method": "PUT",
-            "path": "/api/preferences",
-            "summary": "本人桌面状态 · PUT /api/preferences",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-b3b3bfe7bee61e5278618a79",
-            "method": "GET",
-            "path": "/api/session",
-            "summary": "本人桌面状态 · GET /api/session",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-6de4046155d9d250464ae5cf",
-            "method": "POST",
-            "path": "/auth/logout",
-            "summary": "本人桌面状态 · POST /auth/logout",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-7bca766ca020facc77f955ca",
-            "method": "POST",
-            "path": "/auth/renew",
-            "summary": "本人桌面状态 · POST /auth/renew",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "service-manager.platform-caf96a56",
-        "appId": "service-manager",
-        "name": "服务中心 · 服务中心",
-        "version": "1.0.0",
-        "description": "服务管理应用授权；管理写操作须管理员角色与 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-1f465825c92a2f4beb2200be",
-            "method": "GET",
-            "path": "/api/service-registry",
-            "summary": "服务中心 · GET /api/service-registry",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-f6ea5dbef1a182913e7d55c9",
-            "method": "POST",
-            "path": "/api/service-registry/activation",
-            "summary": "服务中心 · POST /api/service-registry/activation",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-a6f3854a3a5f4f3fdaf77059",
-            "method": "GET",
-            "path": "/api/service-registry/insights",
-            "summary": "服务中心 · GET /api/service-registry/insights",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-d13bd82810a041df4a1799e7",
-            "method": "POST",
-            "path": "/api/service-registry/lifecycle",
-            "summary": "服务中心 · POST /api/service-registry/lifecycle",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-86ff4623ed0b04f1dd0b9415",
-            "method": "POST",
-            "path": "/api/service-registry/publications",
-            "summary": "服务中心 · POST /api/service-registry/publications",
-            "effect": "write"
-          },
-          {
-            "operationId": "api-0774e89fe8834dc9c9d7b010",
-            "method": "GET",
-            "path": "/api/service-registry/workspace",
-            "summary": "服务中心 · GET /api/service-registry/workspace",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-1ff92409d80c7a5af8a35786",
-            "method": "POST",
-            "path": "/api/service-registry/workspace",
-            "summary": "服务中心 · POST /api/service-registry/workspace",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "service-manager.platform-1d972241",
-        "appId": "service-manager",
-        "name": "服务中心 · API 台账",
-        "version": "1.0.0",
-        "description": "服务管理授权及管理员角色；写入须 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-8d17ee299d56c2fc5b3a29c1",
-            "method": "GET",
-            "path": "/api/service-registry/api-inventory",
-            "summary": "API 台账 · GET /api/service-registry/api-inventory",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-28a767e5109a5e2ff6e91b5b",
-            "method": "POST",
-            "path": "/api/service-registry/api-inventory",
-            "summary": "API 台账 · POST /api/service-registry/api-inventory",
-            "effect": "write"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
-        "serviceId": "service-manager.identity-18e797dc",
-        "appId": "service-manager",
-        "name": "服务中心 · 桌面登录",
-        "version": "1.0.0",
-        "description": "PKCE、状态 Cookie 与统一身份。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
-        "operations": [
-          {
-            "operationId": "api-209a264913f20c3f85d9c83e",
-            "method": "GET",
-            "path": "/auth/callback",
-            "summary": "桌面登录 · GET /auth/callback",
-            "effect": "read"
-          },
-          {
-            "operationId": "api-9da3d0c0e66069c2ed25f3d4",
-            "method": "GET",
-            "path": "/auth/start",
-            "summary": "桌面登录 · GET /auth/start",
-            "effect": "read"
-          }
-        ],
-        "exposure": "catalog"
-      }
-    },
-    {
-      "manifest": {
-        "schemaVersion": 1,
         "serviceId": "expert-database.self-1e74b288",
         "appId": "expert-database",
         "name": "指标知识库 · 账号安全",
@@ -7496,6 +7133,246 @@
     {
       "manifest": {
         "schemaVersion": 1,
+        "serviceId": "app-manager.platform-5d655459",
+        "appId": "app-manager",
+        "name": "应用管理 · 应用管理",
+        "version": "1.0.0",
+        "description": "应用管理授权；系统应用只读，外部应用归本人。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
+        "operations": [
+          {
+            "operationId": "api-60dc9ce7c3c35c7b5ade8fbc",
+            "method": "GET",
+            "path": "/api/applications",
+            "summary": "应用管理 · GET /api/applications",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-52a66e561e31ed10363aa8a3",
+            "method": "POST",
+            "path": "/api/applications",
+            "summary": "应用管理 · POST /api/applications",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-be1491c67cdbde6584888da9",
+            "method": "DELETE",
+            "path": "/api/applications/{id}",
+            "summary": "应用管理 · DELETE /api/applications/{id}",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-090d7da4c205426b419e18ac",
+            "method": "PUT",
+            "path": "/api/applications/{id}",
+            "summary": "应用管理 · PUT /api/applications/{id}",
+            "effect": "write"
+          }
+        ],
+        "exposure": "catalog"
+      }
+    },
+    {
+      "manifest": {
+        "schemaVersion": 1,
+        "serviceId": "service-manager.platform-69f23978",
+        "appId": "service-manager",
+        "name": "服务中心 · 应用网关",
+        "version": "1.0.0",
+        "description": "目标应用 audience、路径白名单与服务状态。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
+        "operations": [
+          {
+            "operationId": "api-e086812695c788d231092cae",
+            "method": "ANY",
+            "path": "/api/apps/{appId}/{path*}",
+            "summary": "应用网关 · ANY /api/apps/{appId}/{path*}",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-a7681ca8f085c05186d99a10",
+            "method": "ANY",
+            "path": "/api/services/apps/{appId}/{path*}",
+            "summary": "应用网关 · ANY /api/services/apps/{appId}/{path*}",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-ddb6701633cc2d39c793db40",
+            "method": "ANY",
+            "path": "/api/services/invoke/{serviceId}/{operationId}",
+            "summary": "应用网关 · ANY /api/services/invoke/{serviceId}/{operationId}",
+            "effect": "write"
+          }
+        ],
+        "exposure": "catalog"
+      }
+    },
+    {
+      "manifest": {
+        "schemaVersion": 1,
+        "serviceId": "personal-center.platform-0cfc8cde",
+        "appId": "personal-center",
+        "name": "个人中心 · 本人桌面状态",
+        "version": "1.0.0",
+        "description": "桌面用户会话；写入须 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
+        "operations": [
+          {
+            "operationId": "api-730ea091aa080dcc204d5fdf",
+            "method": "DELETE",
+            "path": "/api/notifications",
+            "summary": "本人桌面状态 · DELETE /api/notifications",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-2f491aa857b8cfc5c2a1be0a",
+            "method": "GET",
+            "path": "/api/notifications",
+            "summary": "本人桌面状态 · GET /api/notifications",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-0dd2dc6b19102cbe65140ec8",
+            "method": "PATCH",
+            "path": "/api/notifications",
+            "summary": "本人桌面状态 · PATCH /api/notifications",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-bb1ab176b8655d24c6c182b1",
+            "method": "POST",
+            "path": "/api/notifications",
+            "summary": "本人桌面状态 · POST /api/notifications",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-fab6ede0ab7512282c512b36",
+            "method": "GET",
+            "path": "/api/preferences",
+            "summary": "本人桌面状态 · GET /api/preferences",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-5b678db5a19168fb4abe88b1",
+            "method": "PUT",
+            "path": "/api/preferences",
+            "summary": "本人桌面状态 · PUT /api/preferences",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-53a08e95501a0711990eb90e",
+            "method": "GET",
+            "path": "/api/session",
+            "summary": "本人桌面状态 · GET /api/session",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-6808ff27045b4863bbc8b432",
+            "method": "POST",
+            "path": "/auth/logout",
+            "summary": "本人桌面状态 · POST /auth/logout",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-de26410a2b0124e47ea59fda",
+            "method": "POST",
+            "path": "/auth/renew",
+            "summary": "本人桌面状态 · POST /auth/renew",
+            "effect": "write"
+          }
+        ],
+        "exposure": "catalog"
+      }
+    },
+    {
+      "manifest": {
+        "schemaVersion": 1,
+        "serviceId": "service-manager.platform-c904d6d0",
+        "appId": "service-manager",
+        "name": "服务中心 · 服务中心",
+        "version": "1.0.0",
+        "description": "服务管理应用授权；管理写操作须管理员角色与 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
+        "operations": [
+          {
+            "operationId": "api-aea9b4d5c285105b3dec89da",
+            "method": "GET",
+            "path": "/api/service-registry",
+            "summary": "服务中心 · GET /api/service-registry",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-1f018656e178fbbf0556e18c",
+            "method": "POST",
+            "path": "/api/service-registry/activation",
+            "summary": "服务中心 · POST /api/service-registry/activation",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-8c00b9aaeb2dfe16f345b452",
+            "method": "GET",
+            "path": "/api/service-registry/insights",
+            "summary": "服务中心 · GET /api/service-registry/insights",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-501846204e3f5a9183c9c880",
+            "method": "POST",
+            "path": "/api/service-registry/lifecycle",
+            "summary": "服务中心 · POST /api/service-registry/lifecycle",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-d397c92bc7ca22a4d823f5fa",
+            "method": "POST",
+            "path": "/api/service-registry/publications",
+            "summary": "服务中心 · POST /api/service-registry/publications",
+            "effect": "write"
+          },
+          {
+            "operationId": "api-bb18040cb59d971744f0bd7e",
+            "method": "GET",
+            "path": "/api/service-registry/workspace",
+            "summary": "服务中心 · GET /api/service-registry/workspace",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-35734a5e07748a8dcb910d54",
+            "method": "POST",
+            "path": "/api/service-registry/workspace",
+            "summary": "服务中心 · POST /api/service-registry/workspace",
+            "effect": "write"
+          }
+        ],
+        "exposure": "catalog"
+      }
+    },
+    {
+      "manifest": {
+        "schemaVersion": 1,
+        "serviceId": "service-manager.platform-ddc20e94",
+        "appId": "service-manager",
+        "name": "服务中心 · API 台账",
+        "version": "1.0.0",
+        "description": "服务管理授权及管理员角色；写入须 CSRF。协议或平台目录登记，保持提供方协议，不通过业务代理启用。",
+        "operations": [
+          {
+            "operationId": "api-e550257577a213d3e421013a",
+            "method": "GET",
+            "path": "/api/service-registry/api-inventory",
+            "summary": "API 台账 · GET /api/service-registry/api-inventory",
+            "effect": "read"
+          },
+          {
+            "operationId": "api-f362f43c66affa7fbb9ef6f6",
+            "method": "POST",
+            "path": "/api/service-registry/api-inventory",
+            "summary": "API 台账 · POST /api/service-registry/api-inventory",
+            "effect": "write"
+          }
+        ],
+        "exposure": "catalog"
+      }
+    },
+    {
+      "manifest": {
+        "schemaVersion": 1,
         "serviceId": "resource-manager.probe-0d8ce652",
         "appId": "resource-manager",
         "name": "资源管理 · 运行健康",
@@ -8268,54 +8145,6 @@
   ],
   "metadata": [
     {
-      "serviceId": "app-manager.platform-f4c7183a",
-      "category": "system",
-      "owner": "",
-      "boundary": "platform"
-    },
-    {
-      "serviceId": "service-manager.platform-74efded2",
-      "category": "system",
-      "owner": "",
-      "boundary": "platform"
-    },
-    {
-      "serviceId": "service-manager.probe-f96bcef7",
-      "category": "system",
-      "owner": "",
-      "boundary": "probe"
-    },
-    {
-      "serviceId": "personal-center.platform-24e97fb2",
-      "category": "system",
-      "owner": "",
-      "boundary": "platform"
-    },
-    {
-      "serviceId": "service-manager.platform-0017008a",
-      "category": "system",
-      "owner": "",
-      "boundary": "platform"
-    },
-    {
-      "serviceId": "service-manager.platform-caf96a56",
-      "category": "system",
-      "owner": "",
-      "boundary": "platform"
-    },
-    {
-      "serviceId": "service-manager.platform-1d972241",
-      "category": "system",
-      "owner": "",
-      "boundary": "platform"
-    },
-    {
-      "serviceId": "service-manager.identity-18e797dc",
-      "category": "system",
-      "owner": "",
-      "boundary": "identity"
-    },
-    {
       "serviceId": "expert-database.self-1e74b288",
       "category": "data",
       "owner": "",
@@ -8506,6 +8335,36 @@
       "category": "engine",
       "owner": "",
       "boundary": "machine"
+    },
+    {
+      "serviceId": "app-manager.platform-5d655459",
+      "category": "system",
+      "owner": "",
+      "boundary": "platform"
+    },
+    {
+      "serviceId": "service-manager.platform-69f23978",
+      "category": "system",
+      "owner": "",
+      "boundary": "platform"
+    },
+    {
+      "serviceId": "personal-center.platform-0cfc8cde",
+      "category": "system",
+      "owner": "",
+      "boundary": "platform"
+    },
+    {
+      "serviceId": "service-manager.platform-c904d6d0",
+      "category": "system",
+      "owner": "",
+      "boundary": "platform"
+    },
+    {
+      "serviceId": "service-manager.platform-ddc20e94",
+      "category": "system",
+      "owner": "",
+      "boundary": "platform"
     },
     {
       "serviceId": "resource-manager.probe-0d8ce652",

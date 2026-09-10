@@ -16,8 +16,6 @@ type CreateSystemInput = { name?: string; code?: string; region?: string; year?:
 type NodeInput = { parentId?: string | null; level?: number; code?: string; name?: string; sortOrder?: number };
 type ModuleInput = { expectedTemplateRevision?: number; expectedRevisionNo?: number; values?: Array<{ fieldKey?: string; value?: unknown }>; notApplicableReasons?: Record<string, string>; confirm?: boolean };
 type EvidenceInput = { expectedTemplateRevision?: number; type?: string; title?: string; sourceUrl?: string; excerpt?: string; verificationStatus?: string; fieldKeys?: string[] };
-type SuggestionInput = { expectedTemplateRevision?: number; targetType?: 'module' | 'summary'; moduleKey?: string; fieldKey?: string; content?: string; rationale?: string; confidence?: string; evidenceIds?: string[]; verificationItems?: string[]; sourceRevisionIds?: string[]; modelId?: string; promptVersion?: string };
-type SuggestionDecisionInput = { expectedTemplateRevision?: number; decision?: 'accepted' | 'rejected'; expectedRevisionNo?: number; fieldKey?: string; value?: unknown; reason?: string };
 
 const MODULE_STATUSES = new Set(['not_started', 'in_progress', 'pending_review', 'confirmed', 'returned']);
 const EVIDENCE_STATUSES = new Set(['pending_verification', 'verified', 'invalid', 'superseded']);
@@ -357,27 +355,15 @@ export class CatalogService {
     await this.requireWritableVersion(versionId);
     await this.requireResearchPermission(versionId, nodeId, actor);
     const record = await this.recordForNode(versionId, nodeId);
-    const expected = Number(input.expectedRevisionNo);
-    if (!Number.isInteger(expected)) throw new BadRequestException('保存摘要时必须携带 expectedRevisionNo。');
-    const current = await this.prisma.researchSummaryRevision.aggregate({ where: { recordId: record.id }, _max: { revisionNo: true } });
-    const currentRevisionNo = current._max.revisionNo ?? 0;
-    if (expected !== currentRevisionNo) throw new ConflictException({ message: '研究摘要已被他人更新，请刷新后重试。', expectedRevisionNo: expected, currentRevisionNo });
-    const summary = input.summary?.trim();
-    const sourceRevisionIds = [...new Set(input.sourceRevisionIds ?? [])];
-    if (!summary) throw new BadRequestException('研究结论摘要不能为空。');
-    if (!sourceRevisionIds.length) throw new BadRequestException('摘要必须引用至少一条模块修订。');
-    const validSources = await this.prisma.researchRevision.count({ where: { id: { in: sourceRevisionIds }, module: { recordId: record.id } } });
-    if (validSources !== sourceRevisionIds.length) throw new BadRequestException('摘要引用了不属于当前指标的模块修订。');
-    const nextRevisionNo = currentRevisionNo + 1;
-    const template = await this.templates.forNode(versionId, nodeId);
+    // 摘要就是一个自由文本框：内容、来源修订和模板修订都不校验，每次保存追加一条摘要修订。
+    const summary = input.summary?.trim() ?? '';
     return this.prisma.$transaction(async (tx) => {
-      await this.templates.assertCurrent(tx, template.systemId, template.level, input.expectedTemplateRevision, template.revisionNo);
-      const fresh = await tx.researchSummaryRevision.aggregate({ where: { recordId: record.id }, _max: { revisionNo: true } });
-      if ((fresh._max.revisionNo ?? 0) !== expected) throw new ConflictException('摘要已被更新，请刷新后核对。');
+      const current = await tx.researchSummaryRevision.aggregate({ where: { recordId: record.id }, _max: { revisionNo: true } });
+      const nextRevisionNo = (current._max.revisionNo ?? 0) + 1;
       await tx.researchRecord.update({ where: { id: record.id }, data: { summary, revisionNo: { increment: 1 } } });
-      const revision = await tx.researchSummaryRevision.create({ data: { recordId: record.id, revisionNo: nextRevisionNo, summary, sourceRevisionIds, actorUserId: actor.userId, actorName: actor.name } });
-      await this.audit(tx, actor, 'research_summary.saved', 'ResearchRecord', record.id, versionId, { revisionNo: nextRevisionNo, sourceRevisionIds });
-      return { summary, revisionNo: revision.revisionNo, sourceRevisionIds, updatedAt: revision.createdAt.toISOString() };
+      const revision = await tx.researchSummaryRevision.create({ data: { recordId: record.id, revisionNo: nextRevisionNo, summary, sourceRevisionIds: [], actorUserId: actor.userId, actorName: actor.name } });
+      await this.audit(tx, actor, 'research_summary.saved', 'ResearchRecord', record.id, versionId, { revisionNo: nextRevisionNo });
+      return { summary, revisionNo: revision.revisionNo, sourceRevisionIds: [], updatedAt: revision.createdAt.toISOString() };
     });
   }
 
@@ -446,121 +432,6 @@ export class CatalogService {
   async auditLogs(versionId: string): Promise<object[]> {
     await this.version(versionId);
     return this.prisma.auditLog.findMany({ where: { versionId }, orderBy: { at: 'desc' }, take: 100 });
-  }
-
-  async suggestions(versionId: string, nodeId: string, actor: Actor): Promise<object[]> {
-    await this.systemAccess.requireForVersion(versionId, actor, ['canView']);
-    await this.requireContentNode(versionId, nodeId);
-    const record = await this.recordForNode(versionId, nodeId);
-    const suggestions = await this.prisma.aISuggestion.findMany({ where: { recordId: record.id }, orderBy: { createdAt: 'desc' } });
-    return suggestions.map((suggestion) => this.suggestionView(suggestion));
-  }
-
-  async createSuggestion(versionId: string, nodeId: string, input: SuggestionInput, actor: Actor): Promise<object> {
-    requireRole(actor, ['system_admin', 'ai_service']);
-    await this.requireWritableVersion(versionId);
-    const targetType = input.targetType ?? 'module';
-    if (!['module', 'summary'].includes(targetType)) throw new BadRequestException('AI建议目标类型无效。');
-    const template = await this.templates.forNode(versionId, nodeId);
-    const moduleKey = input.moduleKey?.trim(); const definition = activeModules(template.modules).find(m => m.moduleKey === moduleKey);
-    if (targetType === 'module' && !definition) throw new BadRequestException('模块建议必须包含有效模块。');
-    if (targetType === 'summary' && (moduleKey || input.fieldKey)) throw new BadRequestException('摘要建议不能指定模块字段。');
-    if (!input.content?.trim() || !input.rationale?.trim()) throw new BadRequestException('AI建议必须包含正文和说明。');
-    if (input.fieldKey && !definition?.fields.some((field) => field.fieldId === input.fieldKey)) throw new BadRequestException('AI建议目标字段不属于当前模块。');
-    const confidence = input.confidence ?? 'needs_verification';
-    if (!['supported', 'inference', 'needs_verification'].includes(confidence)) throw new BadRequestException('AI建议置信状态无效。');
-    const record = await this.recordForNode(versionId, nodeId);
-    const evidenceIds = [...new Set(input.evidenceIds ?? [])];
-    const sourceRevisionIds = [...new Set(input.sourceRevisionIds ?? [])];
-    if (evidenceIds.length) {
-      const count = await this.prisma.evidence.count({ where: { id: { in: evidenceIds }, recordId: record.id } });
-      if (count !== evidenceIds.length) throw new BadRequestException('AI建议引用了不属于当前指标的依据。');
-    }
-    if (sourceRevisionIds.length) {
-      const count = await this.prisma.researchRevision.count({ where: { id: { in: sourceRevisionIds }, module: { recordId: record.id } } });
-      if (count !== sourceRevisionIds.length) throw new BadRequestException('AI建议引用了不属于当前指标的模块修订。');
-    }
-    const content = input.content!.trim();
-    const rationale = input.rationale!.trim();
-    return this.prisma.$transaction(async (tx) => {
-      await this.templates.assertCurrent(tx, template.systemId, template.level, input.expectedTemplateRevision, template.revisionNo);
-      const suggestion = await tx.aISuggestion.create({ data: { templateRevision: template.revisionNo, recordId: record.id, targetType, moduleKey: moduleKey ?? null, fieldKey: input.fieldKey ?? null, content, rationale, confidence, evidenceIds, verificationItems: [...new Set(input.verificationItems ?? [])].map((item) => item.trim()).filter(Boolean), sourceRevisionIds, modelId: input.modelId?.trim() || 'unconfigured', promptVersion: input.promptVersion?.trim() || 'm0-contract' } });
-      await this.audit(tx, actor, 'ai_suggestion.created', 'AISuggestion', suggestion.id, versionId, { targetType, moduleKey: moduleKey ?? null, evidenceCount: evidenceIds.length, sourceRevisionCount: sourceRevisionIds.length });
-      return this.suggestionView(suggestion);
-    });
-  }
-
-  async decideSuggestion(versionId: string, nodeId: string, suggestionId: string, input: SuggestionDecisionInput, actor: Actor): Promise<object> {
-    await this.requireWritableVersion(versionId);
-    await this.requireResearchPermission(versionId, nodeId, actor);
-    const record = await this.recordForNode(versionId, nodeId);
-    const suggestion = await this.prisma.aISuggestion.findFirst({ where: { id: suggestionId, recordId: record.id } });
-    if (!suggestion) throw new NotFoundException('AI建议不存在。');
-    if (suggestion.status !== 'pending') throw new ConflictException('AI建议已被处理。');
-    if (input.decision === 'rejected') return this.prisma.$transaction(async (tx) => {
-      const updated = await tx.aISuggestion.update({ where: { id: suggestionId }, data: { status: 'rejected', decisionReason: input.reason?.trim() || null, decidedAt: new Date(), decidedByUserId: actor.userId } });
-      await this.audit(tx, actor, 'ai_suggestion.rejected', 'AISuggestion', suggestionId, versionId, { reason: input.reason?.trim() ?? null });
-      return this.suggestionView(updated);
-    });
-    if (input.decision !== 'accepted') throw new BadRequestException('建议处理结果必须是 accepted 或 rejected。');
-    const suggestionTemplate = await this.templates.forNode(versionId, nodeId);
-    if (suggestion.templateRevision !== suggestionTemplate.revisionNo) throw new ConflictException('模板已变更，请重新生成 AI 建议。');
-    if (suggestion.targetType === 'summary') {
-      const sourceRevisionIds = (suggestion.sourceRevisionIds as string[]).filter(Boolean);
-      if (!sourceRevisionIds.length) throw new BadRequestException('采纳摘要建议前必须存在至少一条来源模块修订。');
-      const expected = Number(input.expectedRevisionNo);
-      if (!Number.isInteger(expected)) throw new BadRequestException('采纳摘要建议时必须携带 expectedRevisionNo。');
-      const current = await this.prisma.researchSummaryRevision.aggregate({ where: { recordId: record.id }, _max: { revisionNo: true } });
-      const currentRevisionNo = current._max.revisionNo ?? 0;
-      if (expected !== currentRevisionNo) throw new ConflictException({ message: '研究摘要已被他人更新，请刷新后重试。', expectedRevisionNo: expected, currentRevisionNo });
-      const nextRevisionNo = currentRevisionNo + 1;
-      return this.prisma.$transaction(async (tx) => {
-        await this.templates.assertCurrent(tx, suggestionTemplate.systemId, suggestionTemplate.level, suggestion.templateRevision);
-        await tx.researchRecord.update({ where: { id: record.id }, data: { summary: suggestion.content, revisionNo: { increment: 1 } } });
-        const revision = await tx.researchSummaryRevision.create({ data: { recordId: record.id, revisionNo: nextRevisionNo, summary: suggestion.content, sourceRevisionIds, actorUserId: actor.userId, actorName: actor.name } });
-        const updated = await tx.aISuggestion.update({ where: { id: suggestionId }, data: { status: 'accepted', decidedAt: new Date(), decidedByUserId: actor.userId, resultRevisionId: revision.id } });
-        await this.audit(tx, actor, 'ai_suggestion.accepted', 'AISuggestion', suggestionId, versionId, { targetType: 'summary', resultRevisionId: revision.id });
-        return { suggestion: this.suggestionView(updated), summary: { summary: suggestion.content, revisionNo: revision.revisionNo, sourceRevisionIds, resultRevisionId: revision.id } };
-      });
-    }
-    if (!suggestion.moduleKey) throw new BadRequestException('模块建议缺少目标模块。');
-    const moduleKey = suggestion.moduleKey;
-    const fieldKey = input.fieldKey ?? suggestion.fieldKey; if (!fieldKey) throw new BadRequestException('采纳AI建议时必须选择目标字段。');
-    const template = await this.templates.forNode(versionId, nodeId);
-    const definition = activeModules(template.modules).find(m => m.moduleKey === moduleKey);
-    if (!definition) throw new BadRequestException('模块建议包含未知研究模块。');
-    const expected = Number(input.expectedRevisionNo);
-    if (!Number.isInteger(expected)) throw new BadRequestException('采纳模块建议时必须携带 expectedRevisionNo。');
-    return this.prisma.$transaction(async (tx) => {
-      await this.templates.assertCurrent(tx, suggestionTemplate.systemId, suggestionTemplate.level, suggestion.templateRevision);
-      const pendingSuggestion = await tx.aISuggestion.findFirst({ where: { id: suggestionId, recordId: record.id, status: 'pending' } });
-      if (!pendingSuggestion) throw new ConflictException('AI建议已被处理。');
-      const module = await tx.researchModule.findUniqueOrThrow({ where: { recordId_moduleKey: { recordId: record.id, moduleKey } } });
-      if (module.revisionNo !== expected) throw new ConflictException({ message: '研究模块已被他人更新，请刷新后重试。', expectedRevisionNo: expected, currentRevisionNo: module.revisionNo });
-      const values = this.mergeValues(module.values as JsonMap, [{ fieldKey, value: input.value ?? pendingSuggestion.content }], definition.fields);
-      const naReasons = module.naReasons as JsonMap;
-      const nextStatus = 'in_progress';
-      const persisted = await this.persistModuleRevision(tx, {
-        versionId,
-        recordId: record.id,
-        module,
-        moduleKey,
-        values,
-        naReasons,
-        nextStatus,
-        action: 'saved',
-        actor,
-      });
-      const accepted = await tx.aISuggestion.updateMany({
-        where: { id: suggestionId, recordId: record.id, status: 'pending' },
-        data: { status: 'accepted', decidedAt: new Date(), decidedByUserId: actor.userId, resultRevisionId: persisted.revision.id },
-      });
-      if (accepted.count !== 1) throw new ConflictException('AI建议已被处理。');
-      const updated = await tx.aISuggestion.findUniqueOrThrow({ where: { id: suggestionId } });
-      await this.audit(tx, actor, 'ai_suggestion.accepted', 'AISuggestion', suggestionId, versionId, { targetType: 'module', moduleKey, fieldKey, resultRevisionId: persisted.revision.id });
-      const evidence = await tx.evidence.findMany({ where: { recordId: record.id, moduleKey } });
-      return { suggestion: this.suggestionView(updated), module: this.moduleView(persisted.module, evidence, moduleKey, definition) };
-    });
   }
 
   async cloneVersion(versionId: string, input: { year?: number; versionCode?: string }, actor: Actor): Promise<object> {
@@ -674,7 +545,7 @@ export class CatalogService {
   }
   async requireResearchPermission(versionId: string, nodeId: string, actor: Actor): Promise<void> {
     await this.requireContentNode(versionId, nodeId);
-    if (actor.role === 'system_admin' || actor.role === 'ai_service') return;
+    if (actor.role === 'system_admin') return;
     await this.systemAccess.requireForVersion(versionId, actor, ['canResearch']);
   }
   private async requireResearchOrReviewScope(versionId: string, nodeId: string, actor: Actor): Promise<void> {
@@ -783,28 +654,6 @@ export class CatalogService {
   private moduleView(module: { id: string; moduleKey: string; status: string; revisionNo: number; returnReason: string | null; values: unknown; naReasons: unknown; updatedAt: Date }, evidence: Array<{ id: string; title: string; type: string; sourceUrl: string | null; excerpt: string | null; verificationStatus: string; fieldKeys: unknown }>, moduleKey: string, definition: ModuleDefinition): object {
     const values = module.values as JsonMap; const naReasons = module.naReasons as JsonMap;
     return { id: module.id, moduleKey, status: module.revisionNo > 0 ? 'in_progress' : 'not_started', revisionNo: module.revisionNo, completedFields: definition.fields.filter((field) => values[field.fieldId] !== null && values[field.fieldId] !== undefined && values[field.fieldId] !== '').length, totalFields: definition.fields.length, values: definition.fields.map((field) => ({ fieldKey: field.fieldId, value: values[field.fieldId] ?? null, notApplicableReason: typeof naReasons[field.fieldId] === 'string' ? naReasons[field.fieldId] : undefined, evidenceStatus: evidence.some((item) => item.verificationStatus === 'verified' && (item.fieldKeys as string[]).includes(field.fieldId)) ? 'confirmed' : 'pending', evidence: evidence.filter((item) => (item.fieldKeys as string[]).includes(field.fieldId)).map((item) => ({ id: item.id, title: item.title, sourceType: item.type, sourceUrl: item.sourceUrl ?? undefined, excerpt: item.excerpt ?? undefined, status: item.verificationStatus === 'verified' ? 'confirmed' : 'pending' })) })), updatedAt: module.updatedAt.toISOString() };
-  }
-  private suggestionView(suggestion: { id: string; targetType: string; moduleKey: string | null; fieldKey: string | null; content: string; rationale: string; confidence: string; evidenceIds: unknown; verificationItems: unknown; sourceRevisionIds: unknown; modelId: string; promptVersion: string; status: string; decisionReason: string | null; decidedAt: Date | null; decidedByUserId: string | null; resultRevisionId: string | null; createdAt: Date }): object {
-    return {
-      id: suggestion.id,
-      targetType: suggestion.targetType,
-      moduleKey: suggestion.moduleKey ?? undefined,
-      fieldKey: suggestion.fieldKey ?? undefined,
-      content: suggestion.content,
-      rationale: suggestion.rationale,
-      confidence: suggestion.confidence,
-      evidenceIds: Array.isArray(suggestion.evidenceIds) ? suggestion.evidenceIds : [],
-      verificationItems: Array.isArray(suggestion.verificationItems) ? suggestion.verificationItems : [],
-      sourceRevisionIds: Array.isArray(suggestion.sourceRevisionIds) ? suggestion.sourceRevisionIds : [],
-      modelId: suggestion.modelId,
-      promptVersion: suggestion.promptVersion,
-      status: suggestion.status,
-      decisionReason: suggestion.decisionReason ?? undefined,
-      decidedAt: suggestion.decidedAt?.toISOString(),
-      decidedByUserId: suggestion.decidedByUserId ?? undefined,
-      resultRevisionId: suggestion.resultRevisionId ?? undefined,
-      createdAt: suggestion.createdAt.toISOString(),
-    };
   }
   private contentProgress(modules: Array<{ moduleKey: string; values: unknown; naReasons: unknown }>, definitions: ModuleDefinition[]): number {
     let total = 0, filled = 0;

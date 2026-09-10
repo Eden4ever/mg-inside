@@ -43,8 +43,12 @@ try {
   const { hashPassword } = requireIdentity('./dist/password.js');
   const user = await db.user.upsert({ where: { username: account.username }, update: {}, create: {
     username: account.username, displayName: '桌面体验', passwordHash: await hashPassword(account.password), role: 'system_admin' } });
+  const platformAdministrator = await db.role.findUniqueOrThrow({ where: { key: 'platform-admin' } });
+  await db.userRole.upsert({ where: { userId_roleId: { userId: user.id, roleId: platformAdministrator.id } }, update: {},
+    create: { userId: user.id, roleId: platformAdministrator.id } });
   for (const client of secrets.clients) {
-    await db.application.upsert({ where: { clientId: client.client_id }, update: {}, create: { clientId: client.client_id, name: client.client_name } });
+    if (client.client_id === 'desktop-one') continue;
+    await db.application.upsert({ where: { clientId: client.client_id }, update: {}, create: { clientId: client.client_id } });
     await db.applicationUser.upsert({ where: { clientId_userId: { clientId: client.client_id, userId: user.id } }, update: {},
       create: { clientId: client.client_id, userId: user.id, enabled: true } });
   }

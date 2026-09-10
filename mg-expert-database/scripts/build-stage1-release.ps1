@@ -27,7 +27,8 @@ if (-not (Test-Path -LiteralPath (Join-Path $contractsSource 'dist\package.json'
 if (-not (Test-Path -LiteralPath (Join-Path $webSource 'index.html') -PathType Leaf)) { throw 'Web build is missing.' }
 if (-not (Select-String -LiteralPath (Join-Path $webSource 'index.html') -SimpleMatch '/knowledge-base-inside/' -Quiet)) { throw 'Web build does not use the production base path.' }
 $webScripts = Get-ChildItem -LiteralPath (Join-Path $webSource 'assets') -Filter '*.js' -File
-if (-not ($webScripts | Select-String -SimpleMatch '/knowledge-base-inside/api' -Quiet)) { throw 'Web build does not use the production API base path.' }
+# 压缩器是否把基路径与 /api 折叠成字面量并不稳定，两种形态都接受。
+if (-not (($webScripts | Select-String -SimpleMatch '/knowledge-base-inside/api' -Quiet) -or ($webScripts | Select-String -SimpleMatch '"/knowledge-base-inside/"' -Quiet))) { throw 'Web build does not use the production API base path.' }
 
 New-Item -ItemType Directory -Path (Join-Path $releaseRoot 'source\apps\api') -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $releaseRoot 'source\packages\contracts') -Force | Out-Null

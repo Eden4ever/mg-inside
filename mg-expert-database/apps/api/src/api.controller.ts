@@ -1,7 +1,7 @@
 import { TemplatesService } from './templates.service';
 import type { SaveSystemTemplatesRequest } from '@mg-expert/contracts';
 import { BadRequestException, Body, Controller, Delete, Get, HttpCode, Inject, Param, Patch, Post, Put, Query, Req } from '@nestjs/common';
-import type { CloneVersionRequest, CreateAiSuggestionRequest, CreateSystemRequest, DecideAiSuggestionRequest, EvidenceRequest, IndicatorNodeRequest, SaveSummaryRequest, UpdateModuleRequest } from '@mg-expert/contracts';
+import type { CloneVersionRequest, CreateSystemRequest, EvidenceRequest, IndicatorNodeRequest, SaveSummaryRequest, UpdateModuleRequest } from '@mg-expert/contracts';
 import { actorFromRequest, Public, type AuthenticatedRequest } from './auth';
 import { CatalogService } from './catalog.service';
 import { RequireSystemPermission } from './system-access';
@@ -57,11 +57,8 @@ export class ApiController {
   @RequireSystemPermission('canView')
   @Get('indicator-versions/:versionId/indicators/:nodeId/revisions') revisions(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Query('moduleKey') moduleKey: string | undefined, @Req() req: AuthenticatedRequest) { return this.catalog.revisions(versionId, nodeId, moduleKey, actorFromRequest(req)); }
   @RequireSystemPermission('canView')
-  @Get('indicator-versions/:versionId/indicators/:nodeId/ai-suggestions') suggestions(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Req() req: AuthenticatedRequest) { return this.catalog.suggestions(versionId, nodeId, actorFromRequest(req)); }
   @RequireSystemPermission('canResearch')
-  @Post('indicator-versions/:versionId/indicators/:nodeId/ai-suggestions') createSuggestion(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Body() body: CreateAiSuggestionRequest, @Req() req: AuthenticatedRequest) { return this.catalog.createSuggestion(versionId, nodeId, body, actorFromRequest(req)); }
   @RequireSystemPermission('canResearch')
-  @Post('indicator-versions/:versionId/indicators/:nodeId/ai-suggestions/:suggestionId/decision') decideSuggestion(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Param('suggestionId') suggestionId: string, @Body() body: DecideAiSuggestionRequest, @Req() req: AuthenticatedRequest) { return this.catalog.decideSuggestion(versionId, nodeId, suggestionId, body, actorFromRequest(req)); }
 
   @RequireSystemPermission('canView')
   @Get('indicator-versions/:versionId/indicators/:nodeId/evidence') evidenceList(@Param('versionId') versionId: string, @Param('nodeId') nodeId: string, @Query('moduleKey') moduleKey: string | undefined, @Req() req: AuthenticatedRequest) { return this.catalog.evidenceList(versionId, nodeId, moduleKey, actorFromRequest(req)); }

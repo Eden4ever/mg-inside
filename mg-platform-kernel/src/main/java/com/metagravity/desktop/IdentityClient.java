@@ -57,7 +57,10 @@ public class IdentityClient {
             String token=serviceToken();
             var res=send(HttpRequest.newBuilder(URI.create(issuer()+"/api/unified/"+path)).timeout(Duration.ofSeconds(8)).header("Authorization","Bearer "+token).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofByteArray(Json.bytes(body))).build());
             if(res.statusCode()==401 && attempt==0) { synchronized(this) { if(Objects.equals(machineToken,token)) machineToken=null; } continue; }
-            if(res.statusCode()<200 || res.statusCode()>=300) throw new ApiException(res.statusCode()==400 || res.statusCode()==401?401:503,"统一认证请求未通过");
+            if(res.statusCode()<200 || res.statusCode()>=300) {
+                if(path.equals("client-registration") && Set.of(400,401,403,409).contains(res.statusCode()))throw new ApiException(res.statusCode(),Json.string(response(res),"message"));
+                throw new ApiException(res.statusCode()==400 || res.statusCode()==401?401:503,"统一认证请求未通过");
+            }
             return response(res);
         }
         throw new ApiException(503,"统一认证服务身份已失效");
@@ -113,6 +116,10 @@ public class IdentityClient {
     }
     public void revoke(String token) {
         if(!request("revoke",Map.of("token",token(token),"app_id",clientId())).path("revoked").equals(Json.MAPPER.getNodeFactory().booleanNode(true))) throw new ApiException(503,"统一退出未完成");
+    }
+    public JsonNode manageClient(String token,String csrf,JsonNode input) {
+        var body=((com.fasterxml.jackson.databind.node.ObjectNode)input.deepCopy()).put("token",token(token)).put("csrfToken",csrf);
+        return request("client-registration",body);
     }
     public boolean hasRequiredRole(AppCatalog.App app,String token) {
         if(app.requiredRole()==null) return true;

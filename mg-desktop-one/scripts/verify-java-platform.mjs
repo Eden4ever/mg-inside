@@ -27,7 +27,7 @@ const children=[];
 const tokenA='A'.repeat(43),tokenB='B'.repeat(43),origin='http://127.0.0.1:4301';
 const sha=value=>createHash('sha256').update(value).digest('hex');
 let machineRequests=0,renewRequests=0;
-const apps=['service-manager','resource-manager','office-one','files','personal-center','app-manager','expert-database','token-one','token-one-console','token-one-docs','identity'];
+const apps=['service-manager','resource-manager','low-alt-cockpit','office-one','files','personal-center','app-manager','expert-database','token-one','token-one-console','token-one-docs','identity'];
 const mock=createServer(async(req,res)=>{
   let bytes=Buffer.alloc(0);for await(const chunk of req) bytes=Buffer.concat([bytes,chunk]);
   const url=new URL(req.url,'http://localhost');
@@ -36,12 +36,12 @@ const mock=createServer(async(req,res)=>{
   if(url.pathname.startsWith('/api/unified/')) {
     assert.equal(req.headers.authorization,'Bearer machine-fixture');
     const body=JSON.parse(bytes.toString()),operation=url.pathname.split('/').at(-1);
-    const profile=(token,app='desktop-one')=>({active:true,iss:mockOrigin,aud:app,sub:token===tokenB?'user-b':'user-a',sid:'session-fixture',username:'fixture',name:'体验用户',department:null,avatarUrl:null,role:'system_admin',localUserId:null,securityVersion:1,authTime:1700000000,amr:['pwd'],exp:2000000000,csrfToken:'csrf-fixture'});
+    const profile=(token,app='desktop-one')=>({active:true,iss:mockOrigin,aud:app,sub:token===tokenB?'user-b':'user-a',sid:'session-fixture',username:'fixture',name:'体验用户',department:null,avatarUrl:null,role:token===tokenB?'member':'system_admin',localUserId:null,securityVersion:1,authTime:1700000000,amr:['pwd'],exp:2000000000,csrfToken:'csrf-fixture'});
     if(operation==='introspect') {
       if(![tokenA,tokenB].includes(body.token) || body.token===tokenB && body.app_id==='app-manager') return json(200,{active:false});
       return json(200,profile(body.token,body.app_id));
     }
-    if(operation==='applications') return json(200,{applications:apps.map(id=>({id,name:id}))});
+    if(operation==='applications') return json(200,{applications:apps.filter(id=>body.token!==tokenB||id!=='app-manager').map(id=>({id,name:id}))});
     if(operation==='exchange') return json(200,{access_token:tokenA,profile:profile(tokenA)});
     if(operation==='renew') {renewRequests++;await new Promise(r=>setTimeout(r,100));return json(200,{access_token:body.token,profile:profile(body.token)});}
     if(operation==='revoke') return json(200,{revoked:true});

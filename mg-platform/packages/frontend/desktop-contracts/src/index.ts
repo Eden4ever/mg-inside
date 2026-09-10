@@ -1,5 +1,6 @@
 export const DESKTOP_PROTOCOL = 'mg-desktop-v1';
 export interface DesktopApp {
+  launchMode?: 'embedded' | 'tab';
   kind?: 'system' | 'default' | 'internal' | 'external';
   id: string; name: string; description: string; icon: string;
   entryUrl: string; defaultPath: string; allowedPaths: string[];

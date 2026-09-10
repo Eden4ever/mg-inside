@@ -2,7 +2,7 @@
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import type { ScrollbarInstance, TreeInstance } from 'element-plus';
-import { Plus, ArrowUp, ArrowDown, Collection, Document, Delete } from '@element-plus/icons-vue';
+import { Plus, ArrowUp, ArrowDown, Collection, CopyDocument, Document, Delete } from '@element-plus/icons-vue';
 import { api } from '@/api/client';
 import type { IndicatorSystemSummary } from '@/types/domain';
 import type { SystemTemplateSettings, ResearchModuleDefinition, ResearchFieldDefinition, FieldType } from '@mg-expert/contracts';
@@ -21,6 +21,7 @@ const navTree = ref<TreeInstance>();
 const savedItemKeys = new Set<string>();
 const confirmingDelete = ref(false);
 const deletedPopoverOpen = ref(false);
+const copyPopoverOpen = ref(false);
 const visibleModules = computed(() => current.value?.modules.filter(module => !module.deleted) ?? []);
 const visibleFields = (module: ResearchModuleDefinition) => module.fields.filter(field => !field.deleted);
 type TemplateNavNode = { key: string; moduleKey: string; fieldId?: string; label: string; inactive: boolean; kind: 'module' | 'field'; children?: TemplateNavNode[] };
@@ -54,6 +55,7 @@ watch(level, async () => {
   activeAnchor.value = navigation.value[0]?.key ?? '';
   navOpen.value = false;
   deletedPopoverOpen.value = false;
+  copyPopoverOpen.value = false;
   await nextTick();
   if (editorScroll.value?.wrapRef) editorScroll.value.wrapRef.scrollTop = 0;
   navTree.value?.setCurrentKey(activeAnchor.value);
@@ -166,6 +168,63 @@ function restoreItem(item: TemplateNavNode) {
   deletedPopoverOpen.value = false;
   void locateAnchor(item.key);
 }
+const copySources = computed(() => (settings.value?.levels ?? [])
+  .filter(entry => entry.level <= (settings.value?.maxLevel ?? 0) && entry.level !== level.value)
+  .map(entry => ({ level: entry.level, count: entry.modules.filter(module => !module.deleted && module.active !== false).length }))
+  .sort((a, b) => a.level - b.level));
+// 覆盖只改结构：来源结构整体接管本级，本级不再包含的已保存项按删除规则保留以便恢复。
+function mergedCopy(incoming: ResearchModuleDefinition[], existing: ResearchModuleDefinition[], targetLevel: number) {
+  const saved = (moduleKey: string, fieldId?: string) => savedItemKeys.has(savedItemKey(targetLevel, moduleKey, fieldId));
+  const priorModules = new Map(existing.map(module => [module.moduleKey, module]));
+  const merged: ResearchModuleDefinition[] = [];
+  for (const module of incoming) {
+    const prior = priorModules.get(module.moduleKey);
+    module.deleted = false;
+    module.active = module.active !== false;
+    const priorFields = new Map((prior?.fields ?? []).map(field => [field.fieldId, field]));
+    const reused = new Set<string>();
+    const fields = module.fields.filter(field => !field.deleted).map(field => {
+      const priorField = priorFields.get(field.fieldId);
+      // 本级已有内容的字段不能改类型，改用新标识并把旧字段留在删除项里。
+      if (priorField && priorField.fieldType !== field.fieldType) field.fieldId = id('field_');
+      else if (priorField) reused.add(field.fieldId);
+      field.deleted = false;
+      field.active = field.active !== false;
+      delete field.inactiveEnumValues;
+      return field;
+    });
+    for (const priorField of prior?.fields ?? []) {
+      if (!reused.has(priorField.fieldId) && saved(module.moduleKey, priorField.fieldId)) fields.push({ ...priorField, active: false, deleted: true });
+    }
+    module.fields = fields;
+    merged.push(module);
+  }
+  const incomingKeys = new Set(incoming.map(module => module.moduleKey));
+  for (const module of existing) {
+    if (!incomingKeys.has(module.moduleKey) && saved(module.moduleKey)) merged.push({ ...module, active: false, deleted: true });
+  }
+  merged.forEach((module, order) => { module.displayOrder = order + 1; });
+  return merged;
+}
+async function copyFromLevel(sourceLevel: number) {
+  if (!settings.value || !current.value || preview.value || busy.value || confirmingDelete.value) return;
+  const origin = current.value;
+  const targetLevel = level.value;
+  const source = settings.value.levels.find(entry => entry.level === sourceLevel);
+  if (!source || source === origin) return;
+  const incoming = source.modules.filter(module => !module.deleted);
+  if (!incoming.some(module => module.active !== false)) { ElMessage.warning('来源级别没有启用模块，请先启用后再复制。'); return; }
+  copyPopoverOpen.value = false;
+  confirmingDelete.value = true;
+  try {
+    await ElMessageBox.confirm('用 ' + sourceLevel + ' 级模板覆盖 ' + targetLevel + ' 级模板？本级不再包含的已保存模块和字段将转为删除状态，可从「已删除」恢复。已有内容、依据及历史修订保留。保存模板后应用到本级 ' + origin.affectedCount + ' 个指标。', '复制 ' + sourceLevel + ' 级模板', { type: 'warning', confirmButtonText: '覆盖本级模板', cancelButtonText: '取消' });
+    if (busy.value || preview.value || current.value !== origin || level.value !== targetLevel) return;
+    origin.modules = mergedCopy(JSON.parse(JSON.stringify(incoming)) as ResearchModuleDefinition[], origin.modules, targetLevel);
+    await locateAnchor(anchorKey(origin.modules[0]!.moduleKey));
+    ElMessage.success('已复制 ' + sourceLevel + ' 级模板，保存后生效。');
+  } catch { /* 取消覆盖时保留本级模板及当前输入。 */ }
+  finally { confirmingDelete.value = false; }
+}
 function reorder<T>(items: T[], index: number, target: number) {
   if (preview.value || busy.value || index === target || index < 0 || index >= items.length || target < 0 || target >= items.length) return false;
   const [item] = items.splice(index, 1);
@@ -221,6 +280,13 @@ async function save() {
       <div class="settings-head">
         <label>最大层级 <el-select v-model="settings.maxLevel" aria-label="最大层级" @change="changeDepth"><el-option v-for="n in 6" :key="n" :label="n + ' 级'" :value="n" /></el-select></label>
         <div class="settings-actions">
+          <el-popover v-model:visible="copyPopoverOpen" placement="bottom-end" :width="260" trigger="click" :disabled="preview || busy || confirmingDelete || !copySources.length">
+            <template #reference><el-button class="template-copy-trigger" :icon="CopyDocument" title="复制其他级别模板覆盖本级" :disabled="preview || busy || confirmingDelete || !copySources.length">复制级别</el-button></template>
+            <div class="copy-level-list">
+              <p class="copy-level-note">选择来源级别，覆盖当前 {{ level }} 级模板。</p>
+              <el-button v-for="option in copySources" :key="option.level" class="copy-level-item" link type="primary" :aria-label="'复制 ' + option.level + ' 级模板'" :disabled="busy || confirmingDelete" @click="copyFromLevel(option.level)">{{ option.level }} 级模板（{{ option.count }} 个启用模块）</el-button>
+            </div>
+          </el-popover>
           <el-button class="template-nav-toggle" :icon="Collection" :aria-label="navOpen ? '收起模板目录' : '展开模板目录'" :aria-expanded="navOpen" @click="navOpen = !navOpen">目录</el-button>
           <el-switch v-model="preview" active-text="预览" inactive-text="编辑" aria-label="预览模板" />
         </div>
@@ -311,6 +377,9 @@ async function save() {
 .settings-head .el-select { width:110px; margin-left:10px; }
 .scope-note { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; color:var(--el-text-color-secondary); margin-bottom:14px; }
 .template-deleted-trigger { flex-shrink:0; }
+.copy-level-list { display:flex; flex-direction:column; align-items:stretch; max-height:240px; overflow-y:auto; }
+.copy-level-note { color:var(--el-text-color-secondary); font-size:12px; margin:0 0 8px; }
+.copy-level-item { justify-content:flex-start; margin:0; padding:6px 0; }
 .deleted-template-list { max-height:240px; overflow-y:auto; }
 .deleted-template-item { display:flex; align-items:center; gap:12px; padding:8px 0; }
 .deleted-template-item > span { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -361,6 +430,6 @@ h3 { font-size:15px; margin:0 0 8px; } p { color:var(--el-text-color-secondary);
 @media (max-width:420px) {
   .settings-head { flex-wrap:wrap; gap:8px; }
   .settings-head .el-select { width:90px; margin-left:6px; }
-  .settings-actions { margin-left:auto; }
+  .settings-actions { margin-left:auto; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
 }
 </style>

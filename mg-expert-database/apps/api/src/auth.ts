@@ -17,7 +17,7 @@ type VerifiedSecond = 'totp' | 'email' | 'key' | 'recovery';
 
 export { hashPassword } from './password';
 
-export const ROLES = ['system_admin', 'catalog_manager', 'researcher', 'reviewer', 'publisher', 'reader', 'ai_service'] as const;
+export const ROLES = ['system_admin', 'catalog_manager', 'researcher', 'reviewer', 'publisher', 'reader'] as const;
 export type Role = (typeof ROLES)[number];
 export interface Actor { userId: string; name: string; role: Role; }
 export interface SessionUser extends Actor { username: string | null; departmentName: string | null; authSource: string; }
@@ -408,7 +408,7 @@ export class AuthService {
   }
 
   private validRole(role?: string): Role {
-    if (!role || !ROLES.includes(role as Role) || role === 'ai_service') throw new ConflictException('用户角色无效。');
+    if (!role || !ROLES.includes(role as Role)) throw new ConflictException('用户角色无效。');
     return role as Role;
   }
 

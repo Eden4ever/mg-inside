@@ -31,8 +31,9 @@ public class LoginFlow {
         if(key.length!=32) throw new IllegalStateException("桌面登录流程密钥无效");
     }
     public static String randomToken() { byte[] bytes=new byte[32]; RANDOM.nextBytes(bytes); return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes); }
-    public static String sha256(String value) {
-        try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8))); }
+    public static String sha256(String value) { return sha256(value.getBytes(StandardCharsets.UTF_8)); }
+    public static String sha256(byte[] value) {
+        try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(value)); }
         catch(GeneralSecurityException e) { throw new IllegalStateException(e); }
     }
     public static String challenge(String verifier) { return Base64.getUrlEncoder().withoutPadding().encodeToString(HexFormat.of().parseHex(sha256(verifier))); }

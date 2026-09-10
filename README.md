@@ -16,6 +16,8 @@ MG 统一桌面、公共应用壳及全部配套应用的私有源码仓库。�
 | mg-personal-one | 个人资料、安全与桌面偏好 |
 | mg-app-manager-one | 应用目录、当前应用版本与个人外链应用 |
 | mg-auth-one-identity | 统一身份、授权与会话 |
+| mg-security-one | 安全中心：登录历史、操作日志与安全策略配置（规划阶段） |
+| mg-zentao-sso | 禅道 OIDC 单点登录扩展 |
 | mg-expert-database | 指标知识库 |
 | mg-token-one | Token 门户、控制台、文档和模型网关 |
 

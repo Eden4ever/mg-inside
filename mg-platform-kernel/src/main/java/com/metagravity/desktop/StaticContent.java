@@ -29,7 +29,7 @@ public class StaticContent {
         if(!file.startsWith(root)) return error(404,"资源不存在");
         try {
             byte[] bytes=Files.readAllBytes(file);String name=file.getFileName().toString(),extension=name.substring(name.lastIndexOf('.')+1);
-            String type=Map.ofEntries(Map.entry("html","text/html; charset=utf-8"),Map.entry("js","application/javascript"),Map.entry("css",font?"text/css; charset=utf-8":"text/css"),Map.entry("svg","image/svg+xml"),Map.entry("png","image/png"),Map.entry("webp","image/webp"),Map.entry("woff2","font/woff2")).getOrDefault(extension,"application/octet-stream");
+            String type=Map.ofEntries(Map.entry("html","text/html; charset=utf-8"),Map.entry("js","application/javascript"),Map.entry("css",font?"text/css; charset=utf-8":"text/css"),Map.entry("svg","image/svg+xml"),Map.entry("png","image/png"),Map.entry("jpg","image/jpeg"),Map.entry("jpeg","image/jpeg"),Map.entry("webp","image/webp"),Map.entry("woff2","font/woff2")).getOrDefault(extension,"application/octet-stream");
             headers.set("Content-Type",type);headers.setContentLength(bytes.length);
             headers.setCacheControl(font?(extension.equals("css")?"public, max-age=0, must-revalidate":"public, max-age=31536000, immutable"):path.startsWith("/assets/")?"public, max-age=31536000, immutable":"no-store");
             return new Result(200,headers,bytes);

@@ -62,562 +62,6 @@
   ],
   "entries": [
     {
-      "id": "api-324c8cbd093f7b371aed5216",
-      "provider": "desktop-one",
-      "appIds": [
-        "app-manager"
-      ],
-      "category": "system",
-      "domain": "应用管理",
-      "boundary": "platform",
-      "auth": "应用管理授权；系统应用只读，外部应用归本人",
-      "summary": "应用管理 · GET /api/applications",
-      "method": "GET",
-      "path": "/api/applications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 90
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-b62efaf707d033f96a442f63",
-      "provider": "desktop-one",
-      "appIds": [
-        "app-manager"
-      ],
-      "category": "system",
-      "domain": "应用管理",
-      "boundary": "platform",
-      "auth": "应用管理授权；系统应用只读，外部应用归本人",
-      "summary": "应用管理 · POST /api/applications",
-      "method": "POST",
-      "path": "/api/applications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 90
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-2ccdf02a99a8e4358b951359",
-      "provider": "desktop-one",
-      "appIds": [
-        "app-manager"
-      ],
-      "category": "system",
-      "domain": "应用管理",
-      "boundary": "platform",
-      "auth": "应用管理授权；系统应用只读，外部应用归本人",
-      "summary": "应用管理 · DELETE /api/applications/{id}",
-      "method": "DELETE",
-      "path": "/api/applications/{id}",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 90
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-0875e967e593f0b13eaefbba",
-      "provider": "desktop-one",
-      "appIds": [
-        "app-manager"
-      ],
-      "category": "system",
-      "domain": "应用管理",
-      "boundary": "platform",
-      "auth": "应用管理授权；系统应用只读，外部应用归本人",
-      "summary": "应用管理 · PUT /api/applications/{id}",
-      "method": "PUT",
-      "path": "/api/applications/{id}",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 90
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-2842e827aa46b04342d86f41",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "应用网关",
-      "boundary": "platform",
-      "auth": "目标应用 audience、路径白名单与服务状态",
-      "summary": "应用网关 · ANY /api/apps/{appId}/{path*}",
-      "method": "ANY",
-      "path": "/api/apps/{appId}/{path*}",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
-        "line": 139
-      },
-      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
-    },
-    {
-      "id": "api-3fd39cadf0d1eb0c073e7f4d",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "运行健康",
-      "boundary": "probe",
-      "auth": "公开",
-      "summary": "运行健康 · ANY /api/health",
-      "method": "ANY",
-      "path": "/api/health",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 46
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-29aff39fd4db43d853353860",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · DELETE /api/notifications",
-      "method": "DELETE",
-      "path": "/api/notifications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 106
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-5c750d5219da5008a581771d",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · GET /api/notifications",
-      "method": "GET",
-      "path": "/api/notifications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 106
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-2b1ae28c241951308dbc26a9",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · PATCH /api/notifications",
-      "method": "PATCH",
-      "path": "/api/notifications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 106
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-307bcf4e8f45603b44bae739",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · POST /api/notifications",
-      "method": "POST",
-      "path": "/api/notifications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 106
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-1d02d0af62fd8b18dfd762f0",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · GET /api/preferences",
-      "method": "GET",
-      "path": "/api/preferences",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 111
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-eba77b4d7da987f28fb255d3",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · PUT /api/preferences",
-      "method": "PUT",
-      "path": "/api/preferences",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 111
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-1f465825c92a2f4beb2200be",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · GET /api/service-registry",
-      "method": "GET",
-      "path": "/api/service-registry",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 57
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-f6ea5dbef1a182913e7d55c9",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · POST /api/service-registry/activation",
-      "method": "POST",
-      "path": "/api/service-registry/activation",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 95
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-8d17ee299d56c2fc5b3a29c1",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "API 台账",
-      "boundary": "platform",
-      "auth": "服务管理授权及管理员角色；写入须 CSRF",
-      "summary": "API 台账 · GET /api/service-registry/api-inventory",
-      "method": "GET",
-      "path": "/api/service-registry/api-inventory",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 49
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-28a767e5109a5e2ff6e91b5b",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "API 台账",
-      "boundary": "platform",
-      "auth": "服务管理授权及管理员角色；写入须 CSRF",
-      "summary": "API 台账 · POST /api/service-registry/api-inventory",
-      "method": "POST",
-      "path": "/api/service-registry/api-inventory",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 49
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-a6f3854a3a5f4f3fdaf77059",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · GET /api/service-registry/insights",
-      "method": "GET",
-      "path": "/api/service-registry/insights",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 55
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-d13bd82810a041df4a1799e7",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · POST /api/service-registry/lifecycle",
-      "method": "POST",
-      "path": "/api/service-registry/lifecycle",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 107
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-86ff4623ed0b04f1dd0b9415",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · POST /api/service-registry/publications",
-      "method": "POST",
-      "path": "/api/service-registry/publications",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 74
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-0774e89fe8834dc9c9d7b010",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · GET /api/service-registry/workspace",
-      "method": "GET",
-      "path": "/api/service-registry/workspace",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 54
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-1ff92409d80c7a5af8a35786",
-      "provider": "desktop-one",
-      "appIds": [
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "服务中心",
-      "boundary": "platform",
-      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
-      "summary": "服务中心 · POST /api/service-registry/workspace",
-      "method": "POST",
-      "path": "/api/service-registry/workspace",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
-        "line": 54
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-32c2a962eda5de35d7ce3895",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "应用网关",
-      "boundary": "platform",
-      "auth": "目标应用 audience、路径白名单与服务状态",
-      "summary": "应用网关 · ANY /api/services/apps/{appId}/{path*}",
-      "method": "ANY",
-      "path": "/api/services/apps/{appId}/{path*}",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
-        "line": 45
-      },
-      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
-    },
-    {
-      "id": "api-a26f5e145e793a5833e8e061",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "应用网关",
-      "boundary": "platform",
-      "auth": "目标应用 audience、路径白名单与服务状态",
-      "summary": "应用网关 · ANY /api/services/invoke/{serviceId}/{operationId}",
-      "method": "ANY",
-      "path": "/api/services/invoke/{serviceId}/{operationId}",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
-        "line": 46
-      },
-      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
-    },
-    {
-      "id": "api-b3b3bfe7bee61e5278618a79",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · GET /api/session",
-      "method": "GET",
-      "path": "/api/session",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 78
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-209a264913f20c3f85d9c83e",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "桌面登录",
-      "boundary": "identity",
-      "auth": "PKCE、状态 Cookie 与统一身份",
-      "summary": "桌面登录 · GET /auth/callback",
-      "method": "GET",
-      "path": "/auth/callback",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 58
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-6de4046155d9d250464ae5cf",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · POST /auth/logout",
-      "method": "POST",
-      "path": "/auth/logout",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 85
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-7bca766ca020facc77f955ca",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "personal-center",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "本人桌面状态",
-      "boundary": "platform",
-      "auth": "桌面用户会话；写入须 CSRF",
-      "summary": "本人桌面状态 · POST /auth/renew",
-      "method": "POST",
-      "path": "/auth/renew",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 86
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
-      "id": "api-9da3d0c0e66069c2ed25f3d4",
-      "provider": "desktop-one",
-      "appIds": [
-        "desktop-one",
-        "service-manager"
-      ],
-      "category": "system",
-      "domain": "桌面登录",
-      "boundary": "identity",
-      "auth": "PKCE、状态 Cookie 与统一身份",
-      "summary": "桌面登录 · GET /auth/start",
-      "method": "GET",
-      "path": "/auth/start",
-      "source": {
-        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
-        "line": 47
-      },
-      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
-    },
-    {
       "id": "api-95f928476cf8157b896b051e",
       "provider": "expert-database",
       "appIds": [
@@ -2589,7 +2033,7 @@
       "path": "/",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -2608,7 +2052,7 @@
       "path": "/.well-known/oauth-authorization-server",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -2627,7 +2071,7 @@
       "path": "/.well-known/oauth-authorization-server",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -2646,7 +2090,7 @@
       "path": "/.well-known/openid-configuration",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -2665,7 +2109,7 @@
       "path": "/.well-known/openid-configuration",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -2684,7 +2128,7 @@
       "path": "/access-denied",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -2703,7 +2147,7 @@
       "path": "/account",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -2722,7 +2166,7 @@
       "path": "/admin",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -3021,7 +2465,7 @@
       "path": "/api/applications",
       "source": {
         "file": "mg-auth-one-identity/src/applications.controller.ts",
-        "line": 22
+        "line": 23
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3040,7 +2484,7 @@
       "path": "/api/applications/{clientId}/users/{userId}",
       "source": {
         "file": "mg-auth-one-identity/src/applications.controller.ts",
-        "line": 28
+        "line": 30
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3060,7 +2504,7 @@
       "path": "/api/applications/mine",
       "source": {
         "file": "mg-auth-one-identity/src/applications.controller.ts",
-        "line": 9
+        "line": 10
       },
       "note": "中心 FoundationIdentity 接口；本人访问不要求身份管理应用管理员权限。"
     },
@@ -3079,7 +2523,7 @@
       "path": "/api/applications/users/{userId}",
       "source": {
         "file": "mg-auth-one-identity/src/applications.controller.ts",
-        "line": 16
+        "line": 17
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3367,7 +2811,7 @@
       "path": "/api/directory/logout",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 140
+        "line": 137
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3386,7 +2830,7 @@
       "path": "/api/directory/session",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 132
+        "line": 129
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3405,7 +2849,7 @@
       "path": "/api/directory/users",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 106
+        "line": 103
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3671,7 +3115,7 @@
       "path": "/api/roles",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 21
+        "line": 22
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3690,7 +3134,7 @@
       "path": "/api/roles",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 27
+        "line": 28
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3709,7 +3153,7 @@
       "path": "/api/roles/{roleId}",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 53
+        "line": 54
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3728,7 +3172,7 @@
       "path": "/api/roles/{roleId}",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 43
+        "line": 44
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3747,7 +3191,7 @@
       "path": "/api/roles/{roleId}/applications/{clientId}",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 82
+        "line": 83
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3766,7 +3210,7 @@
       "path": "/api/roles/{roleId}/members/{userId}",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 66
+        "line": 67
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3785,7 +3229,7 @@
       "path": "/api/roles/users/{userId}",
       "source": {
         "file": "mg-auth-one-identity/src/roles.controller.ts",
-        "line": 33
+        "line": 34
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3804,7 +3248,7 @@
       "path": "/api/scopes",
       "source": {
         "file": "mg-auth-one-identity/src/scope.controller.ts",
-        "line": 11
+        "line": 12
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3823,7 +3267,7 @@
       "path": "/api/scopes/{id}/applications/{clientId}/users/{userId}",
       "source": {
         "file": "mg-auth-one-identity/src/scope.controller.ts",
-        "line": 50
+        "line": 53
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3842,7 +3286,7 @@
       "path": "/api/scopes/{id}/members",
       "source": {
         "file": "mg-auth-one-identity/src/scope.controller.ts",
-        "line": 44
+        "line": 47
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3861,7 +3305,7 @@
       "path": "/api/scopes/{kind}/{id}",
       "source": {
         "file": "mg-auth-one-identity/src/scope.controller.ts",
-        "line": 21
+        "line": 23
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -3880,7 +3324,7 @@
       "path": "/api/unified/applications",
       "source": {
         "file": "mg-auth-one-identity/src/unified-token.mjs",
-        "line": 121
+        "line": 124
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3899,7 +3343,7 @@
       "path": "/api/unified/authorize",
       "source": {
         "file": "mg-auth-one-identity/src/unified-token.mjs",
-        "line": 128
+        "line": 131
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3918,7 +3362,7 @@
       "path": "/api/unified/exchange",
       "source": {
         "file": "mg-auth-one-identity/src/unified-token.mjs",
-        "line": 116
+        "line": 119
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3937,7 +3381,7 @@
       "path": "/api/unified/introspect",
       "source": {
         "file": "mg-auth-one-identity/src/unified-token.mjs",
-        "line": 101
+        "line": 104
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3956,7 +3400,7 @@
       "path": "/api/unified/renew",
       "source": {
         "file": "mg-auth-one-identity/src/unified-token.mjs",
-        "line": 111
+        "line": 114
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -3975,7 +3419,7 @@
       "path": "/api/unified/revoke",
       "source": {
         "file": "mg-auth-one-identity/src/unified-token.mjs",
-        "line": 105
+        "line": 108
       },
       "note": "身份基础接口；不依赖已登录桌面网关，避免认证循环。"
     },
@@ -4203,7 +3647,7 @@
       "path": "/applications",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4222,7 +3666,7 @@
       "path": "/assets/{file}",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 154
+        "line": 151
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -4241,7 +3685,7 @@
       "path": "/auth",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4260,7 +3704,7 @@
       "path": "/auth/{uid}",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4279,7 +3723,7 @@
       "path": "/divisions",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4298,7 +3742,7 @@
       "path": "/health",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 151
+        "line": 148
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -4317,7 +3761,7 @@
       "path": "/interaction/{uid}",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 57
+        "line": 54
       },
       "note": "源码声明；部署启用状态须结合运行配置核验。缺少契约时仅登记台账。"
     },
@@ -4336,7 +3780,7 @@
       "path": "/jwks",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4355,7 +3799,7 @@
       "path": "/jwks",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4374,7 +3818,7 @@
       "path": "/login",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4393,7 +3837,7 @@
       "path": "/me",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4412,7 +3856,7 @@
       "path": "/me",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4431,7 +3875,7 @@
       "path": "/me",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4450,7 +3894,7 @@
       "path": "/organizations",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4469,7 +3913,7 @@
       "path": "/request",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4488,7 +3932,7 @@
       "path": "/request",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4507,7 +3951,7 @@
       "path": "/roles",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4526,7 +3970,7 @@
       "path": "/scopes",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4545,7 +3989,7 @@
       "path": "/session/end",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4564,7 +4008,7 @@
       "path": "/session/end/confirm",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4583,7 +4027,7 @@
       "path": "/session/end/success",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4602,7 +4046,7 @@
       "path": "/settings",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 152
+        "line": 149
       },
       "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
@@ -4621,7 +4065,7 @@
       "path": "/token",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4640,7 +4084,7 @@
       "path": "/token",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4659,7 +4103,7 @@
       "path": "/token/revocation",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4678,7 +4122,7 @@
       "path": "/token/revocation",
       "source": {
         "file": "mg-auth-one-identity/src/oidc.mjs",
-        "line": 27
+        "line": 24
       },
       "note": "来自当前安装 oidc-provider 的启用路由栈；HEAD 为 GET 的框架隐式行为。"
     },
@@ -4700,6 +4144,589 @@
         "line": 80
       },
       "note": "外部依赖调用；地址来自 Office 配置，保持签名机器协议。"
+    },
+    {
+      "id": "api-60dc9ce7c3c35c7b5ade8fbc",
+      "provider": "platform-kernel",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · GET /api/applications",
+      "method": "GET",
+      "path": "/api/applications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-52a66e561e31ed10363aa8a3",
+      "provider": "platform-kernel",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · POST /api/applications",
+      "method": "POST",
+      "path": "/api/applications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-be1491c67cdbde6584888da9",
+      "provider": "platform-kernel",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · DELETE /api/applications/{id}",
+      "method": "DELETE",
+      "path": "/api/applications/{id}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-090d7da4c205426b419e18ac",
+      "provider": "platform-kernel",
+      "appIds": [
+        "app-manager"
+      ],
+      "category": "system",
+      "domain": "应用管理",
+      "boundary": "platform",
+      "auth": "应用管理授权；系统应用只读，外部应用归本人",
+      "summary": "应用管理 · PUT /api/applications/{id}",
+      "method": "PUT",
+      "path": "/api/applications/{id}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 90
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-e086812695c788d231092cae",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "应用网关",
+      "boundary": "platform",
+      "auth": "目标应用 audience、路径白名单与服务状态",
+      "summary": "应用网关 · ANY /api/apps/{appId}/{path*}",
+      "method": "ANY",
+      "path": "/api/apps/{appId}/{path*}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
+        "line": 146
+      },
+      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
+    },
+    {
+      "id": "api-df3f43642361f09c138aa7c6",
+      "provider": "platform-kernel",
+      "appIds": [],
+      "category": "system",
+      "domain": "运行健康",
+      "boundary": "probe",
+      "auth": "公开",
+      "summary": "运行健康 · ANY /api/health",
+      "method": "ANY",
+      "path": "/api/health",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 46
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-730ea091aa080dcc204d5fdf",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · DELETE /api/notifications",
+      "method": "DELETE",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 123
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-2f491aa857b8cfc5c2a1be0a",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/notifications",
+      "method": "GET",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 123
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-0dd2dc6b19102cbe65140ec8",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · PATCH /api/notifications",
+      "method": "PATCH",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 123
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-bb1ab176b8655d24c6c182b1",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · POST /api/notifications",
+      "method": "POST",
+      "path": "/api/notifications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 123
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-fab6ede0ab7512282c512b36",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/preferences",
+      "method": "GET",
+      "path": "/api/preferences",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 141
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-5b678db5a19168fb4abe88b1",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · PUT /api/preferences",
+      "method": "PUT",
+      "path": "/api/preferences",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 141
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-b2b921e0c9380fecd7f7b869",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · DELETE /api/preferences/wallpaper",
+      "method": "DELETE",
+      "path": "/api/preferences/wallpaper",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 128
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-b8c933ccf606fb9a6c01c63e",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/preferences/wallpaper",
+      "method": "GET",
+      "path": "/api/preferences/wallpaper",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 128
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-3d79efa3bb93c56b7f665682",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · PUT /api/preferences/wallpaper",
+      "method": "PUT",
+      "path": "/api/preferences/wallpaper",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 128
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-aea9b4d5c285105b3dec89da",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · GET /api/service-registry",
+      "method": "GET",
+      "path": "/api/service-registry",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 57
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-1f018656e178fbbf0556e18c",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/activation",
+      "method": "POST",
+      "path": "/api/service-registry/activation",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 95
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-e550257577a213d3e421013a",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "API 台账",
+      "boundary": "platform",
+      "auth": "服务管理授权及管理员角色；写入须 CSRF",
+      "summary": "API 台账 · GET /api/service-registry/api-inventory",
+      "method": "GET",
+      "path": "/api/service-registry/api-inventory",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 49
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-f362f43c66affa7fbb9ef6f6",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "API 台账",
+      "boundary": "platform",
+      "auth": "服务管理授权及管理员角色；写入须 CSRF",
+      "summary": "API 台账 · POST /api/service-registry/api-inventory",
+      "method": "POST",
+      "path": "/api/service-registry/api-inventory",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 49
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-8c00b9aaeb2dfe16f345b452",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · GET /api/service-registry/insights",
+      "method": "GET",
+      "path": "/api/service-registry/insights",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 55
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-501846204e3f5a9183c9c880",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/lifecycle",
+      "method": "POST",
+      "path": "/api/service-registry/lifecycle",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 107
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-d397c92bc7ca22a4d823f5fa",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/publications",
+      "method": "POST",
+      "path": "/api/service-registry/publications",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 74
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-bb18040cb59d971744f0bd7e",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · GET /api/service-registry/workspace",
+      "method": "GET",
+      "path": "/api/service-registry/workspace",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 54
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-35734a5e07748a8dcb910d54",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "服务中心",
+      "boundary": "platform",
+      "auth": "服务管理应用授权；管理写操作须管理员角色与 CSRF",
+      "summary": "服务中心 · POST /api/service-registry/workspace",
+      "method": "POST",
+      "path": "/api/service-registry/workspace",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java",
+        "line": 54
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-a7681ca8f085c05186d99a10",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "应用网关",
+      "boundary": "platform",
+      "auth": "目标应用 audience、路径白名单与服务状态",
+      "summary": "应用网关 · ANY /api/services/apps/{appId}/{path*}",
+      "method": "ANY",
+      "path": "/api/services/apps/{appId}/{path*}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
+        "line": 45
+      },
+      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
+    },
+    {
+      "id": "api-ddb6701633cc2d39c793db40",
+      "provider": "platform-kernel",
+      "appIds": [
+        "service-manager"
+      ],
+      "category": "system",
+      "domain": "应用网关",
+      "boundary": "platform",
+      "auth": "目标应用 audience、路径白名单与服务状态",
+      "summary": "应用网关 · ANY /api/services/invoke/{serviceId}/{operationId}",
+      "method": "ANY",
+      "path": "/api/services/invoke/{serviceId}/{operationId}",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java",
+        "line": 46
+      },
+      "note": "网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。"
+    },
+    {
+      "id": "api-53a08e95501a0711990eb90e",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · GET /api/session",
+      "method": "GET",
+      "path": "/api/session",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 78
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-5959206b24b22b9677a052d6",
+      "provider": "platform-kernel",
+      "appIds": [],
+      "category": "system",
+      "domain": "桌面登录",
+      "boundary": "identity",
+      "auth": "PKCE、状态 Cookie 与统一身份",
+      "summary": "桌面登录 · GET /auth/callback",
+      "method": "GET",
+      "path": "/auth/callback",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 58
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-6808ff27045b4863bbc8b432",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · POST /auth/logout",
+      "method": "POST",
+      "path": "/auth/logout",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 85
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-de26410a2b0124e47ea59fda",
+      "provider": "platform-kernel",
+      "appIds": [
+        "personal-center"
+      ],
+      "category": "system",
+      "domain": "本人桌面状态",
+      "boundary": "platform",
+      "auth": "桌面用户会话；写入须 CSRF",
+      "summary": "本人桌面状态 · POST /auth/renew",
+      "method": "POST",
+      "path": "/auth/renew",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 86
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
+    },
+    {
+      "id": "api-4b43902e8d5d1afe67e9a623",
+      "provider": "platform-kernel",
+      "appIds": [],
+      "category": "system",
+      "domain": "桌面登录",
+      "boundary": "identity",
+      "auth": "PKCE、状态 Cookie 与统一身份",
+      "summary": "桌面登录 · GET /auth/start",
+      "method": "GET",
+      "path": "/auth/start",
+      "source": {
+        "file": "mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java",
+        "line": 47
+      },
+      "note": "保留提供方处理器与认证边界；台账登记不自动启用代理。"
     },
     {
       "id": "api-d87048b93ece90b218bbd5b6",

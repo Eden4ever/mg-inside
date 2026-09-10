@@ -29,7 +29,10 @@ async function toggleFullscreen() {
   } catch { notice('当前浏览器暂不支持全屏，请使用浏览器的全屏功能。'); }
   fullscreenChanged();
 }
-const prefs = reactive({ theme: 'system', wallpaper: 'dawn', restore: true, pinned: [] as string[], applicationOrder: [] as string[] });
+const prefs = reactive({ theme: 'system', wallpaper: 'dawn', wallpaperVersion: '', restore: true, pinned: [] as string[], applicationOrder: [] as string[] });
+// 自定义壁纸带版本号取用户自己的图片，版本变化才回源，其余情况走浏览器长缓存。
+const wallpaperStyle = computed(() => prefs.wallpaper === 'custom' && prefs.wallpaperVersion
+  ? { '--wallpaper': `url("/api/preferences/wallpaper?v=${encodeURIComponent(prefs.wallpaperVersion)}")` } : undefined);
 const notices = ref<Array<{ id: string; text: string; appId: string; read: boolean }>>([]);
 let notificationTimer: ReturnType<typeof setInterval> | undefined;
 async function refreshNotifications() {
@@ -224,6 +227,10 @@ function showPanel(value: typeof panel.value) { panel.value = panel.value === va
 function openApp(app: DesktopApp, path?: string) {
   if (Date.now() < suppressAppClickUntil) return;
   appMenu.value = null;
+  if (app.launchMode === 'tab') {
+    window.open(app.entryUrl.replace(/\/$/, '') + (path && appAllowsPath(app, path) ? path : app.defaultPath), '_blank', 'noopener,noreferrer');
+    panel.value = ''; return;
+  }
   const existing = store.windows.find(w => w.appId === app.id && !w.dialog);
   const win = store.open(app, path);
   if (existing && path && appAllowsPath(app, path)) send(win, 'navigate', { path: safeAppPath(path) });
@@ -446,7 +453,7 @@ onUnmounted(() => { cancelAppPointerDrag?.(); observer?.disconnect(); clearInter
 </script>
 
 <template>
-  <main class="desktop" :class="[{ dark }, prefs.wallpaper]">
+  <main class="desktop" :class="[{ dark }, prefs.wallpaper]" :style="wallpaperStyle">
     <header class="menu-bar">
       <button class="brand" aria-label="桌面菜单" aria-haspopup="menu" :aria-expanded="panel === 'system'" @mouseenter="hoverMenu('system')" @click="showPanel('system')"><img :src="enterpriseLogo" alt="元引" draggable="false" /></button>
       <button class="active-app" aria-label="当前应用菜单" aria-haspopup="menu" :aria-expanded="panel === 'application'" @mouseenter="hoverMenu('application')" @click="showPanel('application')">{{ active && !active.minimized ? appFor(active)?.name : desktopName }}</button>

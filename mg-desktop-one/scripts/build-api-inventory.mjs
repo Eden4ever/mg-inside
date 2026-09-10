@@ -65,7 +65,6 @@ for(const [appId,file] of [['files','mg-files-one/server/http.ts'],['office-one'
   }
 }
 async function manual(provider,appIds,category,domain,boundary,auth,file,rows,note='保留提供方处理器与认证边界；台账登记不自动启用代理。'){
-  if(appIds.includes('desktop-one'))appIds=[...new Set([...appIds,'service-manager'])];
   for(const [method,path,needle,summary] of rows)add({provider,appIds,category,domain,boundary,auth,summary:summary||domain+' · '+method+' '+path,method,path,source:await source(file,needle),note});
 }
 await manual('files',['files'],'application','运行健康','probe','公开','mg-files-one/server/http.ts',[['GET','/health',"path === '/health'"]]);
@@ -75,20 +74,20 @@ await manual('files',['office-one'],'component','Office 集成','machine','会�
 await manual('onlyoffice',['office-one'],'engine','Office 命令','machine','ONLYOFFICE JWT','mg-files-one/server/office.ts',[
   ['POST','/coauthoring/CommandService.ashx','/coauthoring/CommandService.ashx']], '外部依赖调用；地址来自 Office 配置，保持签名机器协议。');
 const platform='mg-platform-kernel/src/main/java/com/metagravity/desktop/PlatformController.java';
-await manual('desktop-one',['desktop-one'],'system','运行健康','probe','公开',platform,[['ANY','/api/health','if(path.equals("/api/health"))']]);
-await manual('desktop-one',['desktop-one'],'system','桌面登录','identity','PKCE、状态 Cookie 与统一身份',platform,[['GET','/auth/start','if(path.equals("/auth/start")'],['GET','/auth/callback','if(path.equals("/auth/callback")']]);
-await manual('desktop-one',['desktop-one','personal-center'],'system','本人桌面状态','platform','桌面用户会话；写入须 CSRF',platform,[
+await manual('platform-kernel',[],'system','运行健康','probe','公开',platform,[['ANY','/api/health','if(path.equals("/api/health"))']]);
+await manual('platform-kernel',[],'system','桌面登录','identity','PKCE、状态 Cookie 与统一身份',platform,[['GET','/auth/start','if(path.equals("/auth/start")'],['GET','/auth/callback','if(path.equals("/auth/callback")']]);
+await manual('platform-kernel',['personal-center'],'system','本人桌面状态','platform','桌面用户会话；写入须 CSRF',platform,[
   ['GET','/api/session','if(path.equals("/api/session")'],['POST','/auth/logout','if(path.equals("/auth/logout")'],['POST','/auth/renew','if(path.equals("/auth/renew")'],
-  ...['GET','PUT'].map(m=>[m,'/api/preferences','if(path.equals("/api/preferences"))']),...['GET','POST','PATCH','DELETE'].map(m=>[m,'/api/notifications','if(path.equals("/api/notifications"))'])]);
-await manual('desktop-one',['app-manager'],'system','应用管理','platform','应用管理授权；系统应用只读，外部应用归本人',platform,[
+  ...['GET','PUT'].map(m=>[m,'/api/preferences','if(path.equals("/api/preferences"))']),...['GET','PUT','DELETE'].map(m=>[m,'/api/preferences/wallpaper','if(path.equals("/api/preferences/wallpaper")) {']),...['GET','POST','PATCH','DELETE'].map(m=>[m,'/api/notifications','if(path.equals("/api/notifications"))'])]);
+await manual('platform-kernel',['app-manager'],'system','应用管理','platform','应用管理授权；系统应用只读，外部应用归本人',platform,[
   ...['GET','POST'].map(m=>[m,'/api/applications','if(path.equals("/api/applications") ||']),...['PUT','DELETE'].map(m=>[m,'/api/applications/{id}','if(path.equals("/api/applications") ||'])]);
 const registry='mg-platform-kernel/src/main/java/com/metagravity/desktop/ServiceRegistryController.java';
-await manual('desktop-one',['service-manager'],'system','服务中心','platform','服务管理应用授权；管理写操作须管理员角色与 CSRF',registry,[
+await manual('platform-kernel',['service-manager'],'system','服务中心','platform','服务管理应用授权；管理写操作须管理员角色与 CSRF',registry,[
   ['GET','/api/service-registry','path.equals("/api/service-registry")'],['GET','/api/service-registry/insights','path.equals("/api/service-registry/insights")'],
   ...['GET','POST'].map(m=>[m,'/api/service-registry/workspace','path.equals("/api/service-registry/workspace")']),
   ...['publications','activation','lifecycle'].map(p=>['POST','/api/service-registry/'+p,'path.equals("/api/service-registry/'+p+'")'])]);
-await manual('desktop-one',['service-manager'],'system','API 台账','platform','服务管理授权及管理员角色；写入须 CSRF',registry,['GET','POST'].map(m=>[m,'/api/service-registry/api-inventory','path.equals("/api/service-registry/api-inventory")']));
-await manual('desktop-one',['desktop-one','service-manager'],'system','应用网关','platform','目标应用 audience、路径白名单与服务状态','mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java',[
+await manual('platform-kernel',['service-manager'],'system','API 台账','platform','服务管理授权及管理员角色；写入须 CSRF',registry,['GET','POST'].map(m=>[m,'/api/service-registry/api-inventory','path.equals("/api/service-registry/api-inventory")']));
+await manual('platform-kernel',['service-manager'],'system','应用网关','platform','目标应用 audience、路径白名单与服务状态','mg-platform-kernel/src/main/java/com/metagravity/desktop/ApplicationGateway.java',[
   ['ANY','/api/apps/{appId}/{path*}','^/api/apps/'],['ANY','/api/services/apps/{appId}/{path*}','^/api/services/apps/'],['ANY','/api/services/invoke/{serviceId}/{operationId}','^/api/services/invoke/']], '网关路由模板；实际方法由目标应用策略与服务操作限制，禁止递归自代理。');
 // 从真实 OIDC Provider 的路由栈提取已启用协议（包括库添加的 OPTIONS）。
 const {default:Provider}=await import(pathToFileURL(join(workspace,'mg-auth-one-identity/node_modules/oidc-provider/lib/index.js')).href);

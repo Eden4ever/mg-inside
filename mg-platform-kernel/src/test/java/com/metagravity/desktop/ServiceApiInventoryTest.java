@@ -17,6 +17,11 @@ class ServiceApiInventoryTest {
     private ObjectNode input(long revision,ObjectNode document){var value=Json.object().put("expectedRevision",revision);value.set("document",document);return value;}
     @Test void validatesClassificationAndPreventsDuplicatePathsAndExecutableFields(){
         var doc=document();assertEquals(doc,ServiceApiInventory.validate(doc));
+        var infrastructure=document();infrastructure.withArray("boundaries").add(Json.object().put("id","identity").put("name","身份协议"));
+        ((ObjectNode)infrastructure.at("/entries/0")).put("boundary","identity").set("appIds",Json.MAPPER.createArrayNode());
+        assertEquals(infrastructure,ServiceApiInventory.validate(infrastructure));
+        var unownedBusiness=document();((ObjectNode)unownedBusiness.at("/entries/0")).set("appIds",Json.MAPPER.createArrayNode());
+        assertThrows(ApiException.class,()->ServiceApiInventory.validate(unownedBusiness));
         ((ObjectNode)doc.at("/entries/0")).put("category","unknown");assertThrows(ApiException.class,()->ServiceApiInventory.validate(doc));
         var duplicate=document();duplicate.withArray("entries").add(duplicate.at("/entries/0").deepCopy());assertThrows(ApiException.class,()->ServiceApiInventory.validate(duplicate));
         var unsafe=document();((ObjectNode)unsafe.at("/entries/0")).put("upstream","http://127.0.0.1/private");assertThrows(ApiException.class,()->ServiceApiInventory.validate(unsafe));

@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { onBeforeRouteLeave } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { Plus, Refresh, Search, Edit, Delete, View, TopRight } from '@element-plus/icons-vue';
+import { Plus, Refresh, Search, Edit, Delete, View, TopRight, Connection } from '@element-plus/icons-vue';
 import { PageFrame, PageHeading, ContentPanel, ApplicationIcon } from '@mg-inside/frontend';
 import { application } from '../application';
 import { request, type ManagedApplication } from '../api';
@@ -15,6 +15,11 @@ const loading = ref(true), refreshing = ref(false), saving = ref(false), error =
 const search = ref(''), category = ref('all');
 const opening = ref(false);
 const canRegister=ref(false);
+async function configureApplication(item: ManagedApplication) {
+  if (opening.value) return; opening.value = true;
+  try { await dialogs.open('application-connection', { applicationId: item.id }); desktop.applicationsChanged(); await load(); }
+  catch(e) { error.value = (e as Error).message; } finally { opening.value = false; }
+}
 async function registerApplication(){
  if(opening.value)return;opening.value=true;
  try{const result=await dialogs.open('application-registration',{});if(result.outcome==='completed'){cancelRead();await load();}}
@@ -107,6 +112,7 @@ onUnmounted(() => { disposed = true; cancelRead(); window.removeEventListener('f
             <el-switch v-if="canToggle(item)" :model-value="item.enabled !== false" :disabled="saving" :aria-label="`启停${item.name}`" @change="toggle(item)" />
             <span v-else class="readonly-note">{{ item.kind === 'default' ? '默认可用，无需授权' : item.kind === 'external' ? '我的外链 · 仅自己可见' : '由平台管理 · 需授权' }}</span>
             <div class="application-card-actions">
+              <el-tooltip v-if="canRegister && item.kind === 'internal'" content="接入配置"><el-button text :icon="Connection" :aria-label="`配置${item.name}接入`" @click="configureApplication(item)" /></el-tooltip>
               <el-tooltip content="查看详情"><el-button text :icon="View" :aria-label="`详情${item.name}`" @click="details(item)" /></el-tooltip>
               <el-tooltip v-if="editable(item)" content="编辑元数据"><el-button text :icon="Edit" :disabled="saving || opening" :aria-label="`编辑${item.name}`" @click="startEdit(item)" /></el-tooltip>
               <el-tooltip v-if="editable(item) && item.kind === 'external'" content="移除"><el-button text type="danger" :icon="Delete" :disabled="saving" :aria-label="`移除${item.name}`" @click="remove(item)" /></el-tooltip>

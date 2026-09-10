@@ -75,6 +75,7 @@ public class AppCatalog implements AutoCloseable {
         if (row.defaultMaximized()) data.put("defaultMaximized", true);
         data.put("kind", row.kind());
         var app = new App(data, upstream, row.authorizationAppId(), row.allowedApiPaths(), row.requiredRole(), ApplicationPolicy.parse(row.id(), row.runtimePolicy()));
+        if("tab".equals(app.policy().launchMode()))data.put("launchMode","tab");
         if (!app.allowsPage(row.defaultPath())) throw new IllegalStateException("应用默认路径不在允许范围：" + row.id());
         return app;
     }

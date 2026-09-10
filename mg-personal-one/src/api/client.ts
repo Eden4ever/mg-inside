@@ -7,7 +7,7 @@ export async function request<T>(path: string, options: RequestInit = {}, base =
   const end = mutation ? desktop.beginRequest() : () => {};
   try {
     const headers = new Headers(options.headers);
-    if (options.body) headers.set('Content-Type', 'application/json');
+    if (typeof options.body === 'string') headers.set('Content-Type', 'application/json');
     if (mutation) headers.set('X-CSRF-Token', await platformSession.csrf());
     const response = await fetch(`${base}${path}`, { ...options, headers, credentials: 'include', signal: options.signal || AbortSignal.timeout(30000) });
     const data = response.status === 204 ? {} : await response.json();

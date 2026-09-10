@@ -14,7 +14,7 @@ const jdk = (await readdir(join(kernel, '.runtime/java-tools'))).find(name => na
 const java = join(kernel, '.runtime/java-tools', jdk, 'bin/java.exe');
 const buildDirectory = join(work, 'kernel-target');
 const jar = process.env.TEST_KERNEL_JAR || join(buildDirectory, 'mg-platform-kernel-0.1.0-SNAPSHOT.jar');
-const children = [], granted = new Set(['desktop-one', 'app-manager', 'service-manager']);
+const children = [], granted = new Set(['desktop-one', 'app-manager', 'service-manager', 'files']);
 let db, postgres, desktop, databaseStarted = false, profileRole = 'system_admin', profileUser = 'fixture-user';
 function child(command, args, env = process.env) {
   const value = spawn(command, args, { cwd: root, env, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -38,12 +38,20 @@ const mock = createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const send = value => { res.writeHead(200, { 'content-type': 'application/json' }); res.end(JSON.stringify(value)); };
   if (url.pathname === '/token') return send({ access_token: 'machine-fixture', expires_in: 60 });
-  if (url.pathname === '/api/unified/introspect') return send(granted.has(data.app_id) ? {
+  if (url.pathname === '/api/unified/introspect') {
+    const available = data.app_id === 'desktop-one' || !db || Boolean((await db.query(
+      'SELECT 1 FROM desktop_applications WHERE enabled=true AND (id=$1 OR authorization_app_id=$1)', [data.app_id])).rowCount);
+    return send(granted.has(data.app_id) && available ? {
     active: true, iss: mockOrigin, aud: data.app_id, sub: profileUser, sid: 'fixture-session', role: profileRole,
     name: '注册验证', username: 'fixture', department: null, localUserId: null, authTime: 1700000000, amr: ['pwd'],
     exp: 2000000000, csrfToken: 'fixture-csrf', securityVersion: 1,
-  } : { active: false });
-  if (url.pathname === '/api/unified/applications') return send({ applications: [] });
+    } : { active: false });
+  }
+  if (url.pathname === '/api/unified/applications') {
+    const rows = db ? (await db.query('SELECT id,authorization_app_id FROM desktop_applications WHERE enabled=true')).rows : [];
+    const available = new Set(rows.flatMap(row => [row.id, row.authorization_app_id].filter(Boolean)));
+    return send({ applications: [...granted].filter(id => id !== 'desktop-one' && available.has(id)).map(id => ({ id, name: id })) });
+  }
   if (url.pathname.endsWith('/auth/me')) return send({ user: { role: 'system_admin' } });
   if (url.pathname.endsWith('/capabilities')) return send({ user: { role: 'operator' } });
   if (url.pathname.endsWith('/version.json')) return send({ schemaVersion: 1, appId: 'shared-package', version: '20260909T000000Z' });
@@ -97,17 +105,18 @@ try {
   await run(java,['-jar',jar,'service-storage','api-inventory-schema'],env);
   await run(java,['-jar',jar,'service-storage','workspace-schema'],env);
   const inventoryDocument=JSON.parse(await readFile(join(root,'registrations/api-inventory.json'),'utf8'));
+  const publicationDocument=JSON.parse(await readFile(join(root,'registrations/api-publications.json'),'utf8'));
   const imported=await run(java,['-jar',jar,'service-storage','api-inventory-import',join(root,'registrations/api-inventory.json')],env);
   assert.match(imported,/"duplicate":false/);
   assert.match(await run(java,['-jar',jar,'service-storage','api-inventory-import',join(root,'registrations/api-inventory.json')],env),/"duplicate":true/);
   await db.query("INSERT INTO service_environments(name,imported_digest) VALUES('local','fixture')");
-  assert.match(await run(java,['-jar',jar,'service-storage','publications-import',join(root,'registrations/api-publications.json')],env),/"inserted":68/);
-  assert.match(await run(java,['-jar',jar,'service-storage','publications-import',join(root,'registrations/api-publications.json')],env),/"duplicate":68/);
+  assert.match(await run(java,['-jar',jar,'service-storage','publications-import',join(root,'registrations/api-publications.json')],env),new RegExp(`"inserted":${publicationDocument.publications.length}`));
+  assert.match(await run(java,['-jar',jar,'service-storage','publications-import',join(root,'registrations/api-publications.json')],env),new RegExp(`"duplicate":${publicationDocument.publications.length}`));
   // 应用运行账号仅可更新展示字段和内部应用启停，不授予路由、授权字段或 DDL 权限。
   await db.query('CREATE ROLE application_reader LOGIN');
   await db.query('GRANT USAGE ON SCHEMA public TO application_reader');
   await db.query('GRANT SELECT ON ALL TABLES IN SCHEMA public TO application_reader');
-  await db.query('GRANT UPDATE(name,description,developer,icon,min_width,min_height,default_maximized,enabled,revision,updated_at) ON desktop_applications TO application_reader');
+  await db.query('GRANT UPDATE(name,description,developer,icon,min_width,min_height,default_maximized,enabled,revision,updated_at,registered_version) ON desktop_applications TO application_reader');
   await db.query('GRANT INSERT ON desktop_application_audit TO application_reader');
   await db.query('GRANT INSERT, UPDATE ON service_environments,service_publications,service_bindings,service_version_lifecycles,service_audit,service_activity TO application_reader');
   await db.query('GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO application_reader');
@@ -263,7 +272,7 @@ try {
   await db.query('GRANT SELECT ON desktop_applications TO application_reader');
   await request('/api/session');
   await db.query("UPDATE desktop_applications SET enabled=false WHERE id IN ('app-manager','service-manager')");
-  await request('/api/applications', 403); await request('/api/service-registry', 403);
+  await request('/api/applications'); await request('/api/service-registry', 403);
   console.log('动态注册验证通过，继续原 Node/Java HTTP 兼容回归。');
   const compatibility = JSON.parse(await run(process.execPath, [join(root, 'scripts/verify-java-platform.mjs')],
     { ...process.env, JAVA_TEST_APPLICATION_DATABASE_URL: env.SERVICE_DATABASE_URL, TEST_KERNEL_JAR: jar }));
